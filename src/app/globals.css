@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg-main: hsl(220, 20%, 4%);
-  --color-bg-surface: hsl(220, 15%, 8%);
-  --color-bg-surface-hover: hsl(220, 15%, 12%);
+  --color-bg-main: hsl(280, 10%, 4%);
+  --color-bg-surface: hsl(280, 10%, 8%);
+  --color-bg-surface-hover: hsl(280, 10%, 12%);
   
-  --color-text-primary: hsl(220, 10%, 98%);
-  --color-text-secondary: hsl(220, 10%, 70%);
-  --color-text-tertiary: hsl(220, 10%, 50%);
+  --color-text-primary: hsl(280, 10%, 98%);
+  --color-text-secondary: hsl(280, 10%, 70%);
+  --color-text-tertiary: hsl(280, 10%, 50%);
   
-  --color-accent: hsl(210, 100%, 60%);
-  --color-accent-glow: hsla(210, 100%, 60%, 0.15);
-  --color-border-subtle: hsla(220, 20%, 80%, 0.08);
-  --color-border-strong: hsla(220, 20%, 80%, 0.15);
+  --color-accent: hsl(280, 100%, 70%);
+  --color-accent-glow: hsla(280, 100%, 70%, 0.15);
+  --color-border-subtle: hsla(280, 20%, 80%, 0.08);
+  --color-border-strong: hsla(280, 20%, 80%, 0.15);
 
   --font-display: 'Outfit', system-ui, sans-serif;
 }

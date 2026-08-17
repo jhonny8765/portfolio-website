@@ -29,11 +29,12 @@ export default function DataStreamBackground() {
     let animationFrameId: number;
 
     const draw = () => {
-      // Semi-transparent black to create trailing effect
-      ctx.fillStyle = "rgba(10, 12, 16, 0.1)"; // Matches hsl(220, 20%, 4%) roughly
+      // Semi-transparent base to create trailing effect (matches hsl(280, 10%, 4%))
+      ctx.fillStyle = "rgba(11, 9, 11, 0.1)"; 
       ctx.fillRect(0, 0, width, height);
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.05)"; // Very faint white
+      // Neon Purple tint for the data stream
+      ctx.fillStyle = "rgba(191, 102, 255, 0.07)"; 
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
