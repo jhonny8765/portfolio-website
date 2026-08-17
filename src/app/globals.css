@@ -79,21 +79,3 @@
 .delay-2 { animation-delay: 150ms; }
 .delay-3 { animation-delay: 225ms; }
 
-/* Scroll-driven animations (Chrome/Edge) */
-@supports (animation-timeline: view()) {
-  @keyframes scrollReveal {
-    0% { opacity: 0; transform: translateY(40px) scale(0.95); filter: blur(8px); }
-    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  }
-
-  .reveal {
-    animation: scrollReveal linear both;
-    animation-timeline: view();
-    animation-range: entry 5% cover 25%;
-  }
-  
-  /* Remove time-based delays for scroll-driven mode */
-  .delay-1, .delay-2, .delay-3 {
-    animation-delay: 0ms;
-  }
-}
