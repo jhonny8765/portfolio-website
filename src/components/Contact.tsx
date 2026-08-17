@@ -37,11 +37,24 @@ export default function Contact() {
               Let's Discuss <br/><span className="text-strong">Your Project</span>
             </h2>
             <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-10 max-w-lg">
-              Whether you need a full-stack web application, an automated business workflow, or professional resume services, I'm here to help. Reach out and let's build something great.
+              Whether you need a full-stack web application, an automated business workflow, or an enterprise data pipeline, I'm here to help. Reach out and let's build something great.
             </p>
             
-            <div className="flex flex-col gap-4 text-[var(--color-text-tertiary)] pl-6 border-l-2 border-[var(--color-border-subtle)] text-lg">
-              <p>Pricing is tailored to the scope of your project. Contact me for a custom quote.</p>
+            <div className="flex flex-col gap-6 mb-12">
+              <a href="#" className="inline-flex items-center justify-center px-6 py-4 bg-[var(--color-text-primary)] text-black rounded-xl font-semibold hover:bg-zinc-200 transition-colors w-max">
+                Book a 15-Min Discovery Call
+              </a>
+              <div className="flex flex-col gap-3">
+                <a href="mailto:youremail@example.com" className="text-[var(--color-text-secondary)] hover:text-white transition-colors flex items-center gap-2 font-medium">
+                  → Email me directly
+                </a>
+                <a href="https://wa.me/#" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-white transition-colors flex items-center gap-2 font-medium">
+                  → Message on WhatsApp
+                </a>
+                <a href="https://linkedin.com/in/#" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-white transition-colors flex items-center gap-2 font-medium">
+                  → Connect on LinkedIn
+                </a>
+              </div>
             </div>
           </div>
 
@@ -91,11 +104,9 @@ export default function Contact() {
                     className="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[var(--color-text-primary)] transition-all duration-300 focus:bg-white/[0.05] focus:border-white/20 focus:shadow-[0_0_0_4px_rgba(255,255,255,0.05)] outline-none appearance-none"
                   >
                     <option className="bg-[var(--color-bg-surface)]">General Inquiry</option>
-                    <option className="bg-[var(--color-bg-surface)]">Web & SaaS Development</option>
-                    <option className="bg-[var(--color-bg-surface)]">Business Automation</option>
-                    <option className="bg-[var(--color-bg-surface)]">AI Solutions</option>
-                    <option className="bg-[var(--color-bg-surface)]">Resume & CV Services</option>
-                    <option className="bg-[var(--color-bg-surface)]">Applicant Generation</option>
+                    <option className="bg-[var(--color-bg-surface)]">SaaS & Web Development</option>
+                    <option className="bg-[var(--color-bg-surface)]">Business Automation (n8n)</option>
+                    <option className="bg-[var(--color-bg-surface)]">AI Pipelines & Integrations</option>
                   </select>
                 </div>
 

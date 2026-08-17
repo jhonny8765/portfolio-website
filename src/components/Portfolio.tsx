@@ -14,13 +14,13 @@ const projects = [
     image: "/suki-suite-placeholder.jpg"
   },
   {
-    title: "Salon Suite",
-    description: "Enterprise multi-branch command center. Implemented secure multi-tenant architecture and real-time inventory sync across locations.",
-    icon: <Settings size={24} />,
-    tags: ["React", "Node.js", "Supabase", "WebSockets"],
-    url: "https://123-eight-rosy.vercel.app/",
+    title: "Document AI Parser",
+    description: "Automated FinTech document ingestion pipeline. Extracts structured JSON from unstructured PDFs using computer vision and LLMs. Reduces manual data entry by 95%.",
+    icon: <Monitor size={24} />,
+    tags: ["Python", "FastAPI", "OpenAI Vision", "AWS S3"],
+    url: null,
     colSpan: "col-span-1 lg:col-span-1",
-    image: "/salon-suite-placeholder.jpg"
+    image: "/document-ai-placeholder.jpg"
   },
   {
     title: "Barangay Arena",
