@@ -13,11 +13,11 @@ export default function Footer() {
             <a href="https://github.com/jhonny8765" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
               GitHub
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
-              Facebook
+            <a href="https://linkedin.com/in/#" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
+              LinkedIn
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
-              YouTube
+            <a href="https://wa.me/#" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
+              WhatsApp
             </a>
           </div>
 

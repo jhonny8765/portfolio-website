@@ -8,8 +8,31 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Jhon Rey Consolacion | AI-Powered Full-Stack Developer",
-  description: "An all-rounder who knows technology and AI — from websites and SaaS platforms to automation, recruitment, resumes, and virtual assistance.",
+  metadataBase: new URL("https://noble-planck-blue.vercel.app"),
+  title: "Jhon Rey Consolacion | Senior Software Engineer",
+  description: "Building high-performance SaaS platforms, enterprise data pipelines, and intelligent automation systems. Specializing in Next.js, Node, and AI.",
+  openGraph: {
+    title: "Jhon Rey Consolacion | Senior Software Engineer",
+    description: "Building high-performance SaaS platforms, enterprise data pipelines, and intelligent automation systems.",
+    url: "https://noble-planck-blue.vercel.app",
+    siteName: "Jhon Rey Consolacion Portfolio",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Jhon Rey Consolacion - Senior Software Engineer",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jhon Rey Consolacion | Senior Software Engineer",
+    description: "Building high-performance SaaS platforms, enterprise data pipelines, and intelligent automation systems.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 import DataStreamBackground from "@/components/DataStreamBackground";
