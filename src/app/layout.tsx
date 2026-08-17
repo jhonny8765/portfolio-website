@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "An all-rounder who knows technology and AI — from websites and SaaS platforms to automation, recruitment, resumes, and virtual assistance.",
 };
 
+import DataStreamBackground from "@/components/DataStreamBackground";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -19,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        <DataStreamBackground />
+        {children}
+      </body>
     </html>
   );
 }

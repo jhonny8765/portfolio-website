@@ -25,3 +25,11 @@ Clients will likely view this site on various devices (desktop and mobile) durin
 ## Brand Commitments
 - Clean, modern aesthetic.
 - Bold and creative experience.
+
+## Evidence on Hand
+- Currently relies on live project links (Suki Suite, Salon Suite, Barangay Arena).
+- No additional evidence (testimonials, case studies, or resumes) is committed at this time. Future work must not fabricate these.
+
+## Product Principles
+1. Distinctive engineering: Show, don't just tell.
+2. Premium quality: Let the work speak for itself without relying on generic visual clichés.
