@@ -30,41 +30,42 @@ const projects = [
 
 export default function Portfolio() {
   return (
-    <section id="portfolio" className="section" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
+    <section id="portfolio" className="section" style={{ background: 'var(--bg-surface)' }}>
       <div className="container">
-        <div style={{ marginBottom: 'var(--spacing-16)' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-4)' }}>Projects / Systems I've Built</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', maxWidth: '600px' }}>
+        <div className="reveal" style={{ marginBottom: '4rem', maxWidth: '700px' }}>
+          <h2 style={{ marginBottom: '1rem' }}>Systems <span className="text-gradient">I've Built</span></h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
             A selection of platforms, tools, and automated systems I have designed and developed to solve real business problems.
           </p>
         </div>
 
         <div className="grid grid-cols-2">
           {projects.map((project, index) => (
-            <div key={index} className="card" style={{ backgroundColor: 'var(--bg-primary)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-3)', marginBottom: 'var(--spacing-4)' }}>
-                <div style={{ color: 'var(--text-tertiary)' }}>
+            <div key={index} className={`card-glass reveal delay-${(index % 2) + 1}`}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                <div style={{ color: 'var(--text-primary)', padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
                   {project.icon}
                 </div>
-                <h3 style={{ fontSize: '1.25rem' }}>{project.title}</h3>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 600 }}>{project.title}</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: 'var(--spacing-6)', minHeight: '48px' }}>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', minHeight: '48px' }}>
                 {project.description}
               </p>
-              <div style={{ display: 'flex', gap: 'var(--spacing-2)', flexWrap: 'wrap', marginBottom: 'var(--spacing-6)' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
                 {project.tags.map(tag => (
                   <span key={tag} style={{ 
-                    fontSize: '0.8rem', 
-                    padding: 'var(--spacing-1) var(--spacing-3)', 
-                    backgroundColor: 'var(--bg-tertiary)', 
-                    borderRadius: 'var(--radius-full)',
+                    fontSize: '0.75rem', 
+                    padding: '0.25rem 0.75rem', 
+                    background: 'rgba(255,255,255,0.03)', 
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: '999px',
                     color: 'var(--text-secondary)'
                   }}>
                     {tag}
                   </span>
                 ))}
               </div>
-              <a href="#contact" style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--spacing-2)', fontSize: '0.9rem', fontWeight: 500 }}>
+              <a href="#contact" className="link-hover" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' }}>
                 Discuss a similar project <ArrowRight size={16} />
               </a>
             </div>

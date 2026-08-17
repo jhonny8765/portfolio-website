@@ -1,13 +1,5 @@
 import React from 'react';
-import { 
-  Globe, 
-  Layers, 
-  Zap, 
-  Cpu, 
-  FileText, 
-  Users, 
-  Headset 
-} from 'lucide-react';
+import { Globe, Layers, Zap, Cpu, FileText, Users, Headset } from 'lucide-react';
 
 const services = [
   {
@@ -37,7 +29,7 @@ const services = [
   },
   {
     icon: <Users size={24} />,
-    title: "Recruitment & Applicant Gen",
+    title: "Applicant Generation",
     description: "Social-media-driven applicant generation and recruitment campaigns."
   },
   {
@@ -49,33 +41,31 @@ const services = [
 
 export default function Services() {
   return (
-    <section id="services" className="section" style={{ backgroundColor: 'var(--bg-primary)' }}>
+    <section id="services" className="section">
       <div className="container">
-        <div style={{ marginBottom: 'var(--spacing-16)' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: 'var(--spacing-4)' }}>Services I Offer</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', maxWidth: '600px' }}>
+        <div className="reveal" style={{ marginBottom: '4rem', maxWidth: '700px' }}>
+          <h2 style={{ marginBottom: '1rem' }}>Expertise & <span className="text-gradient">Services</span></h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
             You don't have to hire five different people for your digital needs. I combine web development, AI, automation, and more to turn ideas into working solutions.
           </p>
         </div>
         
         <div className="grid grid-cols-3">
           {services.map((service, index) => (
-            <div key={index} className="card">
+            <div key={index} className={`card-glass reveal delay-${(index % 3) + 1}`}>
               <div style={{ 
-                width: '48px', 
-                height: '48px', 
-                borderRadius: 'var(--radius-md)', 
-                backgroundColor: 'var(--bg-tertiary)', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                marginBottom: 'var(--spacing-6)',
-                color: 'var(--text-primary)'
+                width: '56px', height: '56px', 
+                borderRadius: '16px', 
+                background: 'rgba(255,255,255,0.05)', 
+                border: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: '1.5rem', color: 'var(--text-primary)',
+                boxShadow: 'inset 0 0 20px rgba(255,255,255,0.02)'
               }}>
                 {service.icon}
               </div>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: 'var(--spacing-2)' }}>{service.title}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{service.description}</p>
+              <h3 style={{ fontSize: '1.25rem', marginBottom: '0.75rem' }}>{service.title}</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.6 }}>{service.description}</p>
             </div>
           ))}
         </div>
