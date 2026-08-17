@@ -13,7 +13,7 @@ export default function Hero() {
           </div>
           
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight mb-8">
-            <span className="text-gradient">AI-Powered</span> <br />
+            <span className="text-strong">AI-Powered</span> <br />
             <span className="text-[var(--color-text-primary)]">Full-Stack Developer</span>
           </h1>
           

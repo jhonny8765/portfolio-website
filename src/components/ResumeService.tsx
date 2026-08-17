@@ -14,7 +14,7 @@ export default function ResumeService() {
           </div>
           
           <h2 className="text-3xl md:text-5xl font-medium mb-6 relative z-10 tracking-tight">
-            Need a <span className="text-gradient">Resume That Gets Noticed?</span>
+            Need a <span className="text-strong">Resume That Gets Noticed?</span>
           </h2>
           <p className="text-[var(--color-text-secondary)] text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed relative z-10">
             Beyond development and automation, I help professionals stand out. Get your career materials polished by someone who understands what hiring managers and automated systems (ATS) look for.

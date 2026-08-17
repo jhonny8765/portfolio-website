@@ -42,7 +42,7 @@ export default function Portfolio() {
       <div className="max-w-7xl mx-auto px-6 w-full">
         <div className="reveal max-w-2xl mb-16">
           <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-6">
-            Systems <span className="text-gradient">I've Built</span>
+            Systems <span className="text-strong">I've Built</span>
           </h2>
           <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed">
             A selection of production-ready platforms, tools, and automated systems I have designed and developed to solve real business problems.

@@ -35,20 +35,7 @@
   body {
     overflow-x: hidden;
     position: relative;
-  }
-
-  /* Subtle Animated Background Mesh */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: 
-      radial-gradient(circle at 15% 50%, var(--color-accent-glow), transparent 25%),
-      radial-gradient(circle at 85% 30%, hsla(280, 100%, 60%, 0.1), transparent 25%);
-    z-index: -1;
-    filter: blur(80px);
-    animation: bgShift 20s ease-in-out infinite alternate;
-    pointer-events: none;
+    /* Removed heavy animated background mesh */
   }
 
   h1, h2, h3, h4 {
@@ -59,25 +46,18 @@
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-br from-white to-zinc-400;
+  .text-strong {
+    @apply text-white font-semibold tracking-tight;
   }
   
   .glass-panel {
-    @apply bg-gradient-to-br from-white/[0.03] to-white/[0.01] 
-           border border-white/10 backdrop-blur-xl 
-           transition-all duration-500 ease-out;
+    @apply bg-zinc-900/50 border border-zinc-800/50 
+           transition-all duration-300 ease-out rounded-xl;
   }
   
   .glass-panel:hover {
-    @apply border-white/20 bg-gradient-to-br from-white/[0.05] to-white/[0.02]
-           shadow-[0_20px_40px_rgba(0,0,0,0.4)] -translate-y-1;
+    @apply bg-zinc-800/60 border-zinc-700/50 -translate-y-1;
   }
-}
-
-@keyframes bgShift {
-  0% { transform: scale(1); }
-  100% { transform: scale(1.1) translate(2%, 2%); }
 }
 
 @keyframes revealUp {

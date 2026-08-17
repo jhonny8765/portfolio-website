@@ -34,7 +34,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="reveal">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-6">
-              Let's Discuss <br/><span className="text-gradient">Your Project</span>
+              Let's Discuss <br/><span className="text-strong">Your Project</span>
             </h2>
             <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-10 max-w-lg">
               Whether you need a full-stack web application, an automated business workflow, or professional resume services, I'm here to help. Reach out and let's build something great.

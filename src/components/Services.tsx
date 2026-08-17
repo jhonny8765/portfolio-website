@@ -40,7 +40,7 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-6 w-full">
         <div className="reveal max-w-2xl mb-16">
           <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-6">
-            Expertise & <span className="text-gradient">Services</span>
+            Expertise & <span className="text-strong">Services</span>
           </h2>
           <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed">
             You don't have to hire five different people for your digital needs. I combine web development, AI, automation, and more to turn ideas into working solutions.
