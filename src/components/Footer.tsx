@@ -1,5 +1,4 @@
 import React from 'react';
-import { Github, Facebook, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -10,15 +9,15 @@ export default function Footer() {
             Jhon Rey Consolacion
           </h2>
           
-          <div className="flex gap-8 flex-wrap justify-center">
-            <a href="https://github.com/jhonny8765" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200">
-              <Github size={20} /> GitHub
+          <div className="flex gap-8 flex-wrap justify-center font-medium">
+            <a href="https://github.com/jhonny8765" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
+              GitHub
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200">
-              <Facebook size={20} /> Facebook
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
+              Facebook
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-200">
-              <Youtube size={20} /> YouTube
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:-translate-y-0.5 transition-all duration-200">
+              YouTube
             </a>
           </div>
 
