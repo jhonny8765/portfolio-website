@@ -29,86 +29,89 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="section" style={{ background: 'var(--bg-surface)' }}>
-      <div className="container">
-        <div className="grid grid-cols-2" style={{ gap: '4rem', alignItems: 'center' }}>
+    <section id="contact" className="py-32 relative bg-[var(--color-bg-surface)]">
+      <div className="max-w-7xl mx-auto px-6 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="reveal">
-            <h2 style={{ fontSize: '3rem', marginBottom: '1.5rem' }}>Let's Discuss <br/><span className="text-gradient">Your Project</span></h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', marginBottom: '2.5rem', maxWidth: '500px', lineHeight: 1.8 }}>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-6">
+              Let's Discuss <br/><span className="text-gradient">Your Project</span>
+            </h2>
+            <p className="text-xl text-[var(--color-text-secondary)] leading-relaxed mb-10 max-w-lg">
               Whether you need a full-stack web application, an automated business workflow, or professional resume services, I'm here to help. Reach out and let's build something great.
             </p>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', color: 'var(--text-tertiary)', paddingLeft: '1.5rem', borderLeft: '2px solid var(--border-subtle)' }}>
+            <div className="flex flex-col gap-4 text-[var(--color-text-tertiary)] pl-6 border-l-2 border-[var(--color-border-subtle)] text-lg">
               <p>Pricing is tailored to the scope of your project. Contact me for a custom quote.</p>
             </div>
           </div>
 
-          <div className="card-glass reveal delay-1">
+          <div className="glass-panel p-8 md:p-10 rounded-3xl reveal delay-1">
             {status === 'success' ? (
-              <div style={{ textAlign: 'center', padding: '4rem 0' }} className="animate-fade-in">
-                <div style={{ display: 'inline-flex', color: '#10b981', marginBottom: '1.5rem' }}>
-                  <CheckCircle size={56} />
+              <div className="text-center py-16 animate-fade-in">
+                <div className="inline-flex text-emerald-500 mb-6">
+                  <CheckCircle size={64} strokeWidth={1.5} />
                 </div>
-                <h3 style={{ fontSize: '1.75rem', marginBottom: '1rem' }}>Message Sent!</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Thanks for reaching out. I'll get back to you shortly.</p>
-                <button onClick={() => setStatus('idle')} className="btn btn-secondary">Send Another Message</button>
+                <h3 className="text-3xl font-medium tracking-tight mb-4">Message Sent!</h3>
+                <p className="text-[var(--color-text-secondary)] text-lg mb-8">Thanks for reaching out. I'll get back to you shortly.</p>
+                <button onClick={() => setStatus('idle')} className="inline-flex items-center justify-center px-6 py-3 rounded-full font-medium text-base transition-all duration-300 bg-white/[0.03] border border-white/10 hover:bg-white/[0.08] hover:border-[var(--color-border-strong)] hover:-translate-y-0.5">
+                  Send Another Message
+                </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 {status === 'error' && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '12px', border: '1px solid rgba(239,68,68,0.2)' }}>
+                  <div className="flex items-center gap-3 p-4 bg-red-500/10 text-red-400 rounded-xl border border-red-500/20">
                     <AlertCircle size={20} />
                     <span>Something went wrong. Please try again.</span>
                   </div>
                 )}
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label htmlFor="name" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Name</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="name" className="text-sm font-medium text-[var(--color-text-secondary)]">Name</label>
                   <input 
                     id="name" required type="text" 
                     value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                    className="input-glass"
+                    className="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[var(--color-text-primary)] transition-all duration-300 focus:bg-white/[0.05] focus:border-white/20 focus:shadow-[0_0_0_4px_rgba(255,255,255,0.05)] outline-none"
                   />
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label htmlFor="email" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Email</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="email" className="text-sm font-medium text-[var(--color-text-secondary)]">Email</label>
                   <input 
                     id="email" required type="email" 
                     value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-                    className="input-glass"
+                    className="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[var(--color-text-primary)] transition-all duration-300 focus:bg-white/[0.05] focus:border-white/20 focus:shadow-[0_0_0_4px_rgba(255,255,255,0.05)] outline-none"
                   />
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label htmlFor="service" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Service Needed</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="service" className="text-sm font-medium text-[var(--color-text-secondary)]">Service Needed</label>
                   <select 
                     id="service" value={formData.service} onChange={e => setFormData({...formData, service: e.target.value})}
-                    className="input-glass" style={{ appearance: 'none' }}
+                    className="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[var(--color-text-primary)] transition-all duration-300 focus:bg-white/[0.05] focus:border-white/20 focus:shadow-[0_0_0_4px_rgba(255,255,255,0.05)] outline-none appearance-none"
                   >
-                    <option>General Inquiry</option>
-                    <option>Web & SaaS Development</option>
-                    <option>Business Automation</option>
-                    <option>AI Solutions</option>
-                    <option>Resume & CV Services</option>
-                    <option>Applicant Generation</option>
+                    <option className="bg-[var(--color-bg-surface)]">General Inquiry</option>
+                    <option className="bg-[var(--color-bg-surface)]">Web & SaaS Development</option>
+                    <option className="bg-[var(--color-bg-surface)]">Business Automation</option>
+                    <option className="bg-[var(--color-bg-surface)]">AI Solutions</option>
+                    <option className="bg-[var(--color-bg-surface)]">Resume & CV Services</option>
+                    <option className="bg-[var(--color-bg-surface)]">Applicant Generation</option>
                   </select>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <label htmlFor="message" style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Message</label>
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="message" className="text-sm font-medium text-[var(--color-text-secondary)]">Message</label>
                   <textarea 
                     id="message" required rows={4}
                     value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
-                    className="input-glass" style={{ resize: 'vertical' }}
+                    className="w-full px-5 py-4 bg-white/[0.03] border border-white/10 rounded-xl text-[var(--color-text-primary)] transition-all duration-300 focus:bg-white/[0.05] focus:border-white/20 focus:shadow-[0_0_0_4px_rgba(255,255,255,0.05)] outline-none resize-y"
                   />
                 </div>
 
                 <button 
                   type="submit" 
                   disabled={status === 'submitting'}
-                  className="btn btn-primary" 
-                  style={{ marginTop: '0.5rem', width: '100%', opacity: status === 'submitting' ? 0.7 : 1 }}
+                  className={`mt-2 w-full inline-flex items-center justify-center px-8 py-4 rounded-xl font-medium text-base transition-all duration-500 bg-[var(--color-text-primary)] text-[var(--color-bg-main)] shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] gap-2 ${status === 'submitting' ? 'opacity-70' : ''}`}
                 >
                   {status === 'submitting' ? 'Sending...' : (
                     <>Send Message <Send size={18} /></>

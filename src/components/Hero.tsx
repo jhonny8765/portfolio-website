@@ -3,38 +3,29 @@ import { ArrowRight } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: '0' }}>
-      <div className="container">
-        <div style={{ maxWidth: '850px', position: 'relative', zIndex: 1 }} className="reveal">
-          <div style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            padding: '0.5rem 1rem', 
-            background: 'rgba(255,255,255,0.05)', 
-            border: '1px solid var(--border-subtle)', 
-            borderRadius: '999px',
-            marginBottom: '2rem',
-            backdropFilter: 'blur(10px)'
-          }}>
-            <span style={{ color: 'var(--text-secondary)', fontWeight: 500, letterSpacing: '0.05em', textTransform: 'uppercase', fontSize: '0.85rem' }}>
+    <section className="min-h-screen flex items-center pt-0 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 w-full z-10 pt-20">
+        <div className="max-w-4xl relative reveal">
+          <div className="inline-flex items-center px-5 py-2 mb-8 glass-panel rounded-full">
+            <span className="text-[var(--color-text-secondary)] font-medium tracking-widest uppercase text-xs">
               Jhon Rey Consolacion
             </span>
           </div>
           
-          <h1 style={{ marginBottom: '1.5rem' }}>
-            <span className="text-gradient">AI-Powered Full-Stack Developer</span> <br />
-            <span style={{ color: 'var(--text-primary)' }}>& Digital Solutions Builder</span>
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-medium tracking-tight mb-8">
+            <span className="text-gradient">AI-Powered</span> <br />
+            <span className="text-[var(--color-text-primary)]">Full-Stack Developer</span>
           </h1>
           
-          <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '3rem', maxWidth: '650px', lineHeight: 1.8 }}>
-            An all-rounder who knows technology and AI — from websites and SaaS platforms to automation, recruitment, resumes, and virtual assistance.
+          <p className="text-xl md:text-2xl text-[var(--color-text-secondary)] mb-12 max-w-2xl leading-relaxed">
+            I engineer premium digital solutions—from high-performance web applications to intelligent SaaS platforms and business automation.
           </p>
           
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }} className="reveal delay-1">
-            <a href="#contact" className="btn btn-primary">
+          <div className="flex flex-wrap gap-4 reveal delay-1">
+            <a href="#contact" className="inline-flex items-center justify-center px-8 py-4 rounded-full font-medium text-base transition-all duration-500 bg-[var(--color-text-primary)] text-[var(--color-bg-main)] shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:-translate-y-1 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] gap-2">
               Let's Discuss Your Project <ArrowRight size={18} />
             </a>
-            <a href="#portfolio" className="btn btn-secondary">
+            <a href="#portfolio" className="inline-flex items-center justify-center px-8 py-4 rounded-full font-medium text-base transition-all duration-500 glass-panel hover:text-white">
               View My Work
             </a>
           </div>
