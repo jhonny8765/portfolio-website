@@ -1,81 +1,187 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
 
-@theme {
-  --color-bg-main: hsl(280, 10%, 4%);
-  --color-bg-surface: hsl(280, 10%, 8%);
-  --color-bg-surface-hover: hsl(280, 10%, 12%);
+:root {
+  /* Ultra-dark IDE Palette */
+  --bg-main: #0d0d0d;
+  --bg-surface: #141414;
+  --bg-surface-hover: #1f1f1f;
   
-  --color-text-primary: hsl(280, 10%, 98%);
-  --color-text-secondary: hsl(280, 10%, 70%);
-  --color-text-tertiary: hsl(280, 10%, 50%);
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
   
-  --color-accent: hsl(280, 100%, 70%);
-  --color-accent-glow: hsla(280, 100%, 70%, 0.15);
-  --color-border-subtle: hsla(280, 20%, 80%, 0.08);
-  --color-border-strong: hsla(280, 20%, 80%, 0.15);
+  --accent-primary: #6366f1; /* Indigo */
+  --accent-secondary: #4f46e5;
+  
+  --border-subtle: #262626;
+  --border-strong: #404040;
 
-  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
 }
 
-@layer base {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-  
-  html {
-    scroll-behavior: smooth;
-    background-color: var(--color-bg-main);
-    color: var(--color-text-primary);
-    font-family: var(--font-display);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    overflow-x: hidden;
-    position: relative;
-    /* Removed heavy animated background mesh */
-  }
-
-  h1, h2, h3, h4 {
-    line-height: 1.1;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-  }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@layer utilities {
-  .text-strong {
-    @apply text-white font-semibold tracking-tight;
-  }
-  
-  .glass-panel {
-    @apply bg-zinc-900/50 border border-zinc-800/50 rounded-xl;
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), 
-                background-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 300ms cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  .glass-panel:hover {
-    @apply bg-zinc-800/80 border-zinc-600/50 -translate-y-1;
-    box-shadow: 0 12px 30px -10px rgba(0,0,0,0.7);
-  }
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fallback for browsers that don't support scroll-driven animations */
-@keyframes snapIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(4px); }
-  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+body {
+  overflow-x: hidden;
+  position: relative;
 }
 
-.reveal {
-  opacity: 0;
-  animation: snapIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.delay-1 { animation-delay: 75ms; }
-.delay-2 { animation-delay: 150ms; }
-.delay-3 { animation-delay: 225ms; }
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
 
+/* Typography Scale */
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: clamp(2.5rem, 6vw, 4rem); font-family: var(--font-mono); }
+h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-family: var(--font-mono); }
+h3 { font-size: clamp(1.2rem, 2.5vw, 1.5rem); font-family: var(--font-mono); }
+
+/* Layout */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+.section {
+  padding: 6rem 0;
+  position: relative;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Flat IDE Components */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+  border-radius: 4px;
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-main);
+  border: 1px solid var(--text-primary);
+}
+
+.btn-primary:hover {
+  background: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--text-primary);
+}
+
+.link-hover {
+  transition: color 0.2s;
+}
+.link-hover:hover {
+  color: var(--accent-primary) !important;
+}
+
+/* Flat Panels */
+.panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 1.5rem;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+}
+
+.panel:hover {
+  border-color: var(--border-strong);
+}
+
+/* Terminal Elements */
+.code-block {
+  font-family: var(--font-mono);
+  background: var(--bg-main);
+  border: 1px solid var(--border-subtle);
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.terminal-header {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
+}
+
+.terminal-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--border-strong);
+}
+
+/* Grids */
+.grid { display: grid; gap: 1.5rem; }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 768px) {
+  .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr; }
+  .section { padding: 4rem 0; }
+}
+
+/* Form Elements */
+.input-flat {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-main);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.input-flat:focus {
+  border-color: var(--accent-primary);
+}
