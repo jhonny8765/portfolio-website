@@ -175,13 +175,9 @@ button {
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 10%;
-  left: 20%;
   width: 60%;
   height: 70%;
   min-width: 320px;
-  z-index: 100;
-  animation: fade-in-up 0.2s ease-out forwards;
 }
 
 @keyframes fade-in-up {

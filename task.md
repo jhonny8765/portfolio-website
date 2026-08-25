@@ -1,0 +1,8 @@
+- [x] Initial GitHub Repo and Vercel Deployment (`jhonny8765/portfolio-website`)
+- [x] Integrate Supabase for `Contact.tsx` data storage
+- [x] Design Version 1.0: "Developer Standard / IDE Dashboard"
+- [x] Static UX, Contrast, and Accessibility (A11y) fixes (aria-labels, focus states)
+- [x] Codebase Refactor: Strip inline styles to `globals.css` standard classes
+- [x] Design Version 2.0: Windows XP Luna Desktop Theme (Desktop Layout)
+- [x] Design Version 2.0: Android Home Screen OS Theme (Mobile Responsive Layout)
+- [x] Merge PR #2 into `main` and deploy to Production
