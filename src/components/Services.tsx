@@ -1,39 +1,68 @@
-import React from 'react';
-import { Terminal, Database, Webhook, Cpu, FileJson, Users, HardDrive } from 'lucide-react';
+"use client";
 
-const services = [
-  { icon: <Terminal size={18} />, title: "Web Development", desc: "Modern responsive web applications." },
-  { icon: <Database size={18} />, title: "SaaS Development", desc: "Scalable subscription-based systems." },
-  { icon: <Webhook size={18} />, title: "Automation", desc: "Smart workflows and tool integrations." },
-  { icon: <Cpu size={18} />, title: "AI Solutions", desc: "AI-assisted business tools & processing." },
-  { icon: <FileJson size={18} />, title: "Resume Services", desc: "Professional ATS-friendly career materials." },
-  { icon: <Users size={18} />, title: "Applicant Gen", desc: "Social recruitment and lead generation." },
-  { icon: <HardDrive size={18} />, title: "Virtual Assistance", desc: "Tech-assisted administrative support." }
-];
+import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
+import { SERVICES } from "@/lib/content";
+import { MonitorSmartphone, Workflow, Sparkles } from "lucide-react";
+
+const ICONS = [MonitorSmartphone, Workflow, Sparkles];
 
 export default function Services() {
   return (
-    <section id="services" className="section">
+    <section id="services" className="section" aria-labelledby="services-heading">
       <div className="container">
-        <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>// Services & Capabilities</h2>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
-            {"{"} "stack": ["full-stack", "automation", "ai", "operations"] {"}"}
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-2">
-          {services.map((service, index) => (
-            <div key={index} className="panel" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ color: 'var(--text-tertiary)', marginTop: '0.2rem' }}>
-                {service.icon}
-              </div>
-              <div>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{service.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontFamily: 'var(--font-sans)' }}>{service.desc}</p>
-              </div>
-            </div>
-          ))}
+        <SectionHeading
+          kicker="02 · services"
+          title={
+            <span id="services-heading">
+              Ways we can <span className="text-gradient">ship together</span>.
+            </span>
+          }
+          sub="Three ways to hire me — each one starts with your idea and ends with something deployed."
+        />
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {SERVICES.map((service, i) => {
+            const Icon = ICONS[i];
+            return (
+              <Reveal key={service.id} delay={i * 140}>
+                <article className="surface spotlight card-hover group flex h-full flex-col p-7"
+                  onMouseMove={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+                    e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+                  }}
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-line-strong bg-raised text-lilac transition-all duration-300 group-hover:border-glow/50 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)]">
+                      <Icon size={20} aria-hidden="true" />
+                    </span>
+                    <span className="mono text-[0.72rem] text-faint">0{i + 1}</span>
+                  </div>
+
+                  <h3 className="mt-6 text-lg font-semibold tracking-tight text-ink">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">
+                    {service.description}
+                  </p>
+
+                  <ul className="mt-5 grid grid-cols-2 gap-x-3 gap-y-2">
+                    {service.bullets.map((b) => (
+                      <li key={b} className="mono text-[0.72rem] text-faint">
+                        <span className="mr-1.5 text-lilac">✓</span>
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="mono mt-auto pt-6 text-[0.68rem] text-faint">
+                    {service.file}
+                  </p>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

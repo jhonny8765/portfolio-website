@@ -1,118 +1,276 @@
 "use client";
 
-import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { TerminalSquare } from 'lucide-react';
+import { useState } from "react";
+import { Send, Check, Loader2 } from "lucide-react";
+import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
+import { SITE, SERVICES } from "@/lib/content";
+
+const SUBJECTS = [
+  "General inquiry",
+  ...SERVICES.map((s) => s.title),
+  "Resume & portfolio site",
+];
+
+type Status = "idle" | "submitting" | "success" | "error";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', service: 'inquiry' });
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: SUBJECTS[0],
+    message: "",
+    company: "", // honeypot — humans never see this
+  });
+  const [status, setStatus] = useState<Status>("idle");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const set = (key: keyof typeof form) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setStatus('submitting');
-    
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) {
-      setTimeout(() => setStatus('success'), 800);
+
+    // Honeypot filled → silently accept and drop.
+    if (form.company) {
+      setStatus("success");
+      return;
+    }
+
+    setStatus("submitting");
+
+    // No Supabase env (preview/demo) → simulate a round-trip.
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!url || url.includes("placeholder")) {
+      setTimeout(() => setStatus("success"), 900);
       return;
     }
 
     try {
-      const { error } = await supabase.from('contacts').insert([formData]);
+      const { supabase } = await import("@/lib/supabase");
+      const { error } = await supabase.from("contacts").insert([
+        {
+          name: form.name,
+          email: form.email,
+          service: form.subject,
+          message: form.message,
+        },
+      ]);
       if (error) throw error;
-      setStatus('success');
-      setFormData({ name: '', email: '', message: '', service: 'inquiry' });
-    } catch (error) {
-      console.error(error);
-      setStatus('error');
+      setStatus("success");
+    } catch (err) {
+      console.error("contact submit failed:", err);
+      setStatus("error");
     }
-  };
+  }
+
+  const openAI = () => window.dispatchEvent(new CustomEvent("ask-ai-open"));
 
   return (
-    <section id="contact" className="section">
+    <section id="contact" className="section" aria-labelledby="contact-heading">
       <div className="container">
-        <div className="grid grid-cols-2" style={{ alignItems: 'start' }}>
-          <div>
-            <h2 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Initialize_Contact</h2>
-            <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem', marginBottom: '2rem' }}>
-              Ping me for freelance projects, consultations, or resume services.
-            </p>
-            <div className="code-block">
-              <span style={{ color: 'var(--text-tertiary)' }}># Status: Accepting new clients</span><br/>
-              <span style={{ color: 'var(--text-tertiary)' }}># Pricing: Scoped per requirement</span><br/><br/>
-              <span style={{ color: 'var(--accent-primary)' }}>$</span> ping jhonny8765<br/>
-              PING jhonny (127.0.0.1): 56 data bytes<br/>
-              64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.042 ms
-            </div>
-          </div>
+        <SectionHeading
+          kicker="04 · start a project"
+          title={
+            <span id="contact-heading">
+              Have an idea? <span className="text-gradient">Let&apos;s ship it</span>.
+            </span>
+          }
+          sub="Tell me what you want to build — a website, an app, or a workflow that runs itself. I reply to every serious inquiry."
+        />
 
-          <div className="panel">
-            {status === 'success' ? (
-              <div style={{ textAlign: 'center', padding: '3rem 0', fontFamily: 'var(--font-mono)' }}>
-                <TerminalSquare size={48} style={{ color: '#a3be8c', margin: '0 auto 1rem' }} />
-                <h3 style={{ color: '#a3be8c', marginBottom: '1rem' }}>POST /api/contact 200 OK</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Message transmitted successfully.</p>
-                <button onClick={() => setStatus('idle')} className="btn btn-secondary">reset()</button>
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* left — context */}
+          <Reveal className="lg:col-span-5">
+            <div className="flex h-full flex-col gap-6">
+              <div className="surface p-7">
+                <div className="status-pill">
+                  <span className="status-dot" aria-hidden="true" />
+                  Currently accepting projects
+                </div>
+                <ul className="mt-5 space-y-3">
+                  {SERVICES.map((s) => (
+                    <li key={s.id} className="flex items-center gap-3 text-sm text-muted">
+                      <span className="mono text-[0.7rem] text-lilac">▸</span>
+                      {s.title}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mono mt-6 border-t border-line pt-5 text-[0.72rem] leading-relaxed text-faint">
+                  <span className="mr-2 text-lilac">$</span>pricing: scoped per
+                  requirement — describe the idea, get a real proposal
+                </p>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                {status === 'error' && (
-                  <div style={{ padding: '0.75rem', background: '#3b1c1c', border: '1px solid #7f1d1d', borderRadius: '4px', color: '#fca5a5', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
-                    ERR_CONNECTION_REFUSED
-                  </div>
-                )}
-                
-                <div>
-                  <label htmlFor="name" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>name: string</label>
-                  <input 
-                    id="name" required type="text" 
-                    value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-                    className="input-flat"
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="email" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>email: string</label>
-                  <input 
-                    id="email" required type="email" 
-                    value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-                    className="input-flat"
-                  />
-                </div>
 
-                <div>
-                  <label htmlFor="service" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>type: Enum</label>
-                  <select 
-                    id="service" value={formData.service} onChange={e => setFormData({...formData, service: e.target.value})}
-                    className="input-flat"
+              <div className="surface p-7">
+                <p className="mono text-[0.72rem] uppercase tracking-wider text-faint">
+                  prefer async?
+                </p>
+                <div className="mt-4 flex flex-col gap-3">
+                  <button
+                    onClick={openAI}
+                    className="btn btn-ghost btn-sm w-fit"
                   >
-                    <option value="inquiry">General Inquiry</option>
-                    <option value="dev">Web & SaaS Development</option>
-                    <option value="automation">Business Automation</option>
-                    <option value="resume">Resume Services</option>
-                  </select>
+                    Ask My AI first
+                  </button>
+                  <a
+                    href={SITE.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-ghost btn-sm w-fit"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.2c3-.3 6-1.5 6-6.7a5.5 5.5 0 0 0-1.5-3.8 5.5 5.5 0 0 0-.1-3.8s-1.2-.4-3.9 1.4a13 13 0 0 0-7 0C4.3 1.6 3 2 3 2a5.5 5.5 0 0 0-.1 3.8 5.5 5.5 0 0 0-1.5 3.8c0 5.2 3 6.4 6 6.7a4.8 4.8 0 0 0-1 3.2v4" />
+                    </svg>
+                    github.com/{SITE.handle}
+                  </a>
                 </div>
+              </div>
+            </div>
+          </Reveal>
 
-                <div>
-                  <label htmlFor="message" style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', marginBottom: '0.5rem' }}>payload: text</label>
-                  <textarea 
-                    id="message" required rows={4}
-                    value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
-                    className="input-flat" style={{ resize: 'vertical' }}
-                  />
+          {/* right — form */}
+          <Reveal delay={160} className="lg:col-span-7">
+            <div className="surface-raised h-full p-7 md:p-9">
+              {status === "success" ? (
+                <div className="flex h-full min-h-[380px] flex-col items-center justify-center text-center">
+                  <span className="flex h-14 w-14 items-center justify-center rounded-full border border-mint/40 bg-mint/10 text-mint">
+                    <Check size={26} aria-hidden="true" />
+                  </span>
+                  <h3 className="mono mt-6 text-lg text-ink">
+                    200 OK — message sent
+                  </h3>
+                  <p className="mt-2 max-w-sm text-sm text-muted">
+                    Thanks, {form.name || "friend"} — your message landed. Expect
+                    a reply from Jhon Rey soon.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setForm({ name: "", email: "", subject: SUBJECTS[0], message: "", company: "" });
+                      setStatus("idle");
+                    }}
+                    className="btn btn-ghost btn-sm mt-8"
+                  >
+                    send another
+                  </button>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate={false}>
+                  <p className="mono mb-6 text-[0.72rem] text-faint">
+                    fields marked <span className="text-lilac">*</span> are required
+                  </p>
 
-                <button 
-                  type="submit" 
-                  disabled={status === 'submitting'}
-                  className="btn btn-primary" 
-                  style={{ marginTop: '0.5rem', width: '100%', opacity: status === 'submitting' ? 0.7 : 1 }}
-                >
-                  {status === 'submitting' ? 'Executing...' : 'Submit()'}
-                </button>
-              </form>
-            )}
-          </div>
+                  {/* honeypot */}
+                  <div className="hp-field" aria-hidden="true">
+                    <label htmlFor="company">Don&apos;t fill this out if you&apos;re human</label>
+                    <input
+                      id="company"
+                      name="company"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={form.company}
+                      onChange={set("company")}
+                    />
+                  </div>
+
+                  {status === "error" && (
+                    <p
+                      role="alert"
+                      className="mono mb-5 rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-[0.8rem] text-red-300"
+                    >
+                      ERR_SEND_FAILED — something dropped. Please retry in a
+                      moment.
+                    </p>
+                  )}
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="name" className="field-label">
+                        name <span className="text-lilac">*</span>
+                      </label>
+                      <input
+                        id="name"
+                        required
+                        autoComplete="name"
+                        placeholder="Juan Dela Cruz"
+                        value={form.name}
+                        onChange={set("name")}
+                        className="input-flat"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="field-label">
+                        email <span className="text-lilac">*</span>
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        required
+                        autoComplete="email"
+                        placeholder="you@company.com"
+                        value={form.email}
+                        onChange={set("email")}
+                        className="input-flat"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-5">
+                    <label htmlFor="subject" className="field-label">
+                      how can I help? <span className="text-lilac">*</span>
+                    </label>
+                    <select
+                      id="subject"
+                      value={form.subject}
+                      onChange={set("subject")}
+                      className="input-flat"
+                    >
+                      {SUBJECTS.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mt-5">
+                    <label htmlFor="message" className="field-label">
+                      message <span className="text-lilac">*</span>
+                    </label>
+                    <textarea
+                      id="message"
+                      required
+                      rows={5}
+                      placeholder="What are we building? Rough scope, timeline, links — anything helps."
+                      value={form.message}
+                      onChange={set("message")}
+                      className="input-flat resize-y"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className="btn btn-primary mt-7 w-full disabled:opacity-60"
+                    style={{ opacity: status === "submitting" ? 0.7 : undefined }}
+                  >
+                    {status === "submitting" ? (
+                      <>
+                        <Loader2 size={15} className="animate-spin" aria-hidden="true" />
+                        transmitting…
+                      </>
+                    ) : (
+                      <>
+                        <Send size={15} aria-hidden="true" />
+                        Send message
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
