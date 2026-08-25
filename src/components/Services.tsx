@@ -15,22 +15,22 @@ export default function Services() {
   return (
     <section id="services" className="section">
       <div className="container">
-        <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>// Services & Capabilities</h2>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
+        <div className="mb-12">
+          <h2 className="mb-2 text-primary">// Services & Capabilities</h2>
+          <p className="text-secondary font-mono text-sm">
             {"{"} "stack": ["full-stack", "automation", "ai", "operations"] {"}"}
           </p>
         </div>
         
         <div className="grid grid-cols-2">
           {services.map((service, index) => (
-            <div key={index} className="panel" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-              <div style={{ color: 'var(--text-tertiary)', marginTop: '0.2rem' }}>
+            <div key={index} className="panel flex gap-4 items-start">
+              <div className="text-tertiary mt-1">
                 {service.icon}
               </div>
               <div>
-                <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>{service.title}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', fontFamily: 'var(--font-sans)' }}>{service.desc}</p>
+                <h3 className="text-lg mb-2 text-primary">{service.title}</h3>
+                <p className="text-secondary text-sm font-sans">{service.desc}</p>
               </div>
             </div>
           ))}

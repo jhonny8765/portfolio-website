@@ -3,31 +3,31 @@ import { Terminal, ChevronRight } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <section className="section" style={{ minHeight: '90vh', display: 'flex', alignItems: 'center' }}>
+    <section className="section hero-wrapper">
       <div className="container">
-        <div style={{ maxWidth: '800px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+        <div className="max-w-800">
+          <div className="flex items-center gap-2 text-tertiary font-mono text-sm mb-6">
             <Terminal size={16} />
             <span>~/jhonny8765/portfolio</span>
           </div>
           
-          <h1 style={{ marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-            <span style={{ color: 'var(--accent-primary)' }}>const</span> developer = "Jhon Rey";
+          <h1 className="mb-6 text-primary">
+            <span className="text-accent">const</span> developer = "Jhon Rey";
           </h1>
           
-          <div className="code-block" style={{ marginBottom: '2.5rem' }}>
+          <div className="code-block mb-10">
             <div className="terminal-header">
               <div className="terminal-dot"></div>
               <div className="terminal-dot"></div>
               <div className="terminal-dot"></div>
             </div>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-              <span style={{ color: 'var(--accent-primary)' }}>&gt;</span> I build digital solutions, web applications, and automated workflows. <br/>
-              <span style={{ color: 'var(--accent-primary)' }}>&gt;</span> Focused on performance, AI integration, and robust architecture.
+            <p className="text-secondary leading-relaxed">
+              <span className="text-accent">&gt;</span> I build digital solutions, web applications, and automated workflows. <br/>
+              <span className="text-accent">&gt;</span> Focused on performance, AI integration, and robust architecture.
             </p>
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="btn-block">
             <a href="#contact" className="btn btn-primary">
               ./execute_contact.sh <ChevronRight size={16} />
             </a>

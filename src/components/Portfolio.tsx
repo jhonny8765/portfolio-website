@@ -10,11 +10,11 @@ const projects = [
 
 export default function Portfolio() {
   return (
-    <section id="portfolio" className="section" style={{ background: 'var(--bg-main)' }}>
+    <section id="portfolio" className="section bg-main">
       <div className="container">
-        <div style={{ marginBottom: '3rem' }}>
-          <h2 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>## Projects_Log</h2>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
+        <div className="mb-12">
+          <h2 className="mb-2 text-primary">## Projects_Log</h2>
+          <p className="text-secondary font-mono text-sm">
             $ ls -la ./deployments
           </p>
         </div>
@@ -22,19 +22,19 @@ export default function Portfolio() {
         <div className="grid grid-cols-2">
           {projects.map((project, index) => (
             <div key={index} className="panel">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
-                <span style={{ color: 'var(--accent-primary)' }}>{project.icon}</span>
-                <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)' }}>{project.title}</h3>
+              <div className="flex items-center gap-3 mb-4 border-b-subtle pb-3">
+                <span className="text-accent">{project.icon}</span>
+                <h3 className="text-lg text-primary">{project.title}</h3>
               </div>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontFamily: 'var(--font-sans)', fontSize: '0.9rem', minHeight: '40px' }}>
+              <p className="text-secondary mb-6 font-sans text-sm min-h-40">
                 {project.desc}
               </p>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.5rem', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>
+              <div className="flex gap-2 flex-wrap mb-6 font-mono text-xs">
                 {project.tech.map(t => (
-                  <span key={t} style={{ color: 'var(--text-tertiary)' }}>[{t}]</span>
+                  <span key={t} className="text-tertiary">[{t}]</span>
                 ))}
               </div>
-              <a href="#contact" className="link-hover" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+              <a href="#contact" className="link-hover inline-flex-center text-sm font-mono text-secondary">
                 View details <ArrowRight size={14} />
               </a>
             </div>

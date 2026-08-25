@@ -3,21 +3,21 @@ import { FileText } from 'lucide-react';
 
 export default function ResumeService() {
   return (
-    <section className="section" style={{ background: 'var(--bg-surface)' }}>
+    <section className="section bg-surface">
       <div className="container">
-        <div className="panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '4rem 2rem' }}>
-          <FileText size={32} style={{ color: 'var(--text-tertiary)', marginBottom: '1.5rem' }} />
+        <div className="panel resume-panel">
+          <FileText size={32} className="text-tertiary mb-6" />
           
-          <h2 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>export function ResumeServices()</h2>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-sans)', fontSize: '1rem', maxWidth: '600px', marginBottom: '2rem' }}>
+          <h2 className="mb-4 text-primary">export function ResumeServices()</h2>
+          <p className="text-secondary font-sans text-base resume-desc mb-8">
             Get your career materials polished by someone who understands what hiring managers and automated systems look for.
           </p>
           
-          <div className="code-block" style={{ textAlign: 'left', width: '100%', maxWidth: '500px', marginBottom: '2rem' }}>
-            <span style={{ color: 'var(--accent-primary)' }}>const</span> deliverables = [<br/>
-            &nbsp;&nbsp;<span style={{ color: '#a3be8c' }}>"ATS-Optimized Resume"</span>,<br/>
-            &nbsp;&nbsp;<span style={{ color: '#a3be8c' }}>"Cover Letter Template"</span>,<br/>
-            &nbsp;&nbsp;<span style={{ color: '#a3be8c' }}>"LinkedIn Profile Copy"</span><br/>
+          <div className="code-block resume-code mb-8">
+            <span className="text-accent">const</span> deliverables = [<br/>
+            &nbsp;&nbsp;<span className="text-success">"ATS-Optimized Resume"</span>,<br/>
+            &nbsp;&nbsp;<span className="text-success">"Cover Letter Template"</span>,<br/>
+            &nbsp;&nbsp;<span className="text-success">"LinkedIn Profile Copy"</span><br/>
             ];
           </div>
 
