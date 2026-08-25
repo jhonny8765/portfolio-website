@@ -1,99 +1,194 @@
-"use client";
+'use client';
 
-import React, { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { CheckCircle } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { submitContactForm } from '@/actions/contact';
 
 export default function Contact() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', service: 'inquiry' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('submitting');
-    
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('placeholder')) {
-      setTimeout(() => setStatus('success'), 800);
-      return;
-    }
+    setErrorMessage('');
+
+    const formData = new FormData(e.currentTarget);
 
     try {
-      const { error } = await supabase.from('contacts').insert([formData]);
-      if (error) throw error;
-      setStatus('success');
-      setFormData({ name: '', email: '', message: '', service: 'inquiry' });
-    } catch (error) {
-      console.error(error);
+      const result = await submitContactForm(formData);
+
+      if (result.success) {
+        setStatus('success');
+        formRef.current?.reset();
+      } else {
+        setStatus('error');
+        setErrorMessage(result.error || 'Something went wrong.');
+      }
+    } catch {
       setStatus('error');
+      setErrorMessage('An unexpected error occurred. Please try again.');
     }
   };
 
-  if (status === 'success') {
-    return (
-      <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-        <CheckCircle size={48} style={{ color: '#3c9a4e', marginBottom: '15px' }} />
-        <h3 style={{ margin: '0 0 10px 0' }}>Message Sent Successfully!</h3>
-        <p style={{ color: '#333', marginBottom: '20px' }}>I will get back to you as soon as possible.</p>
-        <button onClick={() => setStatus('idle')} className="xp-button">OK</button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <h2 style={{ fontSize: '18px', borderBottom: '1px solid #7f9db9', paddingBottom: '5px', margin: '0 0 15px 0' }}>Contact Jhon Rey</h2>
-      
-      {status === 'error' && (
-        <div style={{ background: '#ffcccc', border: '1px solid red', padding: '5px', marginBottom: '15px' }}>
-          An error occurred. Please try again.
-        </div>
-      )}
+    <section id="contact" className="w-full flex justify-center pb-24 scroll-mt-24">
+      <div className="w-full max-w-2xl glass-panel rounded-3xl p-8 sm:p-12 shadow-[0_0_40px_rgba(139,92,246,0.05)] relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-violet)]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--color-violet)]/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div className="grid-2">
-          <div>
-            <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>Name:</label>
-            <input 
-              required type="text" className="xp-input"
-              value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})}
-            />
+        <div className="relative z-10">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight">Let&apos;s Work Together</h2>
+            <p className="text-[var(--text-secondary)] text-lg">
+              Have a project in mind or need an AI/Automation builder? Send me a message.
+            </p>
+            <p className="text-[var(--text-secondary)] text-sm mt-4">
+              Fields marked with an asterisk (<span aria-hidden="true" className="text-[var(--color-violet-light)]">*</span>) are required.
+            </p>
           </div>
-          <div>
-            <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>Email:</label>
-            <input 
-              required type="email" className="xp-input"
-              value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})}
-            />
+
+          <div aria-live="polite" className="sr-only">
+            {status === 'success' ? 'Message sent successfully. Thank you for reaching out.' : ''}
+            {status === 'submitting' ? 'Submitting your message...' : ''}
           </div>
-        </div>
 
-        <div>
-          <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>Service:</label>
-          <select 
-            className="xp-input"
-            value={formData.service} onChange={e => setFormData({...formData, service: e.target.value})}
-          >
-            <option value="inquiry">General Inquiry</option>
-            <option value="dev">Web & SaaS Development</option>
-            <option value="automation">Business Automation</option>
-            <option value="resume">Resume Services</option>
-          </select>
-        </div>
+          {status === 'success' ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-500">
+              <div className="w-20 h-20 bg-[var(--color-violet)]/20 rounded-full flex items-center justify-center mb-6 border border-[var(--color-violet)]/50">
+                <CheckCircle2 size={40} className="text-[var(--color-violet-light)]" aria-hidden="true" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
+              <p className="text-[var(--text-secondary)] mb-8 max-w-sm">
+                Thank you for reaching out. I&apos;ll get back to you as soon as possible.
+              </p>
+              <button
+                onClick={() => setStatus('idle')}
+                className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors"
+              >
+                Send Another Message
+              </button>
+            </div>
+          ) : (
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6" aria-busy={status === 'submitting'}>
+              <div role="alert" aria-live="assertive">
+                {status === 'error' && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 text-red-400 mb-2">
+                    <AlertCircle size={20} className="shrink-0 mt-0.5" aria-hidden="true" />
+                    <p className="text-sm">{errorMessage}</p>
+                  </div>
+                )}
+              </div>
 
-        <div>
-          <label style={{ display: 'block', marginBottom: '3px', fontWeight: 'bold' }}>Message:</label>
-          <textarea 
-            required rows={5} className="xp-input" style={{ resize: 'vertical' }}
-            value={formData.message} onChange={e => setFormData({...formData, message: e.target.value})}
-          />
-        </div>
+              {/* Honeypot field (hidden from screen readers and visual users) */}
+              <div aria-hidden="true" className="hidden">
+                <label>
+                  Don&apos;t fill this out if you&apos;re human:
+                  <input type="text" name="website" tabIndex={-1} autoComplete="off" />
+                </label>
+              </div>
 
-        <div style={{ textAlign: 'right', marginTop: '10px' }}>
-          <button type="submit" className="xp-button" disabled={status === 'submitting'}>
-            {status === 'submitting' ? 'Sending...' : 'Send Message'}
-          </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label htmlFor="name" className="text-sm font-medium text-white/80">
+                    Name <span aria-hidden="true" className="text-[var(--color-violet-light)]">*</span>
+                    <span className="sr-only"> (required)</span>
+                  </label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    required
+                    aria-required="true"
+                    autoComplete="name"
+                    maxLength={100}
+                    disabled={status === 'submitting'}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 min-h-[44px] text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-violet)]/50 focus:ring-1 focus:ring-[var(--color-violet)]/50 transition-all disabled:opacity-50"
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-white/80">
+                    Email <span aria-hidden="true" className="text-[var(--color-violet-light)]">*</span>
+                    <span className="sr-only"> (required)</span>
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    aria-required="true"
+                    autoComplete="email"
+                    maxLength={150}
+                    disabled={status === 'submitting'}
+                    className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 min-h-[44px] text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-violet)]/50 focus:ring-1 focus:ring-[var(--color-violet)]/50 transition-all disabled:opacity-50"
+                    placeholder="john@example.com"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="service" className="text-sm font-medium text-white/80">
+                  How can I help you? <span aria-hidden="true" className="text-[var(--color-violet-light)]">*</span>
+                  <span className="sr-only"> (required)</span>
+                </label>
+                <select
+                  id="service"
+                  name="service"
+                  required
+                  aria-required="true"
+                  disabled={status === 'submitting'}
+                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 min-h-[44px] text-white focus:outline-none focus:border-[var(--color-violet)]/50 focus:ring-1 focus:ring-[var(--color-violet)]/50 transition-all appearance-none disabled:opacity-50"
+                >
+                  <option value="inquiry">General Inquiry</option>
+                  <option value="dev">Web & SaaS Development</option>
+                  <option value="automation">Business Automation (n8n)</option>
+                  <option value="resume">Resume & Portfolio Sites</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="message" className="text-sm font-medium text-white/80">
+                  Message <span aria-hidden="true" className="text-[var(--color-violet-light)]">*</span>
+                  <span className="sr-only"> (required)</span>
+                </label>
+                <textarea
+                  id="message"
+                  name="message"
+                  required
+                  aria-required="true"
+                  rows={5}
+                  maxLength={3000}
+                  disabled={status === 'submitting'}
+                  className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[var(--color-violet)]/50 focus:ring-1 focus:ring-[var(--color-violet)]/50 transition-all resize-none disabled:opacity-50"
+                  placeholder="Tell me about your project..."
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={status === 'submitting'}
+                aria-disabled={status === 'submitting'}
+                className="w-full py-4 rounded-xl bg-[var(--color-violet)] text-white font-bold text-lg hover:bg-[var(--color-violet-light)] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
+              >
+                {status === 'submitting' ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin" aria-hidden="true" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" aria-hidden="true" />
+                    Send Message
+                  </>
+                )}
+              </button>
+            </form>
+          )}
         </div>
-      </form>
-    </div>
+      </div>
+    </section>
   );
 }

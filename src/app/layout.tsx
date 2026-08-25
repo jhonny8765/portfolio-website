@@ -1,23 +1,32 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://noble-planck-blue.vercel.app"),
-  title: "Jhon Rey Consolacion | Senior Software Engineer",
-  description: "Building high-performance SaaS platforms, enterprise data pipelines, and intelligent automation systems. Specializing in Next.js, Node, and AI.",
+  metadataBase: new URL(siteUrl),
+  title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
+  description: "I build with AI — websites, applications, and automations.",
   openGraph: {
-    title: "Jhon Rey Consolacion | Senior Software Engineer",
-    description: "Building high-performance SaaS platforms, enterprise data pipelines, and intelligent automation systems.",
-    url: "https://noble-planck-blue.vercel.app",
+    title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
+    description: "I build with AI — websites, applications, and automations.",
+    url: siteUrl,
     siteName: "Jhon Rey Consolacion Portfolio",
+    type: "website",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.jpg", // Ensure you have this image in public/
         width: 1200,
         height: 630,
-        alt: "Jhon Rey Consolacion - Senior Software Engineer",
+        alt: "Jhon Rey Consolacion - AI Developer & Automation Builder",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
+    description: "I build with AI — websites, applications, and automations.",
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -27,8 +36,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <body>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[100] px-4 py-2 bg-[var(--color-violet)] text-white rounded-md font-medium">
+          Skip to main content
+        </a>
         {children}
       </body>
     </html>

@@ -1,33 +1,36 @@
 import React from 'react';
-import { Terminal, Database, Webhook, Cpu, FileJson, Users, HardDrive } from 'lucide-react';
+import { portfolioData } from '@/data/portfolioData';
+import { Cpu, Terminal, LayoutTemplate } from 'lucide-react';
 
-const services = [
-  { icon: <Terminal size={24} />, title: "Web Development", desc: "Modern responsive web applications." },
-  { icon: <Database size={24} />, title: "SaaS Development", desc: "Scalable subscription-based systems." },
-  { icon: <Webhook size={24} />, title: "Automation", desc: "Smart workflows and tool integrations." },
-  { icon: <Cpu size={24} />, title: "AI Solutions", desc: "AI-assisted business tools & processing." },
-  { icon: <FileJson size={24} />, title: "Resume Services", desc: "Professional ATS-friendly career materials." },
-  { icon: <Users size={24} />, title: "Applicant Gen", desc: "Social recruitment and lead generation." },
-  { icon: <HardDrive size={24} />, title: "Virtual Assistance", desc: "Tech-assisted administrative support." }
-];
+const icons = [LayoutTemplate, Cpu, Terminal];
 
 export default function Services() {
   return (
-    <div>
-      <h2 style={{ fontSize: '18px', borderBottom: '1px solid #7f9db9', paddingBottom: '5px', margin: '0 0 15px 0' }}>Services & Capabilities</h2>
-      <div className="grid-2">
-        {services.map((service, index) => (
-          <div key={index} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-            <div style={{ color: '#0054e3', padding: '5px' }}>
-              {service.icon}
-            </div>
-            <div>
-              <h3 style={{ fontSize: '13px', margin: '0 0 4px 0', color: '#000' }}>{service.title}</h3>
-              <p style={{ margin: 0, color: '#333', fontSize: '12px' }}>{service.desc}</p>
-            </div>
-          </div>
-        ))}
+    <section id="services" className="w-full flex flex-col gap-10 scroll-mt-24">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
+          <Cpu className="text-[var(--color-violet)]" />
+          Services
+        </h2>
+        <p className="text-[var(--text-secondary)] text-lg">How I can help bring your ideas to life.</p>
       </div>
-    </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {portfolioData.services.map((service, index) => {
+          const Icon = icons[index % icons.length];
+          return (
+            <div key={index} className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-4 hover:bg-white/[0.05] transition-all">
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-violet)]/10 border border-[var(--color-violet)]/20 flex items-center justify-center text-[var(--color-violet-light)] mb-2">
+                <Icon size={24} />
+              </div>
+              <h3 className="text-xl font-bold text-white">{service.title}</h3>
+              <p className="text-[var(--text-secondary)] leading-relaxed">
+                {service.description}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

@@ -1,445 +1,94 @@
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import "tailwindcss";
 
-:root {
-  --xp-desktop: #1a4b8c;
-  --xp-window-bg: #ece9d8;
-  --xp-window-border: #0054e3;
-  --xp-titlebar-bg: linear-gradient(to bottom, #0058e6 0%, #3a93ff 4%, #288eff 6%, #127dff 8%, #036bfe 10%, #0050ee 14%, #0045d4 20%, #003cc2 24%, #0033b0 56%, #0033b1 66%, #003cb9 76%, #0045c7 86%, #004ecc 92%, #0053cf 94%, #0054d0 100%);
-  --xp-titlebar-text: white;
-  --xp-taskbar-bg: linear-gradient(to bottom, #245edb 0%, #3f8cf3 9%, #245edb 18%, #245edb 92%, #1941a5 100%);
-  --xp-start-bg: linear-gradient(to bottom, #3c9a4e 0%, #6dc972 10%, #4cb558 30%, #3c9a4e 70%, #358442 90%, #2a6933 100%);
-  --font-xp: Tahoma, "Segoe UI", sans-serif;
-  --font-android: 'Inter', system-ui, sans-serif;
+@theme {
+  --color-obsidian: #090A0F;
+  --color-obsidian-light: #161821;
+  --color-violet: #8B5CF6;
+  --color-violet-light: #A855F7;
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  :root {
+    --bg-primary: var(--color-obsidian);
+    --bg-secondary: var(--color-obsidian-light);
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --accent: var(--color-violet);
+    --accent-hover: var(--color-violet-light);
+  }
+
+  html,
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-html, body {
-  background-color: var(--xp-desktop);
-  color: black;
-  font-family: var(--font-xp);
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  font-size: 14px;
+/* Glassmorphism utility */
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
 }
 
-a {
-  color: #0000ee;
-  text-decoration: underline;
+/* Custom Scrollbar Styles */
+@layer base {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.4);
+  }
+  
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.2) var(--bg-primary);
+  }
 }
 
-button {
-  font-family: inherit;
-  background: none;
-  border: none;
-  cursor: pointer;
+/* Global Focus Styles for Accessibility */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 4px; /* Optional fallback radius */
+  }
+  
+  /* Prevent default outline when custom one is applied, unless it's the fallback */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
 }
 
-/* Responsive Display Classes */
-.show-mobile { display: none; }
-.show-desktop { display: flex; }
-
-@media (max-width: 768px) {
-  .show-mobile { display: flex; }
-  .show-desktop { display: none !important; }
-  html, body { background-color: #1e3c72; } /* Mobile fallback bg */
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
-
-
-/* ----------------------------------------------------- */
-/* XP UI Components (Desktop)                            */
-/* ----------------------------------------------------- */
-
-.desktop-area {
-  padding: 20px;
-  flex-direction: column;
-  gap: 20px;
-  height: calc(100vh - 30px);
-  position: relative;
-}
-
-.desktop-icons {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 80px;
-}
-
-.desktop-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  text-align: center;
-  padding: 4px;
-}
-
-.desktop-icon svg {
-  color: white;
-  filter: drop-shadow(1px 1px 2px rgba(0,0,0,0.8));
-}
-
-.desktop-icon span {
-  color: white;
-  font-size: 11px;
-  text-shadow: 1px 1px 2px black;
-  padding: 0 4px;
-}
-
-.desktop-icon:hover span {
-  background: rgba(0, 84, 227, 0.6);
-}
-
-.xp-taskbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 30px;
-  background: var(--xp-taskbar-bg);
-  align-items: stretch;
-  z-index: 9999;
-  border-top: 1px solid #568aef;
-}
-
-.xp-start {
-  background: var(--xp-start-bg);
-  color: white;
-  font-weight: bold;
-  font-style: italic;
-  font-size: 16px;
-  padding: 0 15px;
-  border-radius: 0 8px 8px 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.4), 2px 0 3px rgba(0,0,0,0.3);
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
-  cursor: pointer;
-}
-
-.xp-start:hover {
-  filter: brightness(1.1);
-}
-
-.xp-taskbar-items {
-  display: flex;
-  padding: 3px 10px;
-  gap: 5px;
-  flex: 1;
-}
-
-.xp-taskbar-item {
-  background: #3c81f3;
-  color: white;
-  border: 1px solid #1a52b8;
-  border-radius: 3px;
-  padding: 0 10px;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  box-shadow: inset 1px 1px 2px rgba(255,255,255,0.3);
-  min-width: 120px;
-}
-
-.xp-taskbar-item.active {
-  background: #1e52b8;
-  box-shadow: inset 1px 1px 3px rgba(0,0,0,0.4);
-}
-
-.xp-taskbar-tray {
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  color: white;
-  font-size: 11px;
-  background: linear-gradient(to bottom, #119ceb 0%, #1783e7 50%, #0e72d2 100%);
-  border-left: 1px solid #104192;
-  box-shadow: inset 1px 0 1px rgba(255,255,255,0.3);
-}
-
-.xp-window {
-  background: var(--xp-window-bg);
-  border: 3px solid var(--xp-window-border);
-  border-radius: 8px 8px 0 0;
-  box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  width: 60%;
-  height: 70%;
-  min-width: 320px;
-}
-
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.xp-titlebar {
-  background: var(--xp-titlebar-bg);
-  padding: 3px 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--xp-titlebar-text);
-  font-weight: bold;
-  font-size: 13px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
-  border-radius: 5px 5px 0 0;
-  user-select: none;
-}
-
-.xp-titlebar-title {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.xp-controls {
-  display: flex;
-  gap: 2px;
-}
-
-.xp-btn {
-  width: 21px;
-  height: 21px;
-  border: 1px solid white;
-  border-radius: 3px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-}
-
-.xp-btn-min, .xp-btn-max {
-  background: linear-gradient(to bottom, #7fa9e0 0%, #548ce2 10%, #3476e4 20%, #2a67d8 50%, #3f7bd9 100%);
-  border-color: white;
-}
-
-.xp-btn-close {
-  background: linear-gradient(to bottom, #e07f7f 0%, #e25454 10%, #e43434 20%, #d82a2a 50%, #d93f3f 100%);
-  border-color: white;
-}
-
-.xp-btn:active {
-  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-.xp-toolbar {
-  background: var(--xp-window-bg);
-  padding: 5px;
-  border-bottom: 1px solid white;
-  display: flex;
-  gap: 10px;
-  font-size: 11px;
-}
-
-.xp-content {
-  background: white;
-  margin: 0 3px 3px 3px;
-  border: 1px solid #7f9db9;
-  padding: 15px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.xp-input {
-  border: 1px solid #7f9db9;
-  padding: 3px;
-  font-family: inherit;
-  font-size: 12px;
-  width: 100%;
-}
-
-.xp-button {
-  background: linear-gradient(to bottom, #f3f3f3 0%, #ebebeb 50%, #dddddd 51%, #cfcfcf 100%);
-  border: 1px solid #003c74;
-  border-radius: 3px;
-  padding: 4px 15px;
-  font-size: 12px;
-  color: black;
-}
-.xp-button:active { background: #cfcfcf; }
-
-
-/* ----------------------------------------------------- */
-/* Android OS Components (Mobile)                        */
-/* ----------------------------------------------------- */
-
-.android-container {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  font-family: var(--font-android);
-  color: white;
-}
-
-.android-status-bar {
-  height: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 16px;
-  font-size: 12px;
-  font-weight: 500;
-  z-index: 10;
-}
-
-.android-status-icons {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-}
-
-.android-home {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 30px 20px 20px;
-}
-
-.android-widget-clock {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.android-widget-clock h1 {
-  font-size: 72px;
-  font-weight: 300;
-  margin: 0;
-  line-height: 1;
-}
-.android-widget-clock p {
-  font-size: 16px;
-  margin-top: 8px;
-  opacity: 0.9;
-}
-
-.android-search {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 40px;
-  font-size: 14px;
-}
-
-.android-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px 10px;
-}
-
-.android-app-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.android-icon-box {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
-  color: #1a4b8c;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.android-app-icon span {
-  font-size: 12px;
-  text-align: center;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-  font-weight: 500;
-}
-
-.android-dock {
-  margin-top: auto;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 28px;
-  padding: 15px;
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-}
-
-.android-nav-bar {
-  height: 48px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: rgba(0,0,0,0.2);
-  padding: 0 40px;
-}
-
-/* Android App View (Fullscreen) */
-.android-app-view {
-  position: absolute;
-  top: 24px; /* below status bar */
-  left: 0;
-  right: 0;
-  bottom: 48px; /* above nav bar */
-  background: #f8f9fa;
-  color: #111;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  animation: app-enter 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  border-radius: 16px 16px 0 0;
-  overflow: hidden;
-}
-
-@keyframes app-enter {
-  from { transform: translateY(100%) scale(0.95); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.android-app-header {
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 16px;
-  border-bottom: 1px solid #e0e0e0;
-  background: white;
-}
-.android-app-title {
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.android-app-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-}
-
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.gap-2 { gap: 0.5rem; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-@media(max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }

@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 export default function SnakeGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const resetGameRef = useRef<(() => void) | null>(null);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -31,6 +32,7 @@ export default function SnakeGame() {
       clearInterval(interval);
       interval = setInterval(gameLoop, 100);
     };
+    resetGameRef.current = resetGame;
 
     const spawnFood = () => {
       food = {
@@ -115,8 +117,16 @@ export default function SnakeGame() {
         <canvas ref={canvasRef} width={400} height={400} style={{ display: 'block' }}></canvas>
       </div>
       {gameOver && (
-        <div style={{ marginTop: '15px', color: 'red', fontWeight: 'bold' }}>
-          Game Over! Close window and reopen to play again.
+        <div style={{ marginTop: '15px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ color: 'red', fontWeight: 'bold', marginBottom: '10px' }}>
+            Game Over!
+          </div>
+          <button 
+            onClick={() => resetGameRef.current?.()}
+            style={{ padding: '5px 15px', cursor: 'pointer', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px' }}
+          >
+            Restart
+          </button>
         </div>
       )}
     </div>
