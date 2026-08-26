@@ -84,8 +84,9 @@ export async function submitContactForm(formData: FormData) {
 
     // 5. Send Email via Resend
     try {
+      // Notify you
       await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'onboarding@resend.dev', // NOTE: You must verify a domain in Resend to change this
         to: 'jhonreyc2001@gmail.com',
         subject: `New Contact Form Submission: ${service}`,
         html: `
@@ -94,6 +95,21 @@ export async function submitContactForm(formData: FormData) {
           <p><strong>Service Requested:</strong> ${service}</p>
           <p><strong>Message:</strong></p>
           <p>${message.replace(/\\n/g, '<br/>')}</p>
+        `,
+      });
+
+      // Auto-reply to the user
+      await resend.emails.send({
+        from: 'onboarding@resend.dev', // NOTE: You must verify a domain in Resend to send to arbitrary users
+        to: email, // This will fail if your Resend domain isn't verified yet!
+        subject: `Thank you for reaching out, ${name}!`,
+        html: `
+          <p>Hi ${name},</p>
+          <p>Thank you for contacting me! I have received your message regarding <strong>${service}</strong>.</p>
+          <p>I will review your request and get back to you as soon as possible.</p>
+          <br/>
+          <p>Best regards,</p>
+          <p>Jhon Rey Consolacion</p>
         `,
       });
     } catch (emailErr) {
