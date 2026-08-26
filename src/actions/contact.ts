@@ -97,21 +97,6 @@ export async function submitContactForm(formData: FormData) {
           <p>${message.replace(/\\n/g, '<br/>')}</p>
         `,
       });
-
-      // Auto-reply to the user
-      await resend.emails.send({
-        from: 'onboarding@resend.dev', // NOTE: You must verify a domain in Resend to send to arbitrary users
-        to: email, // This will fail if your Resend domain isn't verified yet!
-        subject: `Thank you for reaching out, ${name}!`,
-        html: `
-          <p>Hi ${name},</p>
-          <p>Thank you for contacting me! I have received your message regarding <strong>${service}</strong>.</p>
-          <p>I will review your request and get back to you as soon as possible.</p>
-          <br/>
-          <p>Best regards,</p>
-          <p>Jhon Rey Consolacion</p>
-        `,
-      });
     } catch (emailErr) {
       // We don't want to fail the user request if email fails, but we should log it
       console.error('Resend Email Error:', emailErr);
