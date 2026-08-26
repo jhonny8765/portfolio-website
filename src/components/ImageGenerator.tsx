@@ -13,6 +13,15 @@ export default function ImageGenerator() {
   
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Cleanup object URLs on unmount or URL change
+  useEffect(() => {
+    return () => {
+      if (imageUrl) {
+        URL.revokeObjectURL(imageUrl);
+      }
+    };
+  }, [imageUrl]);
+
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -92,6 +101,18 @@ export default function ImageGenerator() {
       setImageUrl(null);
     }
     setError(null);
+  };
+
+  const handleDownload = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (!imageUrl) return;
+    
+    const a = document.createElement('a');
+    a.href = imageUrl;
+    a.download = 'ai-generated-image.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   return (
@@ -183,6 +204,7 @@ export default function ImageGenerator() {
             
             <a
               href={imageUrl}
+              onClick={handleDownload}
               download="ai-generated-image.png"
               className="absolute bottom-4 right-4 bg-[var(--color-violet)] md:bg-black/60 hover:bg-[var(--color-violet)] text-white p-3 rounded-xl backdrop-blur-md transition-all z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-lg border border-white/10 flex items-center gap-2"
               title="Download Image"

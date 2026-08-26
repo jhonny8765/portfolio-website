@@ -131,6 +131,12 @@ export default function Hero({ onOpenAi }: HeroProps) {
                 </div>
               </div>
 
+              {/* Blinking Cursor */}
+              <div className="mt-4 flex items-center text-[var(--color-violet-light)]/70 font-mono text-xs">
+                <span>user@system:~$</span>
+                <span className="w-1.5 h-3.5 bg-[var(--color-violet-light)]/70 ml-1.5 animate-pulse" />
+              </div>
+
             </div>
           </div>
         </div>
