@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { portfolioData } from '@/data/portfolioData';
 import { Terminal, CheckCircle2, CircleDashed, Cpu, PlayCircle } from 'lucide-react';
 
@@ -10,7 +10,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenAi }: HeroProps) {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -18,7 +18,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
