@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Terminal, Menu, X, FileText } from 'lucide-react';
+import Link from 'next/link';
+import { Terminal, Menu, X, FileText, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
   onOpenAi: () => void;
@@ -99,9 +100,12 @@ export default function Header({ onOpenAi }: HeaderProps) {
 
           {/* Desktop Nav */}
           <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <a href="#projects" className="text-[var(--text-secondary)] hover:text-white transition-colors">Work</a>
-            <a href="#services" className="text-[var(--text-secondary)] hover:text-white transition-colors">Services</a>
-            <a href="#skills" className="text-[var(--text-secondary)] hover:text-white transition-colors">Skills</a>
+            <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-white transition-colors">Work</Link>
+            <Link href="/#services" className="text-[var(--text-secondary)] hover:text-white transition-colors">Services</Link>
+            <Link href="/#skills" className="text-[var(--text-secondary)] hover:text-white transition-colors">Skills</Link>
+            <Link href="/playground" className="flex items-center gap-1.5 text-[var(--color-violet-light)] hover:text-white transition-colors">
+              <Sparkles size={14} /> Playground
+            </Link>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -165,10 +169,13 @@ export default function Header({ onOpenAi }: HeaderProps) {
 
           <div className="flex-1 overflow-y-auto py-8 px-6 flex flex-col justify-center gap-12">
             <nav aria-label="Mobile navigation" className="flex flex-col gap-6 text-2xl font-medium text-center">
-              <a href="#projects" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Work</a>
-              <a href="#services" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Services</a>
-              <a href="#skills" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Skills</a>
-              <a href="#contact" onClick={closeMenu} className="text-[var(--color-violet-light)] hover:text-white transition-colors inline-flex min-h-[44px] items-center justify-center">Contact</a>
+              <Link href="/#projects" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Work</Link>
+              <Link href="/#services" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Services</Link>
+              <Link href="/#skills" onClick={closeMenu} className="text-white hover:text-[var(--color-violet-light)] transition-colors inline-flex min-h-[44px] items-center justify-center">Skills</Link>
+              <Link href="/playground" onClick={closeMenu} className="flex items-center justify-center gap-2 text-[var(--color-violet-light)] hover:text-white transition-colors min-h-[44px]">
+                <Sparkles size={20} /> Playground
+              </Link>
+              <Link href="/#contact" onClick={closeMenu} className="text-[var(--color-violet-light)] hover:text-white transition-colors inline-flex min-h-[44px] items-center justify-center mt-2">Contact</Link>
             </nav>
 
             <div className="flex flex-col gap-4 mt-4 w-full max-w-sm mx-auto">

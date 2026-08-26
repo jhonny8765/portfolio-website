@@ -5,6 +5,9 @@ import Skills from '@/components/Skills';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import AiStateManager from '@/components/AiStateManager';
+import PlaygroundTeaser from '@/components/PlaygroundTeaser';
+import HowIBuild from '@/components/HowIBuild';
+import BuildLog from '@/components/BuildLog';
 
 export default function Home() {
   return (
@@ -16,10 +19,20 @@ export default function Home() {
       </div>
 
       <AiStateManager>
-        <Projects />
-        <Services />
-        <Skills />
-        <Contact />
+        <div className="relative w-full">
+          {/* Decorative Progress Line */}
+          <div className="absolute -left-4 sm:-left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-[var(--color-violet)]/20 to-transparent pointer-events-none hidden md:block" />
+          
+          <div className="flex flex-col gap-24 sm:gap-32 w-full">
+            <BuildLog />
+            <HowIBuild />
+            <Projects />
+            <PlaygroundTeaser />
+            <Services />
+            <Skills />
+            <Contact />
+          </div>
+        </div>
       </AiStateManager>
 
       <Footer />

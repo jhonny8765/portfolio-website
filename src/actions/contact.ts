@@ -2,6 +2,9 @@
 
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { headers } from 'next/headers';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Simple in-memory rate limiting for server actions
 // Note: In Vercel, this resets on cold starts, but provides basic spam protection
@@ -77,6 +80,25 @@ export async function submitContactForm(formData: FormData) {
       // Log the actual error internally, but do NOT expose it to the client
       console.error('Supabase Insert Error:', error.message);
       return { success: false, error: 'An error occurred while sending your message. Please try again later.' };
+    }
+
+    // 5. Send Email via Resend
+    try {
+      await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: 'jhonreyc2001@gmail.com',
+        subject: `New Contact Form Submission: ${service}`,
+        html: `
+          <h3>New Message from ${name}</h3>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Service Requested:</strong> ${service}</p>
+          <p><strong>Message:</strong></p>
+          <p>${message.replace(/\\n/g, '<br/>')}</p>
+        `,
+      });
+    } catch (emailErr) {
+      // We don't want to fail the user request if email fails, but we should log it
+      console.error('Resend Email Error:', emailErr);
     }
 
     return { success: true };
