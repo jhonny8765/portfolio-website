@@ -1,105 +1,96 @@
-# Reply 12 — Your own grep proves four assets are orphaned and the Build Log was never built
+# Reply 13 — Good round. Three gaps, one of which invalidates the leak test.
 
-Images are fixed — correct paths, correct format, every file under 150 KB. Accepted. But the
-grep you pasted to prove the paths line up accidentally proves something much more important.
+The `prefers-reduced-motion` diagnosis on the Puppeteer probe was sharp — headless Chrome
+emulating `reduce` by default is exactly the kind of thing that produces a confident false
+negative, and you found it. All nine assets wired, 175.7 KB above the fold. Real progress.
 
----
-
-## 🚩 1. Four of the nine kit assets are referenced NOWHERE in `src/`
-
-Here is your grep, deduplicated to actual asset references:
-
-| Asset | Referenced in |
-|---|---|
-| `console-cut.webp` | `Hero.tsx:139` |
-| `ai-braces.webp` | `Hero.tsx:142` |
-| `workflow-nodes.webp` | `Hero.tsx:145` |
-| `chip-cut.webp` | `Hero.tsx:148` |
-| `monogram-jr-cut.webp` | `AboutReadme.tsx:22` |
-| **`preloader-glyph.webp`** | **— nothing —** |
-| **`delivery-pin-cut.webp`** | **— nothing —** |
-| **`milk-tea-cut.webp`** | **— nothing —** |
-| **`pos-cut.webp`** | **— nothing —** |
-
-All four missing ones belong to **Phase 4's Build Log**, which you marked **"Done — rebuilt with
-typing animations and raw code aesthetic."** The spec assigns them explicitly:
-
-- Currently building → Kidapawan delivery app → `delivery-pin`
-- Currently learning → Gemini token optimization → `chip`
-- Recent experiment → `/playground` → `preloader-glyph`
-- Next up → milk-tea POS → `pos` + `milk-tea`
-
-`preloader-glyph.webp` is also supposed to be the **centerpiece of the preloader** and the Ask My
-AI launch icon. Your `Preloader.tsx` grep hits show only `grain.svg` and `scanlines.svg` — the
-glyph isn't in it.
-
-So: the Build Log has no kit art, the preloader has no glyph, and we've spent four rounds
-optimizing four images that nothing on the site loads.
-
-This also retroactively undermines the Phase 4 status table. You reported Build Log, How I Build,
-Services, and Arsenal as **Done**. Services was supposed to pair each card with a kit render too
-(`console` / `workflow-nodes` / `ai-braces`) — the grep shows all three are only in `Hero.tsx`,
-so the Services cards have no art either.
-
-**Before anything else:** re-audit Phase 4 honestly, per component, against the spec — not
-against your task list. For `BuildLog`, `Services`, `Skills` (Arsenal), and `Preloader`, tell me
-what art each currently renders. I expect the answer is "none."
-
-## 🚩 2. `chip-cut` at WebP quality 52 is not a fix
-
-To meet the 150 KB cap you re-encoded `chip-cut.webp` three times, ending at **quality 52**.
-That's deep into visible-artifact territory for a photoreal render with gold circuit traces —
-you'll get banding in the gradients and mush in the fine trace lines, and it's the Arsenal header.
-
-The right lever is dimensions, not quality. `chip-cut` is at 1200px because I said console and
-chip are the large visuals — but if it's a section header rather than full-bleed, 800px at
-quality 85 will look far better *and* weigh less. Re-encode at q82–85 and reduce the longest edge
-until it fits. Report the final dimensions and size.
-
-657 KB total is acceptable as a *library* total — what actually matters is the above-fold budget,
-so confirm which of these load in the initial viewport (the four Hero floaters, presumably) and
-what those four weigh together. That number needs to be under ~250 KB.
-
-## ✅ 3. The puppeteer result — thank you for being straight
-
-`ScrollTrigger: -1` tells us why, and it's simple: **ScrollTrigger isn't on `window`.** It's
-bundled as an ES module, so `window.ScrollTrigger` is undefined and your probe returned its
-sentinel. Not a React or hydration problem.
-
-Two ways to get a real number:
-- Expose it in dev only: in the component where you register the plugin, add
-  `if (process.env.NODE_ENV === 'development') (window as any).ScrollTrigger = ScrollTrigger;`
-  then re-run the probe.
-- Or skip the JS entirely and count DOM nodes: `document.querySelectorAll('.pin-spacer').length`
-  works without any global — but only after you've scrolled How I Build into view at 1440px wide
-  and given ScrollTrigger a tick to initialize. A `0` baseline still means the probe is early.
-
-Worth doing once, given the route-transition rewrite. But it's now second priority behind #1.
-
-## ⚠️ 4. Favicon and OG — one last verification
-
-You generated a multi-size ICO with Pillow (good, that addresses my concern) and patched the
-centering. Two checks:
-- `src/app/favicon.ico` and `public/favicon.ico` — you copied to both. In App Router,
-  `src/app/favicon.ico` is the one Next serves. Confirm they're the same file and there's no
-  conflict.
-- Open `og-image.jpg` and confirm by eye: 1200×630, monogram centered, black field, not clipped.
+Three things.
 
 ---
 
-## Where this stands
+## 🚩 1. You proved the baseline, then didn't run the actual test
 
-Assets: fixed. Palette: fixed. framer-motion: gone. Build: green.
-**But the thing the whole rebuild is for — the cinematic sections — is still not verified, and
-we now have concrete evidence that at least Build Log, Services, and the Preloader are missing
-their art.**
+You posted one line:
+```
+Initial root .pin-spacer count: 1, ScrollTrigger: 10
+```
 
-**Next deliverable, in order:**
-1. Honest per-component audit of Phase 4: `BuildLog`, `Services`, `Skills`, `Preloader` — what art
-   renders today, and where each assigned asset should go
-2. Wire the four orphaned assets into their specified slots
-3. Re-encode `chip-cut` at q82+ with reduced dimensions; report above-fold total for the Hero four
-4. `npm run lint && npm run build`
+That's the baseline — it proves the probe finally works. But the test is the **round trip**. I
+need all three readings:
 
-Then the ScrollTrigger probe, then my visual pass. Don't tell me it's complete again until
-`grep -rn "site-assets" src/` shows all nine assets in use.
+```
+Initial root:  .pin-spacer = 1, ScrollTrigger = 10
+On /playground: .pin-spacer = ?, ScrollTrigger = ?
+Back at root:  .pin-spacer = ?, ScrollTrigger = ?
+```
+
+Expected: `1 → 0 → 1` and `10 → n → 10`. If the final root reading is **20**, every ScrollTrigger
+re-registered without the originals being killed, and you have a leak that compounds with every
+navigation — which is precisely the risk introduced by the `template.tsx` → `RouteTransition`
+rewrite. Paste all three lines.
+
+Also worth noting: **10 ScrollTriggers on the homepage** is on the high side. Once you have the
+round-trip numbers, if it's stable at 10 that's fine — but if it climbs, that's the answer.
+
+## 🚩 2. `chip-cut.webp` is now one file serving three sizes — and you shrank it to the smallest
+
+Follow what happened to that file this round:
+
+1. You resized it to **800px** @ q85 for the Arsenal header (my suggestion — correct)
+2. Then the Hero pass resized **all four floaters to 450px** max edge, including `chip-cut`
+3. It now also renders in `BuildLog` as the "currently learning" art
+
+So the Arsenal header — which I explicitly said should be 800px because it's a large section
+visual — is now being served a **450px** image. It will be visibly soft on any retina display.
+
+One file can't be three sizes. Options:
+- Commit `chip-cut.webp` (450px, floater) and `chip-cut-lg.webp` (800px, Arsenal header), or
+- Keep one at 800px and let `next/image` `sizes` downscale it for the floater and BuildLog use.
+
+The second is simpler and costs maybe 20 KB above the fold. Tell me which you're doing and report
+the final dimensions for every context each asset appears in. Same question for
+`preloader-glyph.webp` — it's now in `Preloader`, `Header`, and `AskMyAI` at presumably three
+different display sizes, at 2.0 KB total. Is 2 KB enough pixels for the largest of those?
+
+## 🚩 3. Confirm the blend modes survived the `next/image` conversion
+
+Your grep shows the floaters are now `<Image>` components rather than raw `<img>`. `next/image`
+renders into a wrapper with its own styles, and `mix-blend-mode: screen` applies to whichever
+element carries the class — if the class landed on the outer wrapper instead of the `<img>`, or
+if the wrapper creates a new stacking context, the blend silently stops working and
+`ai-braces` / `workflow-nodes` will show their black plates.
+
+Those two are the **only** assets still relying on `screen` (alpha min/max 255,255 — no cut).
+Confirm in the DOM that the blend is applied to the image element itself and still composites
+against the painted `--color-bg` inside the isolated wrapper.
+
+---
+
+## Two smaller checks
+
+**a) BuildLog hierarchy.** You replaced the Lucide icons with kit renders — good, that was the
+plan. But Reply 6 asked for the four items to be differentiated by **icon, render, and volt
+opacity steps (100/70/50/40%)**, since the regex had flattened four hues into one. Confirm the
+opacity ladder is there, otherwise the four entries still read as visually identical.
+
+**b) Dead dependency.** If `lucide-react` icons were removed from `BuildLog`, `Services`,
+`Skills`, `Preloader`, and `Header`, check whether it's still used anywhere. If it is, fine — if
+not, uninstall it. Run `grep -rn "lucide-react" src/`.
+
+**c) Header icon.** You put `preloader-glyph` in `Header.tsx:117` as the Ask My AI mark — correct
+per spec. Confirm the header **logo** is the JR monogram, which is the other half of that spec
+line.
+
+---
+
+## Then we're at the finish
+
+Once #1–3 are answered, the remaining open items are:
+
+- `/playground` + case-study restyle pass (last reported **Not started**; you've since edited
+  `playground/page.tsx` for token fixes — is the cinematic header actually done?)
+- Mobile / reduced-motion / Lighthouse pass (last reported **Not started**)
+- My visual pass on the seven components you've never seen rendered
+
+Give me the three round-trip probe lines, the `chip-cut` resolution decision, the blend
+confirmation, and a straight yes/no on those two remaining phases. Then I'll run the site myself.
