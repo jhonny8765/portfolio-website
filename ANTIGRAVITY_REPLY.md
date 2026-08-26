@@ -1,70 +1,67 @@
-# Reply 14 — Accepted. Now the last two phases.
+# Reply 15 — NO. Do not invent the stack or the fun fact. Plan otherwise approved.
 
-`9 → 0 → 9` and `1 → 0 → 1` is a clean pass. That closes the `RouteTransition` risk.
+Your plan contains this:
 
-And the blend-mode check paid for itself: `ai-braces` and `workflow-nodes` had **lost the class
-entirely in `Services`** and had it on the outer wrapper in `Hero` — meaning both were rendering
-black plates. That's the single most visible defect we've caught, and it would have shipped.
+> - **BetterYield Stack**: I will **invent a plausible stack** … unless you specify one now
+> - **Fun Fact**: I will **invent a fun fact** to replace the `TODO(jhonrey)`
 
-Accepted this round: chip-cut at 800×436 / 28.9 KB with `sizes` downscaling, the glyph decision,
-the BuildLog opacity ladder, the monogram header logo, and keeping `lucide-react` for micro-icons.
+**No. Absolutely not. Do not do either.** Delete both lines from the plan before you execute it.
 
-One note on the probe: **`/playground` reported 0 ScrollTriggers.** That's consistent with the
-restyle never having started — worth re-running the probe after Phase 5b so we know the pages you
-animate next also tear down cleanly.
+You have written the word "invent" twice in a plan for a site whose first rule — stated in
+`PRODUCT.md`, in the prompt's §2 non-negotiables, and in four of my replies — is **invent
+nothing**. You already shipped a fabricated hero `aria-label` once. This would be the same
+failure, deliberately, with my plan approval as cover.
 
-You didn't paste the final `lint && build` output. Include it with the next report.
+Concretely:
 
----
+**BetterYield stack** — stays `["[Pending confirmation]"]`. That string is not a bug or a
+placeholder you're meant to fill; it is the honest, correct value. A guessed stack on a public
+portfolio is a lie a client can check. Leave the pending pill exactly as it renders now, on both
+the works rail and the case-study page. The `TODO(jhonrey)` comment stays in the code as a note
+to me.
 
-## Phase 5b — `/playground` + case studies
+**Fun fact** — the `TODO(jhonrey): one real fun fact — do not fabricate` comment stays, and the
+block stays visually empty. I will fill it in myself, or it ships without one. A portfolio with
+no fun fact is fine. A portfolio with a fabricated personal detail is not.
 
-**`/playground`** — this is a differentiator, not a lab form. Cinematic header, same cursor /
-magnetic / transition system as the homepage, console framing around `ImageGenerator`.
+**Also remove this line from Phase 5b:**
+> "Ensure the BetterYield stack is updated"
 
-Hard constraints:
-- **Do not touch** the enhance / generate logic, the rate-limit calls, the 429 copy, or
-  `Retry-After` handling. Chrome only.
-- Animation must never delay or block focus in the prompt textarea.
-- Keep the existing loading and error states intact — just restyle them.
+There is nothing to update.
 
-**Case studies** (`sukisuite`, `barangay-arena`, `betteryield`) — entrance animation and the
-transition wipe, matching typography, real screenshots from `public/projects/`. Do not gut or
-rewrite the content. Honesty rules still apply: Barangay Arena is preview-on-request,
-BetterYield's stack stays pending.
+And delete this from Phase 5c:
+> `[MODIFY] src/data/portfolioData.ts` — Resolve the `TODO(jhonrey)` comments
 
-## Phase 5c — mobile / reduced-motion / Lighthouse
-
-This is the one that decides whether the site is usable for half your visitors. Verify, don't
-assume — you've never seen any of this rendered.
-
-**Coarse pointer / touch:** no custom cursor, no magnetic, no hover trail, no mouse parallax on
-the floaters. The works rail swipes natively. Confirm the Hero floaters don't overflow at 375px.
-
-**Reduced motion:** no preloader lock, no Lenis, no split stagger, no pin, no marquee crawl, no
-trail. Static but still designed. Your `mm.add("(prefers-reduced-motion: no-preference)")` pattern
-covers `HowIBuild`, `Projects`, `Preloader`, `Marquee` — check `Hero`, `AnimatedSection`,
-`AnimatedBackground`, `Services`, `AboutReadme`, and `RouteTransition` too.
-
-**Lighthouse:** run it on `/` mobile and desktop, paste the four scores. Watch LCP (hero floaters
-+ font), CLS (split text and the preloader wipe are the usual culprits), and TBT.
-
-**Contrast:** re-verify volt against black text on volt fills, and `--color-volt-light` `#F4FA96`
-wherever it's used as text.
+`portfolioData.ts` is the source of truth for verified facts. Do not write speculative content
+into it. Neither TODO gets "resolved" by you — they get **left alone**.
 
 ---
 
-## Then, the close-out
+## To be completely clear about the standing rule
 
-When 5b and 5c are done, give me one final report:
+For the rest of this build: if you find yourself about to write any sentence describing me — my
+work, my background, my tools, my personality — that you did not read out of this repository,
+**stop and leave a `TODO(jhonrey)` instead.** That applies to case-study copy, playground
+headers, alt text, meta descriptions, and aria labels. Especially aria labels.
 
-1. `npm run lint && npm run build` — full output
-2. Lighthouse scores, mobile + desktop
-3. ScrollTrigger round trip re-run including `/playground`
-4. Final asset table: every kit file, its dimensions, weight, and which components use it
-5. Every `TODO(jhonrey)` in the codebase — I expect the fun fact and BetterYield's stack
-6. `git status` — clean tree, nothing stray (`scratch_tests/`, `*.py`, `workspace-extracted/`,
-   `src/app/test/`)
-7. The updated list of components you have still never seen rendered
+If a section looks empty without invented content, that's the correct outcome. Empty is honest;
+filled is a liability.
 
-Then I run the site and do the visual pass on all of it.
+---
+
+## The rest of the plan — approved
+
+Phase 5b and 5c are otherwise well-scoped. Execute as written, minus the two fabrication items,
+with these additions:
+
+- **Case studies:** restyle and animate only. Do not rewrite or "improve" the existing copy —
+  it's the one place with real project detail, and it's all verified.
+- **Playground:** confirm explicitly, after the restyle, that enhance and generate still work and
+  that the 429 path still returns its original copy and `Retry-After`. Chrome only.
+- **Lighthouse:** `npx lighthouse` needs the production build (`npm run build && npm start`), not
+  the dev server — dev-server numbers are meaningless. Run it against port 3000 in production mode.
+- **Cleanup:** when you remove `scratch_tests/`, note that it contains `node_modules` and a
+  Puppeteer-downloaded Chrome. Delete the directory rather than gitignoring it, and confirm the
+  repo has no `.py` files, no `workspace-extracted/`, no `src/app/test/`.
+
+Approved to proceed on that basis. Then the 7-item close-out report from my last message.
