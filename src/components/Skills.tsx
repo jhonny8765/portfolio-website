@@ -1,10 +1,13 @@
+'use client';
+
 import React from 'react';
+import AnimatedSection from './AnimatedSection';
 import { portfolioData } from '@/data/portfolioData';
 import { Layers } from 'lucide-react';
 
 export default function Skills() {
   return (
-    <section id="skills" className="w-full flex flex-col gap-10 scroll-mt-24">
+    <AnimatedSection id="skills" className="w-full flex flex-col gap-10 scroll-mt-24">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
           <Layers className="text-[var(--color-violet)]" />
@@ -42,6 +45,6 @@ export default function Skills() {
           </div>
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }

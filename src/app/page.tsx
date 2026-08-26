@@ -8,15 +8,12 @@ import AiStateManager from '@/components/AiStateManager';
 import PlaygroundTeaser from '@/components/PlaygroundTeaser';
 import HowIBuild from '@/components/HowIBuild';
 import BuildLog from '@/components/BuildLog';
+import AnimatedBackground from '@/components/AnimatedBackground';
 
 export default function Home() {
   return (
     <main id="main-content" className="min-h-screen flex flex-col items-center w-full overflow-x-hidden selection:bg-[var(--color-violet)] selection:text-white relative">
-      {/* Background gradients for Dark Obsidian / Electric Violet theme */}
-      <div className="fixed inset-0 pointer-events-none z-[-1] bg-[var(--bg-primary)]">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[var(--color-violet)]/10 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-[var(--color-violet)]/10 rounded-full blur-[120px]"></div>
-      </div>
+      <AnimatedBackground />
 
       <AiStateManager>
         <div className="relative w-full">

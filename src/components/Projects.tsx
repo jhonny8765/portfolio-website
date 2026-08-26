@@ -1,4 +1,8 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
+import AnimatedSection from './AnimatedSection';
 import Link from 'next/link';
 import Image from 'next/image';
 import { portfolioData } from '@/data/portfolioData';
@@ -6,7 +10,7 @@ import { ExternalLink, FolderOpen, ArrowRight } from 'lucide-react';
 
 export default function Projects() {
   return (
-    <section id="projects" className="w-full flex flex-col gap-10 scroll-mt-24">
+    <AnimatedSection id="projects" className="w-full flex flex-col gap-10 scroll-mt-24">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
           <FolderOpen className="text-[var(--color-violet)]" />
@@ -17,7 +21,12 @@ export default function Projects() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {portfolioData.projects.map((project) => (
-          <div key={project.id} className="glass-panel rounded-2xl overflow-hidden flex flex-col group hover:border-[var(--color-violet)]/30 hover:-translate-y-1 transition-all duration-300">
+          <motion.div 
+            key={project.id} 
+            whileHover={{ y: -8 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            className="glass-panel rounded-2xl overflow-hidden flex flex-col group hover:border-[var(--color-violet)]/30 hover:shadow-[0_10px_30px_-15px_rgba(139,92,246,0.5)] transition-colors duration-300"
+          >
             {/* Project Image */}
             <div className="aspect-video w-full relative border-b border-white/10 overflow-hidden bg-black/40">
               {project.imagePlaceholder ? (
@@ -103,9 +112,9 @@ export default function Projects() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </section>
+    </AnimatedSection>
   );
 }

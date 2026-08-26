@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
 import { portfolioData } from '@/data/portfolioData';
 import { Terminal, CheckCircle2, CircleDashed, Cpu, PlayCircle } from 'lucide-react';
 
@@ -7,51 +10,74 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenAi }: HeroProps) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15, delayChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
     <section className="pt-16 sm:pt-24 pb-12 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center max-w-7xl mx-auto">
         {/* Left: Text Content */}
-        <div className="flex flex-col items-start text-left z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-violet)]/30 bg-[var(--color-violet)]/5 text-[var(--color-violet-light)] text-xs font-semibold uppercase tracking-widest mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="flex flex-col items-start text-left z-10"
+        >
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-violet)]/30 bg-[var(--color-violet)]/5 text-[var(--color-violet-light)] text-xs font-semibold uppercase tracking-widest mb-6">
             <Terminal size={14} />
             {portfolioData.identity.title}
-          </div>
+          </motion.div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 fill-mode-both">
+          <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight">
             I build with AI — <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-violet-light)] to-[#06B6D4]">
               websites, apps, & automations.
             </span>
-          </h1>
+          </motion.h1>
           
-          <p className="text-[var(--text-secondary)] text-lg sm:text-xl max-w-xl mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200 fill-mode-both">
+          <motion.p variants={itemVariants} className="text-[var(--text-secondary)] text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
             {portfolioData.identity.shortBio}
-          </p>
+          </motion.p>
           
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300 fill-mode-both">
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
             <button 
               onClick={onOpenAi}
-              className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl bg-[var(--color-violet)] hover:bg-[var(--color-violet-light)] text-white font-semibold transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] flex items-center justify-center gap-2"
+              className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl bg-[var(--color-violet)] hover:bg-[var(--color-violet-light)] text-white font-semibold transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] flex items-center justify-center gap-2 hover:-translate-y-1"
             >
               <Terminal size={18} />
               Ask My AI
             </button>
             
-            <a href="#projects" className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all flex items-center justify-center">
+            <a href="#projects" className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all flex items-center justify-center hover:-translate-y-1">
               Explore Projects
             </a>
-          </div>
+          </motion.div>
           
-          <div className="mt-6 flex items-center gap-3 text-sm text-[var(--text-secondary)] animate-in fade-in slide-in-from-bottom-10 duration-700 delay-400 fill-mode-both">
+          <motion.div variants={itemVariants} className="mt-6 flex items-center gap-3 text-sm text-[var(--text-secondary)]">
             <span>Prefer email?</span>
             <a href="mailto:jhonreyc2001@gmail.com" className="text-white hover:text-[var(--color-violet-light)] underline underline-offset-4 transition-colors font-medium">
               jhonreyc2001@gmail.com
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Right: Build Console */}
-        <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto animate-in fade-in zoom-in-95 duration-1000 delay-500 fill-mode-both z-10">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.5, type: "spring" }}
+          className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto z-10"
+        >
           {/* Subtle background glow */}
           <div className="absolute inset-0 bg-[var(--color-violet)]/10 blur-[80px] rounded-full pointer-events-none" />
           
@@ -139,7 +165,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
 
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { submitContactForm } from '@/actions/contact';
+import AnimatedSection from './AnimatedSection';
 
 export default function Contact() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -33,7 +34,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="w-full flex justify-center pb-24 scroll-mt-24">
+    <AnimatedSection id="contact" className="w-full flex justify-center pb-24 scroll-mt-24">
       <div className="w-full max-w-2xl glass-panel rounded-3xl p-8 sm:p-12 shadow-[0_0_40px_rgba(139,92,246,0.05)] relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-violet)]/10 rounded-full blur-[80px] pointer-events-none"></div>
@@ -189,6 +190,6 @@ export default function Contact() {
           )}
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
