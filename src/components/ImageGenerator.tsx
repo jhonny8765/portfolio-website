@@ -179,12 +179,12 @@ export default function ImageGenerator() {
               className="w-full h-full object-contain md:object-cover pointer-events-none"
             />
             {/* Hover overlay for download */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none rounded-3xl md:rounded-none"></div>
+            <div className="absolute inset-0 bg-black/40 opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none rounded-3xl md:rounded-none"></div>
             
             <a
               href={imageUrl}
               download="ai-generated-image.png"
-              className="absolute bottom-4 right-4 bg-black/60 hover:bg-[var(--color-violet)] text-white p-3 rounded-xl backdrop-blur-md transition-all z-20 opacity-0 group-hover:opacity-100 shadow-lg border border-white/10 flex items-center gap-2"
+              className="absolute bottom-4 right-4 bg-[var(--color-violet)] md:bg-black/60 hover:bg-[var(--color-violet)] text-white p-3 rounded-xl backdrop-blur-md transition-all z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-lg border border-white/10 flex items-center gap-2"
               title="Download Image"
             >
               <Download size={18} />

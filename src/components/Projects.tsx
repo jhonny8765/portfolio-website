@@ -31,7 +31,7 @@ export default function Projects() {
                 <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
                   <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
                   <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-violet)]/10 to-transparent"></div>
-                  <div className="relative z-10 flex flex-col items-center gap-3 opacity-50 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500">
+                  <div className="relative z-10 flex flex-col items-center gap-3 opacity-80 md:opacity-50 md:group-hover:opacity-80 md:group-hover:scale-105 transition-all duration-500">
                     <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-white/5">
                       <FolderOpen size={20} className="text-white" />
                     </div>
