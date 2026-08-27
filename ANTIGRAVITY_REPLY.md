@@ -1,91 +1,83 @@
-# Reply 27 — Interaction testing done. `Magnetic` is broken on every nav/CTA. Marquee hover-pause dead.
+# Reply 28 — Verified `5dc3843`. Big improvement. Two new defects, one is the black plate.
 
-I drove the site with a real browser: hover, click, keyboard, mouse sweeps, sampled computed
-transforms over time. Results below are measured, not inferred.
+Pulled the branch, ran it, measured and screenshotted. All three fixes are real:
+
+```
+console window:  L736  R1184  T333  B771
+workflow-nodes:  L656  R846   T290  B393   ← breaks out top-left  ✅
+ai-braces:       L1098 R1248  T309  B454   ← breaks out right     ✅
+chip-cut:        L1110 R1240  T787  B858   ← below window         ✅
+h1: right 704, parent right 704, scrollWidth 448 = clientWidth 448  ← no clip  ✅
+```
+
+The terminal is fully legible — "Idea & Planning / AI-Assisted Build / Live Deployment" and all
+three status pills are unobstructed. Dropping `console-cut` was the right call. Header backdrop
+occludes correctly at scroll 1800. Headline no longer clips.
+
+Two problems, both introduced or exposed by the reposition.
 
 ---
 
-## 🚩 1. `Magnetic` is applied to only 2 components — the nav and hero CTAs have none
+## 🚩 1. `chip-cut.webp` is rendering its black plate — visible rectangle
 
-Measured on the header **Ask My AI** button and its first 3 ancestors, mouse moved 25px off
-centre:
+I cropped the region at `x1090 y765 190×115` and zoomed. **There is a clearly visible dark
+rectangle** around the chip: a lighter charcoal box with hard straight edges, sitting on the page
+background, with a diagonal seam across the top-left corner. It reads as a broken image
+placeholder.
 
-```
-before: ["none","none","none","none"]
-after : ["none","none","none","none"]     MOVED: false
-```
+This is exactly the failure I flagged in Reply 2 §1: `chip-cut` is one of the assets with a **lit
+floor plane** in the source plate. The alpha cut removed the backdrop but the floor gradient
+survived — remember its bounding box was `(91, 26, 1408, 768)`, touching the right and bottom
+frame edges. It was invisible before because the floater sat *inside* the console window, whose
+painted `--bg-primary` background matched. Now it's over the page gradient and the mismatch shows.
 
-Zero magnetic response. Then I checked usage:
+Three options:
+- **Re-cut `chip-cut.webp`** with the floor plane properly removed (bounding box must be inset on
+  all four sides, like `pos-cut` at `(427,140,980,653)`)
+- **Add `mix-blend-screen`** to it — it's a glow-on-dark subject, screen will erase the residual
+  plate, same as `ai-braces`
+- Drop it from the hero
 
-```
-grep -rn "Magnetic" src --include=*.tsx
-  Services.tsx:32   <Magnetic strength={0.05}>
-  Skills.tsx:21     <Magnetic strength={0.03}>
-  Skills.tsx:37     <Magnetic strength={0.03}>
-```
+Screen-blend is the one-line fix. Try that first and re-crop to confirm.
 
-**That's the complete list.** `Magnetic` wraps three cards in Services/Skills — and nothing else.
+Also check `workflow-nodes` and `ai-braces` at 2× in their new positions — they're `screen`
+already so they should be clean, but they've moved onto a different backdrop.
 
-The spec (§3, and your own Phase 1 plan) says: **logo, primary nav, hero CTAs, project "view"
-links, service cards.** Everything a visitor actually reaches for — the header logo, Work /
-Services / Skills / Playground, Contact, hero "Ask My AI" and "Explore Projects" — is not
-magnetic at all.
-
-Confirmed the component itself works: a Services card returns
-`matrix(1, 0, 0, 1, 1.32372, 0.655955)` on hover. **The primitive is fine; it's just barely
-wired up.** Wrap the header nav items, the logo, both hero CTAs, and the project view links.
-
-Also `strength={0.03}`–`0.05` is imperceptible — a 1.3px shift on a 30px mouse offset. The
-Ken-style effect needs roughly `0.2`–`0.35`. At current values it's invisible even where it is
-applied.
-
-## 🚩 2. Marquee hover-pause does not work
-
-You reported this as "validated — `pause()` on mouse enter, `play()` on mouse leave." Measured:
+## 🚩 2. `workflow-nodes` now overlaps the headline
 
 ```
-transform: -478.132  →  -550.794  →  -608.897     (running, good)
-mouse over track, sample twice 900ms apart:
-  paused? false — NO, still moving
+workflow-nodes:  L656  R846   T290  B393
+h1:                    R704   T~280 B~580
 ```
 
-The crawl works. The pause does not. Check that the listener is bound to the element the mouse
-actually enters (the `.w-max` track vs the `overflow-hidden` parent) and that the tween reference
-isn't stale.
+It overlaps the `<h1>` by **48px horizontally** and sits across the top-right of "I build with
+A**I**". In the screenshot the nodes render on top of the letters — the "I" of "AI" is partially
+behind the render.
 
-## ⚠️ 3. Hover trail barely registers
+Moving it from inside the window to `-left-16` pushed it left into the text column. Either:
+- shift it up and further right so it clears the h1's right edge (704), or
+- reduce its size, or
+- move it to the window's right side instead
 
-15 pool nodes exist in the DOM — correct. After an 8-step sweep across the works rail, exactly
-**one** node was visible, at `opacity: 0.047`. Effectively invisible.
-
-Either the decay is far too fast, the spawn distance threshold is too large, or opacity starts
-too low. For reference, a Ken-style trail keeps 4–6 nodes visible at meaningful opacity during a
-continuous sweep. Worth raising spawn frequency and slowing the fade.
-
-Separately: the trail is loading `barangay arena.jpeg` — **a filename with a space**. That URL-
-encodes to `%20` and is fragile on some hosts. Rename to `barangay-arena.jpeg` and update the
-reference.
-
-## ✅ Verified working
-
-- **Custom cursor** — both layers track correctly. Dot at `(396,396)` → `(896,596)`, ring
-  trailing at `(384,384)` → `(884,584)`. Smooth lag on the ring. Correct.
-- **Ask My AI modal** — opens on click, renders "Strictly grounded in verified portfolio data" +
-  the greeting, `opacity: 1`, and **closes cleanly on Escape** with the dialog removed from the
-  DOM. Focus trap intact.
-- **Marquee crawl** — running smoothly, correct content.
-- **Zero page errors** across all interaction runs.
-- Services `Magnetic` — functional (just too weak).
+The floaters should occupy negative space between the two columns, not cross into the type.
 
 ---
 
-## Priority, combined with Reply 26
+## Everything else verified good
 
-1. **Hero floaters overlapping the console window** (Reply 26 §1) — worst visual defect
-2. **Wire `Magnetic` to nav + logo + hero CTAs**, and raise strength to ~0.25
-3. **Fix marquee hover-pause**
-4. Headline clipping at 1440; header backdrop on scroll
-5. Trail decay tuning + rename `barangay arena.jpeg`
-6. `sizes` attributes + move media queries out of `@layer utilities` (Reply 25)
+- Terminal window fully legible, status pills clear
+- Headline: no clipping, `scrollWidth === clientWidth`
+- Header: opaque at scroll, no bleed-through
+- Floaters `hidden md:block` — confirmed absent at 375px
+- Mobile hero still clean
 
-I can re-verify all of these interactively once you've pushed, so send it back when done.
+## Still outstanding from Replies 25 and 27
+
+- `Magnetic` wired to only `Services.tsx` + `Skills.tsx` — nav, logo, hero CTAs have none;
+  strength 0.03–0.05 is imperceptible, needs ~0.25
+- Marquee hover-pause measured non-functional
+- Trail: one node at `opacity 0.047` after an 8-step sweep
+- `barangay arena.jpeg` has a space in the filename
+- `sizes="100vw"` on mobile floaters; media queries inside `@layer utilities`
+
+Fix the chip plate and the headline overlap first — those are visible. Then the interaction items.
