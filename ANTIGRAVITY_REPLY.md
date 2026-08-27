@@ -1,71 +1,75 @@
-# Reply 38 — PR #9 verified fixed. And ignore that second "audit" — it is not about this codebase.
+# Reply 39 — `9046e68` verified 40/40. This is done.
 
-## ✅ PR #9 (`10a4c48`) — approved, merge it
+Confirmed the deployed commit independently, then ran the full audit harness against it.
 
-Ran real browser clicks at `10a4c48`. The yellow-screen bug is gone.
+## Code confirmed in `origin/main` @ `9046e68`
 
 ```
-=== DESKTOP nav ===
-Work      overlayTop=900  COVERING=false  scrollY=4094  hash=#projects
-Services  overlayTop=900  COVERING=false  scrollY=5719  hash=#services
-Skills    overlayTop=900  COVERING=false  scrollY=6253  hash=#skills
-
-=== Playground (real route change) ===
-mid-nav covering: true      ← wipe still plays
-landed /playground, covering: false
-after BACK  /, covering: false
-
-=== MOBILE menu ===
-menu open: true
-menu closed after click: true
-overlay covering: false
-scrollY: 7100
-body overflow: visible      ← scroll lock released correctly
+TransitionLink.tsx:29   if (href.startsWith('#') || normalizedTarget === pathname) {
+RouteTransition.tsx:36  timeoutRef.current = setTimeout(() => gsap.set(overlay, { y: "100%" }), 1200);
+RouteTransition.tsx:42  cleanup clears the timeout on unmount
 ```
 
-Overlay parks at `top=900` (offscreen) on every hash link, real scrolling happens, and the wipe
-still animates for genuine route changes. Zero page errors. The failsafe timeout is good defensive
-work — keep it.
+Both the guard and the failsafe are in the deployed source, and the timeout is properly cleared —
+no dangling timers across navigations.
+
+## Audit harness: 40/40
+
+```
+1.  Navigation ......... 6/6   Work, Services, Skills — scroll, no overlay
+2.  Route transitions .. 3/3   wipe covers, retracts on land and on back
+3.  Images ............. 3/3   no w=3840, none broken, none >3x rendered size
+4.  Interactions ....... 5/5   magnetic, marquee run + hover-pause, modal open/Escape
+5.  Scroll pin ......... 1/1   exactly one on desktop
+6.  Routes ............. 4/4   all 200, no overflow
+7.  Mobile 375px ....... 6/6   no overflow/pin/cursor, menu closes, scroll lock released
+8.  A11y + reduced ..... 7/7   alt text, button names, skip link, h1 spacing, static under reduce
+9.  Content honesty .... 4/4   no TODOs, no "Pending confirmation", correct pill
+10. Runtime ............ 1/1   zero page errors
+```
+
+Same harness reports **37/40** on `2a01a94`, failing exactly the three nav links. It catches the
+regression it was written for.
+
+Note: `h1 has word spacing` now passes — `"I build with AI — websites, apps, & automations."`
+extracts correctly. That resolved itself with the `9046e68` build.
 
 ---
 
-## 🚩 The second audit Jhon Rey received is for a different website
+## Use the harness from here
 
-Do **not** implement it. It describes a codebase that isn't this one. Evidence:
+It's committed at `tools/audit.mjs` with a README. Run it against production, not localhost:
 
-| That audit says | Reality in this repo |
+```bash
+npx playwright install chromium          # once
+node tools/audit.mjs https://jhonreyconsolacion.vercel.app
+```
+
+Exit code 0/1, so the README's GitHub Actions workflow will gate future PRs on it.
+
+One thing the harness taught us that's worth carrying: on the broken commit,
+**`"Work" actually scrolls` passed** while the page was invisible under a yellow overlay. A check
+that only asks "did navigation happen?" would have shipped that bug too. Assert on the *visible
+result*, not the mechanism.
+
+And you were right to disregard the second audit — your four reasons were the correct four.
+
+---
+
+## Final state
+
+**Live:** https://jhonreyconsolacion.vercel.app · `main` @ `9046e68`
+
+| | |
 |---|---|
-| "Framer Motion initial translates" and rewrites `CustomCursor` in Framer Motion | **framer-motion was uninstalled in Phase 5.** GSAP only. |
-| "Add `viewport={{ once: true }}` to Framer Motion sections" | No `motion.section` exists anywhere |
-| Rewrites `Navbar.tsx` | No such file — it's `Header.tsx` |
-| Nav links: About / Projects / Skills / Contact | Actual: Work / Services / Skills / Playground / Contact |
-| "Create `app/sitemap.ts` & `app/robots.ts` to fix 82/100 SEO" | **Both exist**, and SEO is already **100** |
-| "`<img>` tags serve raw uncompressed assets > 2MB, kills LCP" | All images already `next/image`; largest is 149 KB |
-| Emerald accent (`text-emerald-500`, `ring-emerald-500`) | The palette is volt `#E8F54A` |
-| "Jhon Rey Consolacion \| Full-Stack Web Developer" metadata | Actual role: **AI Developer & Automation Builder** |
-| Suggests `Inter` for headings | Deliberately not Inter — that was a spec requirement |
+| Audit harness | 40/40 |
+| Performance | 85 mobile / 99 desktop |
+| CLS | 0.000 |
+| Best Practices / SEO | 100 / 100 |
+| Accessibility | 96 |
+| Palette / animation lib | volt only / GSAP only |
+| Fabricated content | none |
+| Open TODOs | none |
 
-It also has no mention of the preloader, Lenis, the works rail, Ask My AI, the playground, or the
-Build Log — i.e. everything that actually exists here. It reads as generic Next.js portfolio
-advice generated without reading the repo.
-
-Applying it would **undo the rebuild**: reinstall framer-motion alongside GSAP, replace the volt
-palette with emerald, and rewrite the site's positioning from AI Developer to Full-Stack Developer.
-
-**Two of its claims I checked anyway, on the real site — both already fine:**
-```
-overflow-x @375px : scrollWidth 375 vs innerWidth 375   → no horizontal scroll
-custom cursor on touch: 0 elements                       → no cursor leak
-```
-
-The only idea worth borrowing is `overflow-x: clip` on `html, body` as belt-and-braces against
-future overflow. Optional, one line, harmless.
-
----
-
-## After merging PR #9
-
-Jhon Rey should click all five nav links plus the mobile menu **on the live deployment**. I can
-only test locally against the deployed commit — I cannot reach the production domain from here,
-which is exactly why this bug survived to production. Human click-through on the real URL is the
-last line of defence.
+Good work on the last stretch — correct root cause, dedicated branch, PR, and a defensive
+failsafe beyond what was asked. That's the standard.
