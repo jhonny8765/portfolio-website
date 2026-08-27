@@ -77,11 +77,11 @@ export default function BuildLog() {
                   <div className={`hidden md:flex w-16 h-16 rounded bg-white/5 border border-white/10 items-center justify-center shrink-0 group-hover:border-[var(--color-volt)]/30 group-hover:bg-[var(--color-volt)]/5 transition-all p-2 overflow-hidden`}>
                     {item.images ? (
                       <div className="relative w-full h-full flex">
-                        <Image src={item.images[0]} alt="Log asset" fill className="object-contain -ml-2" />
-                        <Image src={item.images[1]} alt="Log asset" fill className="object-contain ml-2" />
+                        <Image src={item.images[0]} alt="Log asset" fill className="object-contain -ml-2" sizes="48px" />
+                        <Image src={item.images[1]} alt="Log asset" fill className="object-contain ml-2" sizes="48px" />
                       </div>
                     ) : (
-                      item.image && <Image src={item.image} alt={item.label} width={48} height={48} className="object-contain" />
+                      item.image && <Image src={item.image} alt={item.label} width={48} height={48} className="object-contain" sizes="48px" />
                     )}
                   </div>
                   <div className="flex-1">

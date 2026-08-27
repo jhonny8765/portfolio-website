@@ -18,11 +18,16 @@ export default function Projects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = React.useState(false);
   
   // Trail DOM Pool refs
   const poolRef = useRef<(HTMLImageElement | null)[]>([]);
   const currentIndexRef = useRef(0);
   const lastPosRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -238,23 +243,25 @@ export default function Projects() {
         </div>
       </div>
 
-      <div aria-hidden="true" className="hidden md:block pointer-events-none fixed inset-0 z-[30]">
-        {[...Array(15)].map((_, i) => {
-          return (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-              key={i}
-              ref={(el) => {
-                poolRef.current[i] = el;
-              }}
-              src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-            alt=""
-            className="absolute top-0 left-0 w-[200px] h-[120px] object-cover rounded-lg border border-[var(--color-volt)]/20 shadow-2xl opacity-0"
-            style={{ transformOrigin: 'center center' }}
-            />
-          );
-        })}
-      </div>
+      {mounted && (
+        <div aria-hidden="true" className="hidden md:block pointer-events-none fixed inset-0 z-[30]">
+          {[...Array(15)].map((_, i) => {
+            return (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                key={i}
+                ref={(el) => {
+                  poolRef.current[i] = el;
+                }}
+                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                alt=""
+                className="absolute top-0 left-0 w-[200px] h-[120px] object-cover rounded-lg border border-[var(--color-volt)]/20 shadow-2xl opacity-0"
+                style={{ transformOrigin: 'center center' }}
+              />
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 }

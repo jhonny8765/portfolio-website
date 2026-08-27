@@ -24,6 +24,7 @@ export default function AboutReadme() {
                 width={160} 
                 height={160}
                 className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(232,245,74,0.2)] motion-safe:group-hover:scale-105 motion-safe:transition-transform duration-700 ease-out"
+                sizes="(min-width: 640px) 224px, 192px"
               />
             </div>
           </div>

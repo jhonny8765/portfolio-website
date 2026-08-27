@@ -102,19 +102,25 @@ export default function Hero({ onOpenAi }: HeroProps) {
             aria-label="I build with AI — websites, apps, & automations."
           >
             {"I build with AI —".split(' ').map((word, i) => (
-              <span key={i} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block">{word}</span>
-              </span>
+              <React.Fragment key={i}>
+                <span aria-hidden="true" className="inline-block overflow-hidden">
+                  <span className="hero-word inline-block">{word}</span>
+                </span>
+                {' '}
+              </React.Fragment>
             ))}
             <span className="w-full h-0 sm:hidden"></span>
             {"websites, apps, & automations.".split(' ').map((word, i) => (
-              <span key={`glow-${i}`} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}</span>
-              </span>
+              <React.Fragment key={`glow-${i}`}>
+                <span aria-hidden="true" className="inline-block overflow-hidden">
+                  <span className="hero-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}</span>
+                </span>
+                {' '}
+              </React.Fragment>
             ))}
           </h1>
           
-          <p className="hero-text-item text-[var(--text-secondary)] text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
+          <p className="hero-text-item text-[var(--text-secondary)] text-lg sm:text-xl max-w-xl mb-8 leading-relaxed">
             {portfolioData.identity.shortBio}
           </p>
           
@@ -136,7 +142,12 @@ export default function Hero({ onOpenAi }: HeroProps) {
             </Magnetic>
           </div>
           
-          <div className="hero-text-item mt-6 flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+          <div className="hero-text-item mt-3 text-xs text-[var(--color-volt-light)]/70 flex items-center gap-1.5 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-volt)] animate-pulse" />
+            <span>Interactive AI chatbot trained on this portfolio</span>
+          </div>
+          
+          <div className="hero-text-item mt-5 flex items-center gap-3 text-sm text-[var(--text-secondary)]">
             <span>Prefer email?</span>
             <a href="mailto:jhonreyc2001@gmail.com" className="text-white hover:text-[var(--color-volt)] underline underline-offset-4 transition-colors font-medium">
               jhonreyc2001@gmail.com
@@ -152,15 +163,15 @@ export default function Hero({ onOpenAi }: HeroProps) {
           
           {/* Floating Hero Assets (Outside the Console Window, Framing the Edges) */}
           <div className="hidden md:block absolute -top-16 left-8 lg:-top-20 lg:left-12 w-[160px] lg:w-[190px] pointer-events-none hero-floater mix-blend-screen z-[10]">
-            <Image src="/site-assets/floating/workflow-nodes.webp" alt="Workflow nodes diagram" width={190} height={130} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 768px) 190px, 0px" />
+            <Image src="/site-assets/floating/workflow-nodes.webp" alt="Workflow nodes diagram" width={190} height={130} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 1024px) 190px, (min-width: 768px) 160px, 0px" />
           </div>
 
           <div className="hidden md:block absolute -top-12 -right-10 lg:-top-16 lg:-right-14 w-[130px] lg:w-[150px] pointer-events-none hero-floater mix-blend-screen z-[10]">
-            <Image src="/site-assets/floating/ai-braces.webp" alt="AI Braces logic block" width={150} height={110} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 768px) 150px, 0px" />
+            <Image src="/site-assets/floating/ai-braces.webp" alt="AI Braces logic block" width={150} height={110} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 1024px) 150px, (min-width: 768px) 130px, 0px" />
           </div>
 
           <div className="hidden md:block absolute -bottom-10 -right-8 lg:-bottom-12 lg:-right-12 w-[120px] lg:w-[140px] pointer-events-none hero-floater mix-blend-screen z-[10]">
-            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={140} height={95} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 768px) 140px, 0px" />
+            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={140} height={95} className="w-full h-auto object-contain mix-blend-screen" sizes="(min-width: 1024px) 140px, (min-width: 768px) 120px, 0px" />
           </div>
 
           <div className="relative rounded-2xl border border-white/10 bg-[#090a0f]/95 backdrop-blur-xl overflow-hidden shadow-2xl z-[2] hero-console-window">
