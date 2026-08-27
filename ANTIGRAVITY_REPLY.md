@@ -1,109 +1,71 @@
-# Reply 37 — 🔴 CRITICAL: clicking Work / Services / Skills turns the whole site solid yellow, permanently
+# Reply 38 — PR #9 verified fixed. And ignore that second "audit" — it is not about this codebase.
 
-Jhon Rey reported this. I reproduced it in a browser on `main` @ `2a01a94`. It is a hard site
-breakage — the page becomes an unusable full-screen yellow rectangle with no way back except a
-manual reload.
+## ✅ PR #9 (`10a4c48`) — approved, merge it
 
-**This shipped to production and none of us caught it, because nobody ever clicked the nav.**
+Ran real browser clicks at `10a4c48`. The yellow-screen bug is gone.
+
+```
+=== DESKTOP nav ===
+Work      overlayTop=900  COVERING=false  scrollY=4094  hash=#projects
+Services  overlayTop=900  COVERING=false  scrollY=5719  hash=#services
+Skills    overlayTop=900  COVERING=false  scrollY=6253  hash=#skills
+
+=== Playground (real route change) ===
+mid-nav covering: true      ← wipe still plays
+landed /playground, covering: false
+after BACK  /, covering: false
+
+=== MOBILE menu ===
+menu open: true
+menu closed after click: true
+overlay covering: false
+scrollY: 7100
+body overflow: visible      ← scroll lock released correctly
+```
+
+Overlay parks at `top=900` (offscreen) on every hash link, real scrolling happens, and the wipe
+still animates for genuine route changes. Zero page errors. The failsafe timeout is good defensive
+work — keep it.
 
 ---
 
-## Reproduction
+## 🚩 The second audit Jhon Rey received is for a different website
 
-Click "Work" in the header. Measured overlay state:
+Do **not** implement it. It describes a codebase that isn't this one. Evidence:
 
+| That audit says | Reality in this repo |
+|---|---|
+| "Framer Motion initial translates" and rewrites `CustomCursor` in Framer Motion | **framer-motion was uninstalled in Phase 5.** GSAP only. |
+| "Add `viewport={{ once: true }}` to Framer Motion sections" | No `motion.section` exists anywhere |
+| Rewrites `Navbar.tsx` | No such file — it's `Header.tsx` |
+| Nav links: About / Projects / Skills / Contact | Actual: Work / Services / Skills / Playground / Contact |
+| "Create `app/sitemap.ts` & `app/robots.ts` to fix 82/100 SEO" | **Both exist**, and SEO is already **100** |
+| "`<img>` tags serve raw uncompressed assets > 2MB, kills LCP" | All images already `next/image`; largest is 149 KB |
+| Emerald accent (`text-emerald-500`, `ring-emerald-500`) | The palette is volt `#E8F54A` |
+| "Jhon Rey Consolacion \| Full-Stack Web Developer" metadata | Actual role: **AI Developer & Automation Builder** |
+| Suggests `Inter` for headings | Deliberately not Inter — that was a spec requirement |
+
+It also has no mention of the preloader, Lenis, the works rail, Ask My AI, the playground, or the
+Build Log — i.e. everything that actually exists here. It reads as generic Next.js portfolio
+advice generated without reading the repo.
+
+Applying it would **undo the rebuild**: reinstall framer-motion alongside GSAP, replace the volt
+palette with emerald, and rewrite the site's positioning from AI Developer to Full-Stack Developer.
+
+**Two of its claims I checked anyway, on the real site — both already fine:**
 ```
-BEFORE click   : transform matrix(1,0,0,1,0,900)   bg rgb(232,245,74)  z 200
-AFTER click    : transform matrix(1,0,0,1,0,0)     bg rgb(232,245,74)  z 200
-3 seconds later: transform matrix(1,0,0,1,0,0)     bg rgb(232,245,74)  z 200   ← still covering
-URL: http://localhost:3000/#projects
-```
-
-The overlay wipes up to cover the viewport and **never retracts**. Screenshot attached: a solid
-`#E8F54A` screen with only the custom cursor visible. Same for Services and Skills.
-
-## Root cause
-
-`TransitionLink.tsx`:
-
-```js
-const handleTransition = (e) => {
-  e.preventDefault();
-  if (pathname === href) return;        // ← href is "/#projects", pathname is "/"
-  ...
-  tl.to(overlay, { y: "0%", ... onComplete: () => router.push(href) });
-};
-```
-
-The guard compares `pathname` (`"/"`) against `href` (`"/#projects"`). Those never match for a
-hash link, so the guard doesn't fire. The overlay animates to cover the screen and calls
-`router.push("/#projects")`.
-
-`RouteTransition.tsx` retracts the overlay in a `useEffect` keyed on `[pathname]`. But a hash-only
-navigation **does not change `pathname`** — it stays `"/"`. The effect never re-runs. The overlay
-stays at `y: 0%` forever.
-
-So: three of your five nav links permanently white-out the site.
-
-## The fix
-
-`TransitionLink` should only intercept **real route changes**. Anything that is a hash link, or
-resolves to the current pathname, must fall through to normal browser behaviour:
-
-```js
-const handleTransition = (e) => {
-  const [targetPath, hash] = href.split('#');
-  const normalizedTarget = targetPath || '/';
-
-  // Same-page hash link → let the browser/Lenis handle the scroll, no overlay
-  if (normalizedTarget === pathname || href.startsWith('#')) {
-    return;                    // do NOT preventDefault
-  }
-
-  e.preventDefault();
-  // ...existing overlay + router.push
-};
+overflow-x @375px : scrollWidth 375 vs innerWidth 375   → no horizontal scroll
+custom cursor on touch: 0 elements                       → no cursor leak
 ```
 
-Two extra safeguards worth adding, because this class of bug is severe:
-
-1. **A failsafe in `RouteTransition`** — on mount and on every pathname change, force the overlay
-   back to `y: 100%`. Also add a timeout so if navigation ever fails, the overlay retracts after
-   ~1.5s rather than trapping the user.
-2. **`pointer-events-none` is already set** — good, that's why the cursor still moved. But the
-   content underneath is invisible, so it's still a total breakage.
-
-## Also verify after fixing
-
-- "Work" / "Services" / "Skills" scroll smoothly to their sections with **no overlay flash**
-- "Playground" (a real route change) still plays the wipe and retracts
-- Back button from `/playground` retracts correctly
-- The mobile menu versions of these three links — same component, same bug
-- `Contact` in the header uses a plain `<a href="#contact">`, so it should already be fine —
-  confirm
+The only idea worth borrowing is `overflow-x: clip` on `html, body` as belt-and-braces against
+future overflow. Optional, one line, harmless.
 
 ---
 
-## On the other screenshot Jhon Rey sent
+## After merging PR #9
 
-The "Proof of Work" section with SukiSuite and Barangay Arena side by side is **rendering
-correctly** — that's the horizontal works rail, and both cards look right. The apparent
-"cut off" on the right is just the rail extending beyond the viewport, which is intended.
-
-One genuine nit visible there: the header pill overlaps the "Proof of Work" heading — the
-heading's top is clipped behind it. Increase `scroll-mt` on that section so anchored scrolling
-clears the fixed header.
-
----
-
-## Process note
-
-This is the second time a defect reached production that a single click would have found. The
-image-size regression and this one share a cause: **verification by reading code and HTML instead
-of operating the UI.**
-
-For this fix specifically: click every nav link in a real browser, on the real deployment, before
-reporting it fixed. Not localhost, not a source diff. Click all five, plus the mobile menu, plus
-the back button.
-
-Fix on a branch, PR it, and I'll verify against production before it merges.
+Jhon Rey should click all five nav links plus the mobile menu **on the live deployment**. I can
+only test locally against the deployed commit — I cannot reach the production domain from here,
+which is exactly why this bug survived to production. Human click-through on the real URL is the
+last line of defence.
