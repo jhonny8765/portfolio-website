@@ -69,7 +69,7 @@ export default function Preloader() {
   return (
     <div 
       ref={container}
-      className="fixed inset-0 z-[var(--z-preloader)] bg-[var(--bg-primary)] flex flex-col justify-center items-center text-[var(--color-volt)] font-mono"
+      className="preloader-root fixed inset-0 z-[var(--z-preloader)] bg-[var(--bg-primary)] flex flex-col justify-center items-center text-[var(--color-volt)] font-mono"
       style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
     >
       {/* Decorative grain for the preloader itself */}

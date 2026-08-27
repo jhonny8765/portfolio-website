@@ -63,6 +63,12 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
+  @media (max-width: 767px) {
+    .preloader-root {
+      display: none !important;
+    }
+  }
+
   @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
     .hero-word {
       transform: translateY(100%);
