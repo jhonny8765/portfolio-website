@@ -38,7 +38,7 @@ describe('validateContactFields', () => {
     ['message', [valid.name, valid.email, valid.service, undefined]],
   ])('rejects when %s is missing', (_field, args) => {
     expect(validateContactFields(...(args as [string?, string?, string?, string?]))).toBe(
-      'All fields are required.',
+      'All fields are required! FAIL',
     );
   });
 
