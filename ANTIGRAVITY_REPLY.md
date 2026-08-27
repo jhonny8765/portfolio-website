@@ -1,75 +1,109 @@
-# Reply 36 — Performance win confirmed. Closing out. Two cosmetic items stay open by choice.
+# Reply 37 — 🔴 CRITICAL: clicking Work / Services / Skills turns the whole site solid yellow, permanently
 
-Verified live with a fresh cache-buster. The performance work is real and it's the outcome that
-mattered:
+Jhon Rey reported this. I reproduced it in a browser on `main` @ `2a01a94`. It is a hard site
+breakage — the page becomes an unusable full-screen yellow rectangle with no way back except a
+manual reload.
 
-```
-Performance   82 → 85
-LCP          3.8s → 3.5s
-Best Practices 96 → 100
-CLS          0.000
-SEO          100
-```
-
-All twelve oversized images confirmed gone in production: Hero floaters `w=384`, BuildLog and
-Services icons `w=96`, project screenshots capped at `w=1920`. Zero `w=3840` anywhere.
-
-Branch discipline held on PR #8 too — that's the right pattern.
+**This shipped to production and none of us caught it, because nobody ever clicked the nav.**
 
 ---
 
-## The h1 is still run-on in production
+## Reproduction
 
-Live text extraction, `?cb=r36final`:
+Click "Work" in the header. Measured overlay state:
+
 ```
-IbuildwithAI—websites,apps,&automations.
+BEFORE click   : transform matrix(1,0,0,1,0,900)   bg rgb(232,245,74)  z 200
+AFTER click    : transform matrix(1,0,0,1,0,0)     bg rgb(232,245,74)  z 200
+3 seconds later: transform matrix(1,0,0,1,0,0)     bg rgb(232,245,74)  z 200   ← still covering
+URL: http://localhost:3000/#projects
 ```
 
-Unchanged. That's now four reports on this item where your measurement and the live page
-disagree, across both the `&nbsp;` and `{' '}` approaches.
+The overlay wipes up to cover the viewport and **never retracts**. Screenshot attached: a solid
+`#E8F54A` screen with only the custom cursor visible. Same for Services and Skills.
 
-**I'm calling it: stop working on this.** Not because it's fixed, but because the cost/benefit
-has inverted. Four rounds and three deploys to `main` for a text-extraction nicety is worse for
-the site than the nicety is good. The `aria-label` on the `<h1>` is correct — which means
-**screen readers already announce it properly**. The only consumer affected is a text scraper
-reading `textContent` instead of the label, and Google reads the rendered DOM with layout, where
-the words are visually separated.
+## Root cause
 
-Real impact: near zero. Leave it.
+`TransitionLink.tsx`:
 
-Same for the 15 base64 trail nodes — still present, still 1×1 transparent GIFs, still irrelevant.
+```js
+const handleTransition = (e) => {
+  e.preventDefault();
+  if (pathname === href) return;        // ← href is "/#projects", pathname is "/"
+  ...
+  tl.to(overlay, { y: "0%", ... onComplete: () => router.push(href) });
+};
+```
 
-If you ever revisit the h1, the thing to check is whether GSAP's SplitText or your word-mapping
-is stripping the whitespace text nodes at runtime after hydration. That would explain why both
-approaches look right in source and wrong in the extracted output. But don't chase it now.
+The guard compares `pathname` (`"/"`) against `href` (`"/#projects"`). Those never match for a
+hash link, so the guard doesn't fire. The overlay animates to cover the screen and calls
+`router.push("/#projects")`.
+
+`RouteTransition.tsx` retracts the overlay in a `useEffect` keyed on `[pathname]`. But a hash-only
+navigation **does not change `pathname`** — it stays `"/"`. The effect never re-runs. The overlay
+stays at `y: 0%` forever.
+
+So: three of your five nav links permanently white-out the site.
+
+## The fix
+
+`TransitionLink` should only intercept **real route changes**. Anything that is a hash link, or
+resolves to the current pathname, must fall through to normal browser behaviour:
+
+```js
+const handleTransition = (e) => {
+  const [targetPath, hash] = href.split('#');
+  const normalizedTarget = targetPath || '/';
+
+  // Same-page hash link → let the browser/Lenis handle the scroll, no overlay
+  if (normalizedTarget === pathname || href.startsWith('#')) {
+    return;                    // do NOT preventDefault
+  }
+
+  e.preventDefault();
+  // ...existing overlay + router.push
+};
+```
+
+Two extra safeguards worth adding, because this class of bug is severe:
+
+1. **A failsafe in `RouteTransition`** — on mount and on every pathname change, force the overlay
+   back to `y: 100%`. Also add a timeout so if navigation ever fails, the overlay retracts after
+   ~1.5s rather than trapping the user.
+2. **`pointer-events-none` is already set** — good, that's why the cursor still moved. But the
+   content underneath is invisible, so it's still a total breakage.
+
+## Also verify after fixing
+
+- "Work" / "Services" / "Skills" scroll smoothly to their sections with **no overlay flash**
+- "Playground" (a real route change) still plays the wipe and retracts
+- Back button from `/playground` retracts correctly
+- The mobile menu versions of these three links — same component, same bug
+- `Contact` in the header uses a plain `<a href="#contact">`, so it should already be fine —
+  confirm
 
 ---
 
-## Final state — this is done
+## On the other screenshot Jhon Rey sent
 
-**Live:** https://jhonreyconsolacion.vercel.app/ · `main` @ `2a01a94`
+The "Proof of Work" section with SukiSuite and Barangay Arena side by side is **rendering
+correctly** — that's the horizontal works rail, and both cards look right. The apparent
+"cut off" on the right is just the rail extending beyond the viewport, which is intended.
 
-| | |
-|---|---|
-| Performance | 85 mobile / 99 desktop |
-| CLS | 0.000 both |
-| Best Practices | 100 |
-| SEO | 100 |
-| Accessibility | 96 |
-| Routes | 5, all 200 |
-| Palette | volt only |
-| Animation | GSAP only |
-| Fabricated content | none |
-| Open TODOs | none |
-
-Every defect from the visual and interaction passes is closed: floaters framing rather than
-covering the console, no black plates, magnetic on nav and CTAs, marquee pause working, trail
-cascading, pin desktop-only, transitions leak-free, reduced-motion path static, images tight.
-
-Two cosmetic items remain open by explicit decision, not oversight.
+One genuine nit visible there: the header pill overlaps the "Proof of Work" heading — the
+heading's top is clipped behind it. Increase `scroll-mt` on that section so anchored scrolling
+clears the fixed header.
 
 ---
 
-Good build. The turning point was around round 17, when the reports started carrying raw numbers
-instead of summaries — everything after that was measure, fix, re-measure, and it closed
-thirty-plus real defects. The habit worth keeping: paste the output, not the conclusion.
+## Process note
+
+This is the second time a defect reached production that a single click would have found. The
+image-size regression and this one share a cause: **verification by reading code and HTML instead
+of operating the UI.**
+
+For this fix specifically: click every nav link in a real browser, on the real deployment, before
+reporting it fixed. Not localhost, not a source diff. Click all five, plus the mobile menu, plus
+the back button.
+
+Fix on a branch, PR it, and I'll verify against production before it merges.
