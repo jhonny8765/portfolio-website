@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useChat } from 'ai/react';
-import { Terminal, X, Send, Bot, User, Loader2, RefreshCw } from 'lucide-react';
+import { X, Send, User, Loader2, RefreshCw } from 'lucide-react';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -23,6 +24,8 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
     api: '/api/chat',
     onError: (err) => console.error("Chat Error:", err)
   });
+  const [isBooting, setIsBooting] = useState(true);
+  const [bootText, setBootText] = useState('');
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -82,8 +85,28 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
       // Restore focus when closed
       previousFocusRef.current.focus();
       previousFocusRef.current = null;
+      // Reset boot state when closing so it plays again when reopened, or we can leave it false
+      setIsBooting(true);
+      setBootText('');
     }
   }, [isOpen, onClose]);
+
+  // Boot sequence effect
+  useEffect(() => {
+    if (isOpen && isBooting) {
+      const text = "connecting to jhonrey...";
+      let i = 0;
+      const interval = setInterval(() => {
+        setBootText(text.slice(0, i + 1));
+        i++;
+        if (i === text.length) {
+          clearInterval(interval);
+          setTimeout(() => setIsBooting(false), 500); // short pause before revealing UI
+        }
+      }, 50);
+      return () => clearInterval(interval);
+    }
+  }, [isOpen, isBooting]);
 
   const handleSuggestedPrompt = (promptText: string) => {
     append({
@@ -97,20 +120,20 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm transition-opacity"
+      className="fixed inset-0 z-[var(--z-modal)] flex justify-end bg-black/60 backdrop-blur-sm transition-opacity"
       role="dialog"
       aria-modal="true"
       aria-labelledby="ask-my-ai-title"
       aria-describedby="ask-my-ai-desc"
       ref={modalRef}
     >
-      <div className="w-full max-w-3xl h-[85vh] sm:h-[80vh] flex flex-col bg-[var(--bg-primary)] border border-white/10 rounded-2xl shadow-[0_0_40px_rgba(139,92,246,0.15)] overflow-hidden relative">
+      <div className="w-full sm:w-[450px] md:w-[500px] h-full flex flex-col bg-[var(--bg-primary)] border-l border-white/10 shadow-[-20px_0_40px_rgba(0,0,0,0.5)] animate-slide-in-right relative">
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[var(--bg-secondary)]">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[var(--color-violet)]/20 border border-[var(--color-violet)]/50 flex items-center justify-center text-[var(--color-violet-light)]">
-              <Bot size={18} />
+          <div className="flex items-center gap-3 font-mono">
+            <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/10 border border-[var(--color-volt)]/50 flex items-center justify-center text-[var(--color-volt)]">
+              <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain" />
             </div>
             <div>
               <h3 id="ask-my-ai-title" className="font-bold text-white tracking-tight">Ask My AI</h3>
@@ -138,11 +161,18 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth" aria-live="polite">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-6">
-              <div className="w-16 h-16 rounded-2xl bg-[var(--color-violet)]/10 border border-[var(--color-violet)]/20 flex items-center justify-center text-[var(--color-violet-light)] mb-2">
-                <Terminal size={32} />
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth relative" aria-live="polite">
+          {isBooting ? (
+            <div className="flex flex-col items-start justify-start h-full text-[var(--color-volt)] font-mono text-sm pt-4">
+              <div className="flex items-center gap-2">
+                <Loader2 size={16} className="animate-spin" />
+                <span>{bootText}<span className="animate-pulse">_</span></span>
+              </div>
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-in fade-in duration-500">
+              <div className="w-16 h-16 flex items-center justify-center mb-2">
+                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={56} height={56} className="object-contain drop-shadow-[0_0_15px_rgba(232,245,74,0.3)]" />
               </div>
               <div className="space-y-2">
                 <h2 className="text-xl font-bold text-white">Hi, I&apos;m Jhon Rey&apos;s AI Assistant.</h2>
@@ -168,14 +198,14 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               {messages.map((message) => (
                 <div key={message.id} className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-[var(--color-violet)]/20 border border-[var(--color-violet)]/30 flex items-center justify-center text-[var(--color-violet-light)] shrink-0 mt-1">
-                      <Bot size={16} aria-hidden="true" />
+                    <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/20 border border-[var(--color-volt)]/30 flex items-center justify-center text-[var(--color-volt)] shrink-0 mt-1">
+                      <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain" />
                     </div>
                   )}
                   
                   <div className={`max-w-[85%] rounded-2xl px-5 py-4 ${
                     message.role === 'user' 
-                      ? 'bg-[var(--color-violet)] text-white' 
+                      ? 'bg-[var(--color-volt)] text-white' 
                       : 'bg-white/5 border border-white/10 text-white/90'
                   }`}>
                     {message.role === 'assistant' ? (
@@ -199,7 +229,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               
               {isLoading && (
                 <div className="flex gap-4 justify-start" aria-live="polite" aria-busy="true">
-                   <div className="w-8 h-8 rounded-full bg-[var(--color-violet)]/20 border border-[var(--color-violet)]/30 flex items-center justify-center text-[var(--color-violet-light)] shrink-0 mt-1">
+                   <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/20 border border-[var(--color-volt)]/30 flex items-center justify-center text-[var(--color-volt)] shrink-0 mt-1">
                     <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-[var(--text-secondary)] text-sm flex items-center gap-2">
@@ -213,7 +243,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
           {error && (
             <div className="flex gap-4 justify-start" role="alert" aria-live="assertive">
                <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0 mt-1">
-                <Terminal size={16} aria-hidden="true" />
+                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain grayscale opacity-50" />
               </div>
               <div className="bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4 text-red-400 text-sm">
                 {error.message || "An error occurred. Please try again later."}
@@ -232,14 +262,14 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               value={input}
               onChange={handleInputChange}
               placeholder="Ask me anything about Jhon Rey's work..."
-              className="w-full bg-black/50 border border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:border-[var(--color-violet)]/50 focus:ring-1 focus:ring-[var(--color-violet)]/50 transition-all"
+              className="w-full bg-black/50 border border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:border-[var(--color-volt)]/50 focus:ring-1 focus:ring-[var(--color-volt)]/50 transition-all"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
               aria-label="Send message"
-              className="absolute right-2 w-10 h-10 flex items-center justify-center bg-[var(--color-violet)] hover:bg-[var(--color-violet-light)] disabled:bg-white/10 disabled:text-white/30 text-white rounded-full transition-colors"
+              className="absolute right-2 w-10 h-10 flex items-center justify-center bg-[var(--color-volt)] hover:bg-[var(--color-volt)] disabled:bg-white/10 disabled:text-white/30 text-white rounded-full transition-colors"
             >
               <Send size={16} className="ml-0.5" aria-hidden="true" />
             </button>

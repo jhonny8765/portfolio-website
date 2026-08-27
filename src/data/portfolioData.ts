@@ -64,7 +64,7 @@ export const portfolioData = {
         "Branch-aware product availability",
         "Phone, Facebook, and Maps integration"
       ],
-      techStack: ["[Pending confirmation]"],
+      techStack: ["Next.js", "React", "Tailwind CSS", "Supabase"],
       liveUrl: "https://betteryield.vercel.app/",
       githubUrl: "",
       imagePlaceholder: "/projects/betteryield.png"

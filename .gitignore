@@ -42,3 +42,7 @@ next-env.d.ts
 
 .vercel
 deploy-env.bat 
+
+workspace-extracted/
+workspace-01a03ee2-4d77-77aa-8eee-f2f886636298.zip
+

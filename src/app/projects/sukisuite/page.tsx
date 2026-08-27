@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Link from 'next/link';
+import { TransitionLink as Link } from '@/components/TransitionLink';
 import Image from 'next/image';
 import { ArrowLeft, ExternalLink, CheckCircle2, Terminal } from 'lucide-react';
 import { portfolioData } from '@/data/portfolioData';
@@ -28,11 +28,11 @@ export default function SukiSuiteCaseStudy() {
   if (!project) return null;
 
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12 px-4 sm:px-6 relative overflow-hidden selection:bg-[var(--color-violet)] selection:text-white">
+    <main className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12 px-4 sm:px-6 relative overflow-hidden selection:bg-[var(--color-volt)] selection:text-white">
       {/* Background Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-[var(--color-violet)]/10 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-[var(--color-volt)]/10 blur-[100px] rounded-full pointer-events-none"></div>
 
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-4xl mx-auto relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
         <Link href="/" className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-white transition-colors mb-12">
           <ArrowLeft size={16} />
           Back to Portfolio
@@ -40,11 +40,11 @@ export default function SukiSuiteCaseStudy() {
 
         {/* Header */}
         <div className="mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-violet)]/30 bg-[var(--color-violet)]/5 text-[var(--color-violet-light)] text-xs font-semibold uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/5 text-[var(--color-volt-light)] text-xs font-semibold uppercase tracking-widest mb-6">
             <Terminal size={14} />
             Live Deployment
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4">
+          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             {project.title}
           </h1>
           <p className="text-xl text-[var(--text-secondary)] font-light">
@@ -102,7 +102,7 @@ export default function SukiSuiteCaseStudy() {
                   "Package options and introductory pricing"
                 ].map((feature, i) => (
                   <li key={i} className="flex items-start gap-3 text-[var(--text-secondary)]">
-                    <CheckCircle2 size={20} className="text-[var(--color-violet-light)] shrink-0 mt-0.5" />
+                    <CheckCircle2 size={20} className="text-[var(--color-volt)] shrink-0 mt-0.5" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -131,13 +131,13 @@ export default function SukiSuiteCaseStudy() {
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl border border-[var(--color-violet)]/20 bg-gradient-to-b from-[var(--color-violet)]/10 to-transparent flex flex-col gap-4">
+            <div className="p-6 rounded-2xl border border-[var(--color-volt)]/20 bg-gradient-to-b from-[var(--color-volt)]/10 to-transparent flex flex-col gap-4">
               <h3 className="text-sm font-semibold text-white uppercase tracking-wider">Links</h3>
               <a 
                 href={project.liveUrl} 
                 target="_blank" 
                 rel="noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--color-violet)] text-white font-semibold hover:bg-[var(--color-violet-light)] transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--color-volt)] text-white font-semibold hover:bg-[var(--color-volt)] transition-colors"
               >
                 Live Product
                 <ExternalLink size={16} />
@@ -160,3 +160,4 @@ export default function SukiSuiteCaseStudy() {
     </main>
   );
 }
+
