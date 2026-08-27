@@ -64,6 +64,29 @@
   }
 }
 
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-animate {
+  animation: marquee-scroll 35s linear infinite;
+}
+
+.marquee-animate.marquee-paused {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-animate {
+    animation: none;
+  }
+}
+
 @media (max-width: 767px) {
   .preloader-root {
     display: none !important;
