@@ -57,4 +57,15 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Sentry wraps the config ONLY when a DSN is provisioned (plan 6.1) — without
+// a DSN the app runs exactly as before and no data is sent anywhere.
+// hideSourceMaps keeps maps out of the client bundle when enabled.
+export default process.env.SENTRY_DSN
+  ? // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('@sentry/nextjs').withSentryConfig(nextConfig, {
+      silent: true,
+      hideSourceMaps: true,
+      disableLogger: true,
+      automaticVercelMonitors: false,
+    })
+  : nextConfig;

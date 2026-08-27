@@ -17,8 +17,7 @@ export async function checkRateLimit({
     throw new Error('IP_HASH_SALT is missing in environment variables.');
   }
 
-  // Hash the IP using HMAC SHA-256
-  const ipHash = crypto.createHmac('sha256', salt).update(ip).digest('hex');
+  const ipHash = hashIp(ip, salt);
 
   // Call the atomic RPC using the admin client to bypass RLS
   const { data, error } = await supabaseAdmin.rpc('check_and_increment_api_usage', {
@@ -43,4 +42,9 @@ export function getSecondsUntilUTCMidnight(): number {
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
   );
   return Math.floor((tomorrow.getTime() - now.getTime()) / 1000);
+}
+
+/** Hash an IP with HMAC-SHA256 (salted) — raw IPs never leave the process. */
+export function hashIp(ip: string, salt: string): string {
+  return crypto.createHmac('sha256', salt).update(ip).digest('hex');
 }

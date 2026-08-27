@@ -3,6 +3,7 @@
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
+import { escapeHtml, validateContactFields } from '@/lib/contact-utils';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -11,20 +12,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
 const MAX_REQUESTS_PER_WINDOW = 3; // Max 3 contact form submissions per minute per IP
-
-const ALLOWED_SERVICES = ['inquiry', 'dev', 'automation', 'resume'];
-
-// Escape user input before interpolating into the notification email HTML.
-// Without this, a submitter can inject arbitrary markup into mail delivered
-// from our own Resend address (phishing-by-self).
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
 
 export async function submitContactForm(formData: FormData) {
   try {
@@ -62,29 +49,26 @@ export async function submitContactForm(formData: FormData) {
     const service = formData.get('service')?.toString().trim();
     const message = formData.get('message')?.toString().trim();
 
-    if (!name || !email || !service || !message) {
-      return { success: false, error: 'All fields are required.' };
+    const validationError = validateContactFields(name, email, service, message);
+    if (validationError) {
+      return { success: false, error: validationError };
     }
 
-    // Length constraints
-    if (name.length > 100) return { success: false, error: 'Name is too long.' };
-    if (email.length > 150 || !email.includes('@'))
-      return { success: false, error: 'Invalid email address.' };
-    if (message.length > 3000) return { success: false, error: 'Message is too long.' };
-
-    // Service allowlist
-    if (!ALLOWED_SERVICES.includes(service)) {
-      return { success: false, error: 'Invalid service selected.' };
-    }
+    // validateContactFields guarantees all four are non-empty strings — the
+    // assertion carries that proof for downstream narrowing.
+    const validName = name as string;
+    const validEmail = email as string;
+    const validService = service as string;
+    const validMessage = message as string;
 
     // 4. Database Insertion using Admin Client
     // We intentionally omit storing the IP address to preserve privacy.
     const { error } = await supabaseAdmin.from('contacts').insert([
       {
-        name,
-        email,
-        service,
-        message,
+        validName,
+        validEmail,
+        validService,
+        validMessage,
         // created_at is handled by Postgres default
       },
     ]);
@@ -109,11 +93,11 @@ export async function submitContactForm(formData: FormData) {
         to: 'jhonreyc2001@gmail.com',
         subject: `New Contact Form Submission: ${service}`,
         html: `
-          <h3>New Message from ${escapeHtml(name)}</h3>
-          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-          <p><strong>Service Requested:</strong> ${escapeHtml(service)}</p>
+          <h3>New Message from ${escapeHtml(validName)}</h3>
+          <p><strong>Email:</strong> ${escapeHtml(validEmail)}</p>
+          <p><strong>Service Requested:</strong> ${escapeHtml(validService)}</p>
           <p><strong>Message:</strong></p>
-          <p>${escapeHtml(message).replace(/\n/g, '<br/>')}</p>
+          <p>${escapeHtml(validMessage).replace(/\n/g, '<br/>')}</p>
         `,
       });
     } catch (emailErr) {
