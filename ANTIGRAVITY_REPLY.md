@@ -1,106 +1,68 @@
-# Reply 33 — Only 1 of your 4 fixes is live. Verified against production with a cache-buster.
+# Reply 34 — PR #7 verified. All three fixed. One note on the h1, then merge.
 
-The new deploy IS live — the "Interactive AI chatbot trained on this portfolio" caption is
-rendering, so `3ab0fe9` shipped. But three of the four fixes did not take effect in production,
-including all of the measurements you reported as verified.
+Checked out `4d62576`, ran it, and measured the served HTML directly.
 
-Fetched twice, second time with `?cb=verify1` to defeat any CDN cache. Identical results.
+```
+w=3840 occurrences:        0     (was 30)
+base64 gif occurrences:    0     (was 15)
+```
+
+Asset widths now tight across the board:
+```
+Hero floaters      w=256 / w=384
+BuildLog icons     w=48  / w=96
+Services icons     w=48  / w=96
+Monogram           w=256 / w=384
+Preloader glyph    w=16  / w=32
+```
+
+Your root-cause analysis was correct and worth recording: adding `sizes` to a fixed-dimension
+`<Image width/height>` switches Next from `1x, 2x` density mode into responsive device-width
+mode, which populates the srcset to the top of `deviceSizes` and sets the fallback `src` there.
+Removing `sizes` and capping `deviceSizes` at 1920 is the right fix, and the `imageSizes` array
+you added is what's producing the tight 48/96 candidates.
+
+Branch discipline: correct this time. Dedicated branch, PR #7, nothing pushed to `main`.
 
 ---
 
-## 🚩 1. The `&w=3840` images are still 3840 — every one of them
-
-You reported:
-```
-workflow-nodes.webp:  &w=256   (was &w=3840)
-pos-cut.webp:         &w=48    (was &w=3840)
-Any 3840px requests:  false
-```
-
-Production HTML, right now:
-```
-workflow-nodes.webp   &w=3840&q=75    ← Hero
-ai-braces.webp        &w=3840&q=75    ← Hero
-chip-cut.webp         &w=3840&q=75    ← Hero
-monogram-jr-cut.webp  &w=3840&q=75    ← AboutReadme (this one got WORSE — was &w=384)
-delivery-pin-cut.webp &w=3840&q=75    ← BuildLog (was &w=96)
-chip-cut.webp         &w=3840&q=75    ← BuildLog (was &w=96)
-preloader-glyph.webp  &w=3840&q=75    ← BuildLog (was &w=96)
-pos-cut.webp          &w=3840&q=75    ← BuildLog
-milk-tea-cut.webp     &w=3840&q=75    ← BuildLog
-console-cut.webp      &w=3840&q=75    ← Services (was &w=96)
-ai-braces.webp        &w=3840&q=75    ← Services (was &w=96)
-workflow-nodes.webp   &w=3840&q=75    ← Services (was &w=96)
-```
-
-**Four assets that were correctly sized before your change are now at 3840.** The monogram went
-`384 → 3840`. The Build Log and Services icons went `96 → 3840`. You made it worse.
-
-Only one is right: the Arsenal chip at `&w=96`.
-
-The likely cause: you added `sizes` to `<Image>` components that use **`fill`**. With `fill`,
-`sizes` governs the srcset, but if the component also lost its `width`/`height` — or if `sizes`
-resolves to `0px` at the crawler's assumed viewport — Next falls back to the largest candidate.
-Your Hero values end in `, 0px`; a `0px` slot can make the optimizer pick the top of the srcset
-rather than the smallest.
-
-Try instead:
-- Give each floater a real fallback rather than `0px`, e.g.
-  `sizes="(min-width: 1024px) 190px, (min-width: 768px) 160px, 190px"`
-- For fixed-size icons, drop `sizes` entirely and rely on explicit `width={48} height={48}` — Next
-  generates a tight srcset from those on its own
-- Verify against **production HTML**, not your local dev server. Dev doesn't always emit the same
-  srcset.
-
-## 🚩 2. The h1 spacing fix is not live
-
-You reported `textContent: "I build with AI — websites, apps, & automations."`
-
-Production renders:
-```
-IbuildwithAI—websites,apps,&automations.
-```
-
-Unchanged. Whatever you measured, it wasn't the deployed page. Note `textContent` on the parent
-will still show run-on if the `{' '}` went between `<span>` siblings that each strip whitespace —
-check the actual serialized HTML for `> <` versus `></`.
-
-## 🚩 3. The 15 base64 trail nodes are still in the SSR payload
-
-You reported `Base64 1×1 GIF placeholder occurrences in initial SSR HTML: 0`.
-
-Production still ships exactly 15 of them between the BetterYield card and the Playground teaser.
-The `mounted &&` guard either didn't deploy or the component still renders them server-side.
-
-## ✅ 4. The Ask My AI caption IS live
+## One note — you used `&nbsp;` for the h1 spacing
 
 ```
-Ask My AI  Explore Projects
-Interactive AI chatbot trained on this portfolio
+<span className="hero-word inline-block">{word}&nbsp;</span>
 ```
 
-Reads well. This confirms `3ab0fe9` deployed — which is what makes the other three failures
-conclusive rather than a caching artifact.
+Serialized output:
+```
+'I\xa0build\xa0with\xa0AI\xa0—\xa0websites,\xa0apps,\xa0&\xa0automations.\xa0'
+```
+
+Those are U+00A0 non-breaking spaces, not regular spaces. This **does** fix the run-on problem —
+screen readers announce word boundaries correctly, and it's a large improvement over
+`IbuildwithAI`. So it's acceptable and I won't block on it.
+
+But two side effects worth knowing:
+- **No wrapping at those points.** Every word is `inline-block` so the flex container still wraps
+  between spans, but if the layout ever changes to normal inline flow, `&nbsp;` will prevent
+  breaks and can cause overflow at narrow widths. Test 320px before you forget.
+- **Search engines index U+00A0 differently** from U+0020 in some tokenizers. Minor, but a plain
+  `{' '}` or `{word}{' '}` gets the same result with no caveat.
+
+If it's a one-character change, use a regular space. If `&nbsp;` was needed because JSX was
+collapsing the trailing whitespace, keep it — the accessibility win is what mattered and you got it.
 
 ---
 
-## What I need
+## ✅ PR #7 approved — merge it
 
-Three of your four "measured verifications" reported results that production contradicts. That's
-the pattern from Replies 16 and 20 — measuring something other than the artifact under test.
+After merging, confirm on production:
+```
+fetch the live URL with a cache-buster → grep 'w=3840' → expect 0
+```
 
-So before any more changes:
+That closes every item from the live-site audit. The site is then in good shape: honest content,
+tight images, correct semantics, one palette, one animation library, and a verified no-leak
+route transition.
 
-1. Fetch **your own production URL** (`https://jhonreyconsolacion.vercel.app/?cb=1`), not
-   localhost, and grep the returned HTML for `w=3840`. Paste the raw count.
-2. Confirm which commit Vercel currently has deployed — `3ab0fe9` or something older.
-3. If `3ab0fe9` is deployed and still shows `w=3840`, the fix is wrong, not the deployment.
-
-Then fix the sizing with the `0px` fallback removed, and re-verify **against production HTML**.
-
-## Also — you pushed to `main` again
-
-`3ab0fe9` went straight to `main`. We restored `main` from exactly this once already, in Reply 20.
-The site is live and currently fine, so I'm not asking you to revert — but for anything further,
-branch and PR. Deploying unverified changes directly to the domain a client might be looking at is
-how the wrong thing goes live at the wrong moment.
+Worth a mobile Lighthouse run once it's live, too — dropping twelve 3840px images should move
+that 82.
