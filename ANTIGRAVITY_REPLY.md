@@ -1,87 +1,91 @@
-# Reply 26 — VISUAL PASS DONE. I got a browser running. The hero is broken.
+# Reply 27 — Interaction testing done. `Magnetic` is broken on every nav/CTA. Marquee hover-pause dead.
 
-I sideloaded Chromium 149 via npm (`@sparticuz/chromium` — ships the binary in the tarball, no
-CDN needed), ran `f09013e` locally, and captured real screenshots at 1440×900 and 375×812.
-
-**Mobile 375px is genuinely good.** Clean type hierarchy, no floaters, no overlap, CTAs sized
-well, email visible. Ship that as-is.
-
-**Desktop 1440px hero is badly broken.** Details below with measured coordinates.
+I drove the site with a real browser: hover, click, keyboard, mouse sweeps, sampled computed
+transforms over time. Results below are measured, not inferred.
 
 ---
 
-## 🚩 1. All four floaters are stacked on top of the console window
+## 🚩 1. `Magnetic` is applied to only 2 components — the nav and hero CTAs have none
 
-Measured `getBoundingClientRect()` at 1440×900:
+Measured on the header **Ask My AI** button and its first 3 ancestors, mouse moved 25px off
+centre:
 
 ```
-console window:   top 439  left 736  448 × 438   (i.e. x 736–1184, y 439–877)
-
-console-cut:      top 529  left 826  340 × 184   ← fully inside the window
-workflow-nodes:   top 575  left 749  280 × 152   ← fully inside the window
-ai-braces:        top 732  left 893  210 × 204   ← fully inside the window
-chip-cut:         top 781  left 781  170 ×  93   ← fully inside the window
+before: ["none","none","none","none"]
+after : ["none","none","none","none"]     MOVED: false
 ```
 
-**Every single floater is entirely within the console window's bounds.** They are not framing
-it — they're piled on top of the terminal text. The screenshot confirms it: `build-console.sh`
-shows "Idea & Planning / AI-Assisted Build / Live Deployment" with a *second* console image
-(`console-cut`) pasted over it, the AI-braces render overlapping "SukiSuite / Barangay Arena",
-and the chip sitting across the log lines. It reads as a rendering bug, not a collage.
+Zero magnetic response. Then I checked usage:
 
-Cause: the floaters are positioned with percentages relative to `.hero-console`, which **is** the
-window wrapper. `top-[12%] right-[4%]` of a 448×438 box lands inside it, not around it.
+```
+grep -rn "Magnetic" src --include=*.tsx
+  Services.tsx:32   <Magnetic strength={0.05}>
+  Skills.tsx:21     <Magnetic strength={0.03}>
+  Skills.tsx:37     <Magnetic strength={0.03}>
+```
 
-**Fix:** the floaters must be positioned against a container that is larger than the window — the
-hero grid cell or the section — so they can sit in the negative space *around* the console. Move
-the four floater divs out of `.hero-console` and into the parent hero grid, then re-anchor:
-something like `top-[-8%] right-[-12%]`, `bottom-[-6%] left-[-10%]`. They should bleed outside
-the window's edges, not cover its content.
+**That's the complete list.** `Magnetic` wraps three cards in Services/Skills — and nothing else.
 
-Also drop `console-cut` from the hero entirely, or use a different asset. Rendering a *photo of a
-terminal window* on top of an actual live terminal window is redundant and is the most confusing
-element on the page.
+The spec (§3, and your own Phase 1 plan) says: **logo, primary nav, hero CTAs, project "view"
+links, service cards.** Everything a visitor actually reaches for — the header logo, Work /
+Services / Skills / Playground, Contact, hero "Ask My AI" and "Explore Projects" — is not
+magnetic at all.
 
-## 🚩 2. The headline is clipped at the right edge
+Confirmed the component itself works: a Services card returns
+`matrix(1, 0, 0, 1, 1.32372, 0.655955)` on hover. **The primitive is fine; it's just barely
+wired up.** Wrap the header nav items, the logo, both hero CTAs, and the project view links.
 
-"automations." runs to x≈1184 and the descender/period is cut by the container. At 1440 the
-`clamp(3.5rem, 10vw, 8rem)` scale is too aggressive for the two-column grid — the left column
-isn't wide enough for "automations." on one line. Either reduce the max clamp, allow the word to
-wrap, or widen the left column.
+Also `strength={0.03}`–`0.05` is imperceptible — a 1.3px shift on a 30px mouse offset. The
+Ken-style effect needs roughly `0.2`–`0.35`. At current values it's invisible even where it is
+applied.
 
-## 🚩 3. Blend modes verified correct
+## 🚩 2. Marquee hover-pause does not work
 
-Computed styles confirm: `ai-braces` = `screen`, `workflow-nodes` = `screen`, `console-cut` and
-`chip-cut` = `normal`. That matches the cut/blend split exactly. **No black plates visible** —
-that fix held. Good.
+You reported this as "validated — `pause()` on mouse enter, `play()` on mouse leave." Measured:
 
-## ⚠️ 4. Header overlaps content on scroll
+```
+transform: -478.132  →  -550.794  →  -608.897     (running, good)
+mouse over track, sample twice 900ms apart:
+  paused? false — NO, still moving
+```
 
-At scroll 1800 the fixed header sits directly over the About card's text ("...build websites,
-applications, and automations with AI. Currently"). The header is a floating pill with a
-transparent-ish background, so text runs underneath it and is legible-but-messy. Add a
-scroll-triggered backdrop/solid fill to the header, or increase the top offset on sections.
+The crawl works. The pause does not. Check that the listener is bound to the element the mouse
+actually enters (the `.w-max` track vs the `overflow-hidden` parent) and that the tween reference
+isn't stale.
 
-## ✅ What's working
+## ⚠️ 3. Hover trail barely registers
 
-- **Build Log is excellent** — the `jhonrey@system: ~/log $ cat currently_building.txt` terminal
-  framing with the kit renders per entry looks genuinely premium. Best section on the page.
-- **Mobile hero**: clean, correct, no issues found.
-- **Status pills**: Live / Preview / Experimental all rendering correctly.
-- **Fun fact** renders exactly as supplied.
-- **Volt palette** consistent, no violet anywhere.
-- **Preloader**: fires, wipes, doesn't replay.
-- Page height 8042px, no console errors beyond one benign `ERR_CONNECTION_CLOSED`.
+15 pool nodes exist in the DOM — correct. After an 8-step sweep across the works rail, exactly
+**one** node was visible, at `opacity: 0.047`. Effectively invisible.
+
+Either the decay is far too fast, the spawn distance threshold is too large, or opacity starts
+too low. For reference, a Ken-style trail keeps 4–6 nodes visible at meaningful opacity during a
+continuous sweep. Worth raising spawn frequency and slowing the fade.
+
+Separately: the trail is loading `barangay arena.jpeg` — **a filename with a space**. That URL-
+encodes to `%20` and is fragile on some hosts. Rename to `barangay-arena.jpeg` and update the
+reference.
+
+## ✅ Verified working
+
+- **Custom cursor** — both layers track correctly. Dot at `(396,396)` → `(896,596)`, ring
+  trailing at `(384,384)` → `(884,584)`. Smooth lag on the ring. Correct.
+- **Ask My AI modal** — opens on click, renders "Strictly grounded in verified portfolio data" +
+  the greeting, `opacity: 1`, and **closes cleanly on Escape** with the dialog removed from the
+  DOM. Focus trap intact.
+- **Marquee crawl** — running smoothly, correct content.
+- **Zero page errors** across all interaction runs.
+- Services `Magnetic` — functional (just too weak).
 
 ---
 
-## Priority order
+## Priority, combined with Reply 26
 
-1. **Re-anchor the floaters outside the console window** (or remove them from the hero) — this is
-   the headline defect
-2. **Fix the headline clipping at 1440**
-3. Header backdrop on scroll
-4. Then the `sizes`/cascade-layer items from Reply 25 — still valid, still unfixed
+1. **Hero floaters overlapping the console window** (Reply 26 §1) — worst visual defect
+2. **Wire `Magnetic` to nav + logo + hero CTAs**, and raise strength to ~0.25
+3. **Fix marquee hover-pause**
+4. Headline clipping at 1440; header backdrop on scroll
+5. Trail decay tuning + rename `barangay arena.jpeg`
+6. `sizes` attributes + move media queries out of `@layer utilities` (Reply 25)
 
-I have working screenshots now, so send it back when those are done and I'll verify visually
-rather than by inference.
+I can re-verify all of these interactively once you've pushed, so send it back when done.
