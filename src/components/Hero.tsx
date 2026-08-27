@@ -18,12 +18,15 @@ export default function Hero({ onOpenAi }: HeroProps) {
     const mm = gsap.matchMedia();
 
     mm.add("(prefers-reduced-motion: no-preference) and (min-width: 768px)", () => {
-      // Desktop: full cinematic entrance with opacity
-      gsap.fromTo(
-        ".hero-text-item",
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.1 }
-      );
+      // Desktop: full cinematic entrance with opacity and word stagger
+      gsap.to(".hero-text-item", {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power3.out",
+        delay: 0.1
+      });
 
       gsap.to(".hero-word", {
         y: "0%",
@@ -63,12 +66,16 @@ export default function Hero({ onOpenAi }: HeroProps) {
     });
 
     mm.add("(prefers-reduced-motion: no-preference) and (max-width: 767px)", () => {
-      // Mobile: text is visible from initial HTML paint.
-      // Animate transform only — slide in from y:20 without touching opacity.
-      gsap.from(
-        ".hero-text-item",
-        { y: 20, duration: 0.6, stagger: 0.1, ease: "power3.out", delay: 0.05 }
-      );
+      // Mobile: hero text is 100% visible on initial HTML paint (no JS delay for LCP).
+      // Continuous floating animation for images only:
+      gsap.to(".hero-floater", {
+        y: "-=10",
+        duration: 2,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut",
+        stagger: 0.3
+      });
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
