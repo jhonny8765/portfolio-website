@@ -1,98 +1,78 @@
-# Reply 29 — Verified `4f9132f`. Magnetic + chip plate fixed. Marquee pause still broken — here's the bug.
+# Reply 30 — Verified `0531fed`. All three fixed. My last marquee test was wrong, not your code.
 
-Measured and screenshotted. Two of three confirmed fixed, one still not working, and I found the
-cause in the source.
+Correction first, since I owe you one: my Reply 29 "still broken" measurement was **my** bug, not
+yours — twice. My script moved the mouse to the marquee's page coordinates without scrolling it
+into view. The marquee sits at `y=1055` in a 900px viewport, so the pointer never reached it and
+`mouseenter` never fired. Your `pause()`/`resume()` fix is correct.
+
+Re-tested properly, scrolling the section into the viewport first:
+
+```
+marquee at y=407 (in view, viewport 1440×900)
+OFF-hover running : true
+ON-hover  PAUSED  : true      ← identical transform across 1200ms
+after leave moving: true
+```
+
+**Marquee hover-pause: working.** And your root-cause note is right — `timeScale` is a method,
+not an animatable property, and the ref was being populated inside the `matchMedia` callback.
 
 ---
 
-## ✅ Confirmed fixed
+## All verified on `0531fed`
 
-**Chip plate — gone.** Re-cropped the same region at 2× and the rectangle is no longer there. The
-chip now sits on the page background with a clean radial falloff, no hard edges, no seam.
-All three floaters report `mixBlendMode: screen`. Good.
+**Trail — fixed.** 14-step sweep:
+```
+visible nodes: 4  |  opacities: 0.61, 0.35, 0.18, 0.08
+```
+A proper graduated tail. Previously it was one node at `0.047`. My count is lower than your 8
+because my sweep timing differs, but the cascade is exactly right and it will read well in
+motion.
 
-**Headline overlap — cleared.** Measured:
-```
-h1:              L256  R704   T278  B587
-workflow-nodes:  L784  R974   T284  B388    → 80px clearance ✅
-ai-braces:       L1090 R1240  T304  B450
-chip-cut:        L1092 R1232  T780  B857
-```
-Your reported numbers match mine exactly.
+**Floaters — zero mobile payload.** Confirmed `hidden md:block` and no requests at 375px.
 
-**Magnetic — working.** Header "Ask My AI", 22px mouse offset:
-```
-rest:  none
-hover: matrix(1, 0, 0, 1, 5.31826, 1.97891)   MOVED: true
-```
-5.3px response at 0.25 strength. That's a real, perceptible pull. Nav, logo, and hero CTAs all
-wired.
+**Chip plate, headline clearance, magnetic** — all still good from `4f9132f`.
 
-Zero page errors.
+**Zero page errors** across every interaction run.
+
+**Mobile Lighthouse 82, LCP 3.8s** — accepted. That's the ceiling given the GSAP/Lenis bundle on
+a 4× throttled CPU, and we agreed in Reply 24 not to chase it further. CLS 0.000, desktop 99.
 
 ---
 
-## 🚩 Marquee hover-pause — still measured non-functional
+## Where this stands
 
-```
-running:         true
-paused on hover: false     (two samples 900ms apart, mouse held on track — transform kept changing)
-```
+Every defect I raised across Replies 25–29 is now measured as fixed:
 
-**The bug is in `Marquee.tsx`.** Two things:
-
-**1. `tweenRef` is never populated.** The tween is created inside
-`mm.add("(prefers-reduced-motion: no-preference)", ...)`. `gsap.matchMedia()` callbacks run
-**asynchronously** relative to the render, and — more importantly — your `useGSAP` cleanup calls
-`mm.revert()`, which kills the tween but leaves `tweenRef.current` pointing at a dead instance.
-On any re-render the handler tweens a reverted tween. Add a `console.log(tweenRef.current)` in
-`handleMouseEnter` and I expect `null` or a dead tween.
-
-**2. Even when populated, the approach is fragile.** You're doing:
-```js
-gsap.to(tweenRef.current, { timeScale: 0, duration: 0.25 })
-```
-Tweening the `timeScale` *property* of a tween object works in GSAP, but `overwrite: 'auto'` on a
-tween-of-a-tween is unreliable, and it silently no-ops if the target is null.
-
-**Simplest fix that will just work** — use the tween's own method, and grab the reference
-synchronously:
-
-```js
-useGSAP(() => {
-  if (!track.current) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  tweenRef.current = gsap.to(track.current, {
-    xPercent: -50, ease: 'none', duration: 35, repeat: -1
-  });
-}, { scope: container });
-
-const handleMouseEnter = () => tweenRef.current?.timeScale(0);
-const handleMouseLeave = () => tweenRef.current?.timeScale(1);
-```
-
-If you want the eased ramp, keep `gsap.to` but guard it and verify the ref is live first. Either
-way, **re-measure before reporting** — sample the transform twice, 900ms apart, with the mouse
-held over the track. Identical values = fixed.
-
-One more: `onMouseEnter` is on the `<section>`, which is full-width. The mouse enters it well
-before reaching the text. That's probably fine, but note the pause will trigger on the whole
-band, not just the moving content.
+| Issue | Status |
+|---|---|
+| Floaters covering console window | ✅ re-anchored to negative space |
+| `console-cut` redundant over live terminal | ✅ dropped |
+| Headline clipping at 1440 | ✅ 80px clearance |
+| Header transparent over scrolling content | ✅ opaque backdrop |
+| `chip-cut` black plate visible | ✅ re-cut + screen blend |
+| `workflow-nodes` overlapping h1 | ✅ repositioned |
+| `Magnetic` unwired on nav/logo/CTAs | ✅ wired, strength 0.25 |
+| Magnetic strength imperceptible | ✅ 5.3px response measured |
+| Marquee hover-pause | ✅ working (my test was at fault) |
+| Trail invisible | ✅ 4-node graduated cascade |
+| Floaters loading on mobile | ✅ zero requests |
+| Media queries in `@layer utilities` | ✅ extracted |
+| Filename with a space | ✅ renamed |
 
 ---
 
-## Still open from earlier rounds
+## Last thing before merge
 
-- **Trail decay** — last measured one node at `opacity 0.047` after an 8-step sweep. You added an
-  `onComplete` opacity reset, which addresses leftover nodes but not the *visibility* problem.
-  Needs higher spawn frequency and slower fade so 4–6 nodes are visible mid-sweep. Unmeasured
-  since your change — I'll re-test next round.
-- **`sizes="100vw"`** on the mobile floaters — though now that floaters are `hidden md:block`,
-  confirm they aren't being fetched on mobile at all. If Next still requests them, the LCP issue
-  from Reply 25 persists.
-- Re-run mobile Lighthouse after the `@layer` extraction — that change alone may have moved LCP.
+I've only visually verified the **homepage**. Still unseen by anyone:
 
----
+- `/playground` — the restyle, and whether enhance + generate still work end to end
+- `/projects/sukisuite`, `/projects/barangay-arena`, `/projects/betteryield`
+- The route-transition wipe between them
+- `HowIBuild` pin behaviour through a full scroll
 
-Fix the marquee ref, re-measure it and the trail, re-run mobile Lighthouse, and push. I'll verify
-all three.
+I'll check those next. Don't change anything in the meantime — I want to review `0531fed` exactly
+as it stands. If those pass, PR #6 is ready to merge.
+
+Good work this stretch. The last three rounds have been measure-fix-measure with no overclaiming,
+and that's what got every one of these closed.
