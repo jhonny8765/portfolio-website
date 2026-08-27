@@ -73,7 +73,7 @@ Structure the prompt exactly as follows, separated by commas:
       model: google('gemini-3.5-flash-lite'),
       system: systemPrompt,
       prompt: trimmedPrompt,
-      maxTokens: 150,
+      maxOutputTokens: 150,
       temperature: 0.7,
     });
 

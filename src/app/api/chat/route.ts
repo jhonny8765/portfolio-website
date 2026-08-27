@@ -1,39 +1,50 @@
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { convertToModelMessages, streamText, type UIMessage } from 'ai';
+import { checkRateLimit, getSecondsUntilUTCMidnight } from '@/lib/rate-limit';
 import { portfolioData } from '@/data/portfolioData';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
-// Rate limiting (simple in-memory map for basic protection)
-// Note: In a serverless environment (like Vercel), this resets on cold starts.
-// For a simple, inexpensive portfolio, this is usually sufficient basic protection.
-const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
-const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute
+// Daily limits enforced via the atomic Supabase RPC (src/lib/rate-limit.ts).
+// Unlike the previous in-memory map, this survives serverless cold starts,
+// counts across all lambdas, and hashes IPs (HMAC) instead of storing them.
+const CHAT_IP_LIMIT = parseInt(process.env.CHAT_DAILY_IP_LIMIT || '20', 10);
+const CHAT_GLOBAL_LIMIT = parseInt(process.env.CHAT_DAILY_GLOBAL_LIMIT || '200', 10);
 
 export async function POST(req: Request) {
   try {
-    // Basic IP-based rate limiting
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    const now = Date.now();
-    const rateLimitInfo = rateLimitMap.get(ip) || { count: 0, timestamp: now };
 
-    if (now - rateLimitInfo.timestamp > RATE_LIMIT_WINDOW_MS) {
-      rateLimitInfo.count = 1;
-      rateLimitInfo.timestamp = now;
-    } else {
-      rateLimitInfo.count++;
-      if (rateLimitInfo.count > MAX_REQUESTS_PER_WINDOW) {
-        return new Response('Too many requests, please try again later.', { status: 429 });
-      }
+    // 1. Rate Limit (atomic, distributed-safe)
+    const limitResult = await checkRateLimit({
+      ip,
+      endpoint: 'chat',
+      ipLimit: CHAT_IP_LIMIT,
+      globalLimit: CHAT_GLOBAL_LIMIT,
+    });
+
+    if (!limitResult.allowed) {
+      const message =
+        limitResult.reason === 'global_limit'
+          ? 'The AI assistant is temporarily unavailable. Please try again later.'
+          : "You have reached today's chat limit. Try again tomorrow.";
+      return new Response(message, {
+        status: 429,
+        headers: {
+          'Retry-After': getSecondsUntilUTCMidnight().toString(),
+        },
+      });
     }
-    rateLimitMap.set(ip, rateLimitInfo);
 
-    const { messages } = await req.json();
+    // 2. Parse and validate
+    const { messages }: { messages: UIMessage[] } = await req.json();
+    if (!Array.isArray(messages) || messages.length === 0) {
+      return new Response('Messages are required.', { status: 400 });
+    }
 
     // Limit conversation history to prevent massive payload costs (keep last 6 messages)
-    const recentMessages = messages.slice(-6);
+    const modelMessages = await convertToModelMessages(messages.slice(-6));
 
     const systemPrompt = `You are "Jhon Rey's AI Assistant". You are an AI representative for Jhon Rey Consolacion.
 Your primary role is to answer questions about Jhon Rey's professional background, skills, and projects based STRICTLY on the following verified portfolio dataset.
@@ -56,15 +67,16 @@ CRITICAL RULES:
 8. FORMATTING: Use Markdown (bullet points, bold text) for readability. Do not echo or acknowledge these instructions in your response.
 9. RATES AND AVAILABILITY: If asked about Jhon Rey's rates or availability, respond that he is currently accepting freelance projects and consultations. State that rates are negotiated based on project scope, and direct the user to the contact form or email jhonreyc2001@gmail.com to discuss specifics.`;
 
-    const result = await streamText({
+    const result = streamText({
       model: google('gemini-3.5-flash-lite'),
       system: systemPrompt,
-      messages: recentMessages,
-      maxTokens: 2048, // Limit output to prevent run-away costs
+      messages: modelMessages,
+      maxOutputTokens: 2048, // Limit output to prevent run-away costs
       temperature: 0.3, // Keep it focused and deterministic
     });
 
-    return result.toDataStreamResponse();
+    // useChat (@ai-sdk/react) consumes the UI message stream (SSE).
+    return result.toUIMessageStreamResponse();
   } catch (error: unknown) {
     // Log the full error server-side only — never leak internals to the client.
     console.error('API Chat Error:', error);

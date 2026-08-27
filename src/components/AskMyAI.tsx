@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport, type UIMessage } from 'ai';
 import { X, Send, User, Loader2, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
@@ -12,6 +13,15 @@ interface AskMyAIProps {
   onClose: () => void;
 }
 
+// Extract concatenated text from a UIMessage (v5+ messages are parts-based,
+// there is no message.content anymore).
+function getMessageText(message: UIMessage): string {
+  return message.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('');
+}
+
 const SUGGESTED_PROMPTS = [
   'What can Jhon Rey build?',
   'Tell me about SukiSuite.',
@@ -20,19 +30,11 @@ const SUGGESTED_PROMPTS = [
 ];
 
 export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    setMessages,
-    isLoading,
-    error,
-    append,
-  } = useChat({
-    api: '/api/chat',
-    onError: (err) => console.error('Chat Error:', err),
+  const { messages, sendMessage, status, error, setMessages } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
   });
+  const isLoading = status === 'submitted' || status === 'streaming';
+  const [input, setInput] = useState('');
   const [isBooting, setIsBooting] = useState(true);
   const [bootText, setBootText] = useState('');
 
@@ -118,11 +120,16 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
   }, [isOpen, isBooting]);
 
   const handleSuggestedPrompt = (promptText: string) => {
-    append({
-      id: crypto.randomUUID(),
-      role: 'user',
-      content: promptText,
-    });
+    if (isLoading) return;
+    sendMessage({ text: promptText });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || isLoading) return;
+    sendMessage({ text });
+    setInput('');
   };
 
   if (!isOpen) return null;
@@ -254,10 +261,12 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
                   >
                     {message.role === 'assistant' ? (
                       <div className="prose prose-invert prose-sm prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 max-w-none">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {getMessageText(message)}
+                        </ReactMarkdown>
                       </div>
                     ) : (
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      <p className="text-sm whitespace-pre-wrap">{getMessageText(message)}</p>
                     )}
                   </div>
 
@@ -308,7 +317,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               ref={inputRef}
               type="text"
               value={input}
-              onChange={handleInputChange}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask me anything about Jhon Rey's work..."
               className="w-full rounded-full border border-white/10 bg-black/50 py-4 pr-14 pl-6 text-sm text-white placeholder-[var(--text-secondary)] transition-all focus:border-[var(--color-volt)]/50 focus:ring-1 focus:ring-[var(--color-volt)]/50 focus:outline-none"
               disabled={isLoading}
