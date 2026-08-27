@@ -8,7 +8,7 @@ import { Magnetic } from './Magnetic';
 
 export default function Skills() {
   return (
-    <AnimatedSection id="skills" className="w-full flex flex-col gap-10 scroll-mt-24">
+    <AnimatedSection id="skills" className="w-full flex flex-col gap-10 scroll-mt-32">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-4">
           <Image src="/site-assets/floating/chip-cut.webp" alt="Chip logic" width={48} height={48} className="object-contain drop-shadow-lg" />

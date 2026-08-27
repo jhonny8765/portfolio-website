@@ -34,7 +34,7 @@ export default function Contact() {
   };
 
   return (
-    <AnimatedSection id="contact" className="w-full flex justify-center pb-24 scroll-mt-24">
+    <AnimatedSection id="contact" className="w-full flex justify-center pb-24 scroll-mt-32">
       <div className="w-full max-w-2xl glass-panel rounded-3xl p-8 sm:p-12 shadow-[0_0_40px_rgba(232,245,74,0.05)] relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-volt)]/10 rounded-full blur-[80px] pointer-events-none"></div>

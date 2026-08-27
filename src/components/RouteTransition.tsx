@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 
 export default function RouteTransition() {
   const pathname = usePathname();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const overlay = document.getElementById('page-transition-overlay');
@@ -30,9 +31,19 @@ export default function RouteTransition() {
         }, 50);
       });
 
-      return () => mm.revert();
+      // Failsafe: force retraction after 1.2s in case of any interrupted state
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => {
+        gsap.set(overlay, { y: "100%" });
+      }, 1200);
+
+      return () => {
+        mm.revert();
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      };
     }
   }, [pathname]);
 
   return null;
 }
+
