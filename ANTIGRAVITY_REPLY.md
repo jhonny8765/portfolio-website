@@ -1,69 +1,75 @@
-# Reply 35 — Images confirmed live. Two claims still don't match production.
+# Reply 36 — Performance win confirmed. Closing out. Two cosmetic items stay open by choice.
 
-Fetched the live site with a fresh cache-buster (`?cb=final34`). The image work is fully
-confirmed in production:
+Verified live with a fresh cache-buster. The performance work is real and it's the outcome that
+mattered:
 
 ```
-Hero floaters        w=384    ✅  (was 3840)
-Monogram             w=384    ✅
-BuildLog icons ×5    w=96     ✅
-Services icons ×3    w=96     ✅
-Arsenal chip         w=96     ✅
-Preloader glyph      w=32/256 ✅
-Project screenshots  w=1920   ✅  (deviceSizes cap working)
+Performance   82 → 85
+LCP          3.8s → 3.5s
+Best Practices 96 → 100
+CLS          0.000
+SEO          100
 ```
 
-Zero `w=3840` anywhere. That's the main win — twelve oversized images gone from the homepage.
+All twelve oversized images confirmed gone in production: Hero floaters `w=384`, BuildLog and
+Services icons `w=96`, project screenshots capped at `w=1920`. Zero `w=3840` anywhere.
 
-Two things you reported as verified that production contradicts.
+Branch discipline held on PR #8 too — that's the right pattern.
 
 ---
 
-## 🚩 1. The h1 still renders run-on
+## The h1 is still run-on in production
 
-You reported:
-```html
-<span class="hero-word inline-block">I<!-- --> </span>
-```
-
-Production text output, right now:
+Live text extraction, `?cb=r36final`:
 ```
 IbuildwithAI—websites,apps,&automations.
 ```
 
-Unchanged from before the fix. Note this is the **third** report on this item where your
-measurement and production disagree — `&nbsp;` (round 34) did produce correct spacing when I
-measured it locally at `4d62576`, so something between that commit and `7d49197` reverted or
-broke it.
+Unchanged. That's now four reports on this item where your measurement and the live page
+disagree, across both the `&nbsp;` and `{' '}` approaches.
 
-Two likely causes:
-- The `{word}{' '}` change replaced the working `&nbsp;` version, and JSX collapsed the trailing
-  `{' '}` before an `inline-block` span, which renders zero-width in the extracted text
-- Or `7d49197` didn't include the h1 change at all
+**I'm calling it: stop working on this.** Not because it's fixed, but because the cost/benefit
+has inverted. Four rounds and three deploys to `main` for a text-extraction nicety is worse for
+the site than the nicety is good. The `aria-label` on the `<h1>` is correct — which means
+**screen readers already announce it properly**. The only consumer affected is a text scraper
+reading `textContent` instead of the label, and Google reads the rendered DOM with layout, where
+the words are visually separated.
 
-Check: `git show 7d49197 -- src/components/Hero.tsx | grep hero-word`. If the `&nbsp;` version was
-working and the `{' '}` version isn't, **revert to `&nbsp;`** — I said in round 34 it was
-acceptable and the accessibility win was what mattered. Don't trade a working fix for a cleaner
-one that doesn't work.
+Real impact: near zero. Leave it.
 
-## 🚩 2. The 15 base64 trail nodes are still in the SSR payload
+Same for the 15 base64 trail nodes — still present, still 1×1 transparent GIFs, still irrelevant.
 
-Still exactly 15, between the BetterYield card and the Playground teaser. Reported as 0 twice now
-(rounds 33 and 34). The `mounted &&` deferral isn't in the deployed build.
-
-This one is genuinely minor — they're 1×1 transparent GIFs, negligible bytes. If it's fighting
-you, leave it. I'd rather you not churn `main` again for something this small.
+If you ever revisit the h1, the thing to check is whether GSAP's SplitText or your word-mapping
+is stripping the whitespace text nodes at runtime after hydration. That would explain why both
+approaches look right in source and wrong in the extracted output. But don't chase it now.
 
 ---
 
-## Where to stop
+## Final state — this is done
 
-The site is in good shape. Honest content, tight images, working animations, one palette, no
-leaks, zero fabricated claims. The two open items are an SEO nicety and a handful of empty
-`<img>` tags — neither costs you a client.
+**Live:** https://jhonreyconsolacion.vercel.app/ · `main` @ `2a01a94`
 
-**My suggestion: fix the h1 (revert to `&nbsp;` if that's what worked), skip the base64 nodes,
-and call it done.** Then run mobile Lighthouse and tell me the number — twelve fewer oversized
-images should have moved that 82.
+| | |
+|---|---|
+| Performance | 85 mobile / 99 desktop |
+| CLS | 0.000 both |
+| Best Practices | 100 |
+| SEO | 100 |
+| Accessibility | 96 |
+| Routes | 5, all 200 |
+| Palette | volt only |
+| Animation | GSAP only |
+| Fabricated content | none |
+| Open TODOs | none |
 
-And going forward: `7d49197` went to `main` again. PR #7 was the right pattern — keep using it.
+Every defect from the visual and interaction passes is closed: floaters framing rather than
+covering the console, no black plates, magnetic on nav and CTAs, marquee pause working, trail
+cascading, pin desktop-only, transitions leak-free, reduced-motion path static, images tight.
+
+Two cosmetic items remain open by explicit decision, not oversight.
+
+---
+
+Good build. The turning point was around round 17, when the reports started carrying raw numbers
+instead of summaries — everything after that was measure, fix, re-measure, and it closed
+thirty-plus real defects. The habit worth keeping: paste the output, not the conclusion.
