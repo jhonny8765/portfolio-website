@@ -1,86 +1,91 @@
-# Reply 17 — Report accepted. Four fixes, then done.
+# Reply 18 — Two fixes have side effects you didn't flag. Then we're done.
 
-This is the first report I trust end to end: scores that differ between mobile and desktop, a
-non-zero CLS, an honest "tree is not clean," and a correction of your own earlier claim. That's
-what measurement looks like. Thank you.
-
-Note for the record: last round you listed `Projects.tsx:124` as
-`{/* TODO(jhonrey): Add section description */}`. It's whitespace. That confirms the earlier
-close-out was written from expectation rather than from the file — which is exactly why I kept
-asking for raw output. No action needed now; just don't go back to summaries.
+Desktop CLS `0.125 → 0.000` and TBT `210 → 73 ms` are real wins, and the trigger count is down to
+6. Good. But two of the four fixes traded one problem for a worse one, and the mobile LCP
+explanation doesn't hold up.
 
 ---
 
-## Fix these four, in order
+## 🚩 1. The mobile preloader skip is not working, and your explanation is wrong
 
-**1. Desktop CLS 0.125 — the only failing Core Web Vital**
+You wrote:
 
-You diagnosed it: hero layout shift during the preloader fade. Mobile is 0.000, desktop is 0.125,
-which means it's the wide-viewport hero layout moving as the preloader releases. Likely causes,
-in order of probability:
-- Split-text spans reflowing when the headline font swaps in → set `font-display: optional` or
-  preload the display font in `layout.tsx`
-- Floaters getting `<Image>` intrinsic dimensions after the wipe → explicit `width`/`height` or
-  an aspect-ratio box on each floater wrapper
-- The preloader unmounting and the hero laying out fresh → reserve the hero's height before the
-  wipe so nothing reflows
+> Lighthouse mobile emulates a 400px-wide viewport which isn't `< 768px` by `innerWidth`
 
-Target under 0.1. This is the highest-value fix on the list.
+400 **is** less than 768. Lighthouse's mobile preset emulates a Moto G Power at **412×823 CSS
+px** — squarely under your threshold. If the skip had fired, it would have fired for that audit.
+It didn't, which means the gate is broken. Mobile LCP only moved 4.2 → 4.0 s, consistent with the
+preloader still running.
 
-**2. Mobile LCP 4.2 s**
+The likely cause is SSR. `window.innerWidth` doesn't exist on the server, so depending on how you
+wrote it you get one of:
+- the component returning `null` on the server and mounting the preloader **after** hydration —
+  which makes LCP worse, not better
+- a hydration mismatch
+- the check running before layout and reading 0 or a stale value
 
-Mobile Performance 76 is entirely this. The LCP element is almost certainly the hero headline
-blocked behind the preloader — the browser can't paint the hero until the wipe completes, so
-your ~1.2–2.0 s preloader is directly added to LCP.
+Fix it with CSS or `matchMedia`, not `innerWidth`:
+```
+const isMobile = window.matchMedia('(max-width: 767px)').matches
+```
+evaluated in `useLayoutEffect`, or simplest and most robust — hide the preloader with a CSS media
+query so it never paints on small screens regardless of JS timing.
 
-Options, cheapest first:
-- Shorten the preloader on mobile specifically (0.8 s, or skip it under 768px — it's a desktop
-  cinema flourish and mobile users pay for it in seconds)
-- Render the hero text underneath the preloader rather than after it, so LCP fires during the wipe
-- Confirm the display font is preloaded, not fetched after CSS parse
+Then re-run mobile Lighthouse and confirm LCP actually drops. If it lands near 2.5 s, mobile
+Performance should clear 90.
 
-Tell me which LCP element Lighthouse actually named — that removes the guesswork.
+## 🚩 2. `display: optional` means most first-time visitors never see your display font
 
-**3. `AnimatedSection` registering 2 ScrollTriggers each**
+You flagged this as a trade-off "you've already accepted" — I didn't accept it, and I want to be
+explicit about what it costs.
 
-Your own breakdown: 4 components × 2 triggers = 8 of the 10, because both the `no-preference`
-and `reduce` matchMedia branches register. That's not how `gsap.matchMedia()` should behave —
-only the matching branch should activate. Either the `reduce` branch is creating a ScrollTrigger
-it doesn't need, or both branches run and one is dead weight.
+With `optional`, the font is used **only if it's already cached**. Every first-time visitor —
+which is nearly every prospective client arriving from a link — gets the system fallback for the
+hero headline. The spec's typography rule was "a display serif or sharp grotesque for the hero,
+**not Inter for headlines**." `display: optional` means most visitors see exactly the generic
+system font we were avoiding, on the largest text on the page.
 
-Worth fixing: it halves the trigger count and removes 4 dead scroll listeners. Check whether the
-`reduce` branch needs a ScrollTrigger at all — if reduced motion means "just show it," use a
-plain `gsap.set()` with no trigger.
+You fixed CLS by removing the font. Better options, in order:
 
-**4. Clean the tree**
+1. **`preload` the font file** in `layout.tsx` (`next/font` does this when the font is used in the
+   initially-rendered tree) and keep `display: swap`. If it loads before first paint there's no
+   swap and no shift.
+2. **`size-adjust` / fallback metric matching** — `next/font` supports `adjustFontFallback`, which
+   matches the fallback's metrics to the real font so the swap causes little or no reflow. This is
+   the purpose-built solution for exactly this problem.
+3. **Reserve the headline's height** with an explicit `min-height` or aspect box so a swap can't
+   shift anything below it.
 
-`scratch_probe.js`, `parse-lh.js`, `localhost_*.report.html` — delete them. Also confirm
-`scratch_tests/` is gone (it carries `node_modules` and a downloaded Chrome), along with any
-`.py` files, `workspace-extracted/`, and the `.zip`. Then paste `git status --short`.
-
-Don't commit until that's clean. Everything else in the tree — new components, `site-assets/` —
-is expected and should go in.
-
----
-
-## Not fixing
-
-- **Accessibility 96 / Best Practices 96** — fine. Tell me what the two flags are so I know
-  whether they're the custom cursor and the `<img>` trail pool (both intentional), but don't
-  chase 100.
-- **TBT 210 ms mobile** — acceptable for a GSAP site. Leave it.
-- **`/playground` has no GSAP** — noted, and consistent. It got the chrome restyle without scroll
-  animation, which is the right call for a tool page.
+Try 1 + 2 together. If CLS stays under 0.1 with `swap`, keep the font. Only fall back to
+`optional` if that genuinely fails — and tell me, because then it's a design decision about
+whether to change the typeface rather than hide it.
 
 ---
 
-## Then you're done
+## Minor
 
-After those four: `npm run lint && npm run build`, re-run Lighthouse to confirm CLS and mobile
-LCP moved, paste `git status --short`, and stop.
+**Your Fix 3 arithmetic was confused in-flight** ("Wait — let me recount"), but the final answer
+of 6 checks out: 4 AnimatedSection + 3 AnimatedBackground − 1... actually that's 8. You reported
+`AnimatedSection × 4 = 4`, `AnimatedBackground = 3`, `HowIBuild = 1`, which sums to **8**, not 6.
+The measured count is 6. Which two components did I lose track of, or is `AnimatedBackground`
+registering 1 rather than 3 now? Just confirm the breakdown matches the measurement — I don't
+need it changed, only reconciled.
 
-I'll take the five never-verified components from here — playground, the How I Build pin, the
-cursor trail, the preloader, and the three case-study pages. That's a visual pass, not a code
-pass, and it needs my eyes rather than another probe.
+**The two 96s** — the empty `src=""` on the trail pool is worth a second look. An `<img>` with an
+empty `src` is a real spec violation (some browsers re-request the current page URL). Set
+`src` to a 1×1 transparent data URI, or don't render pool nodes until first hover. Small, cheap,
+removes a legitimate flag. The cursor `<div>` is fine as-is.
 
-Good work on the last stretch.
+---
+
+## Then stop
+
+1. Fix the mobile preloader gate with `matchMedia`/CSS, re-run mobile Lighthouse, report LCP
+2. Retry the font with `swap` + preload + `adjustFontFallback`; keep `optional` only if CLS fails
+3. Reconcile the trigger breakdown
+4. Empty `src=""` → data URI
+5. `npm run lint && npm run build`, `git status --short`
+
+That's the last round. After that I'm opening the site and doing the visual pass on the five
+unverified components — playground, the How I Build pin, the cursor trail, the preloader, and the
+three case-study pages.
