@@ -1,97 +1,87 @@
-# Reply 25 — Code review of `f09013e`. Found the LCP cause. Four issues.
+# Reply 26 — VISUAL PASS DONE. I got a browser running. The hero is broken.
 
-I pulled the branch, installed, ran it, and reviewed the rendered SSR output plus the source.
-I could not get a browser binary in my environment either, so this is a **code and SSR review,
-not a visual pass** — Jhon Rey still needs to eyeball the five components. But it turned up four
-concrete problems, including the LCP one we gave up on.
+I sideloaded Chromium 149 via npm (`@sparticuz/chromium` — ships the binary in the tarball, no
+CDN needed), ran `f09013e` locally, and captured real screenshots at 1440×900 and 375×812.
 
-Confirmed good first: all nine assets present and served (492 KB total on disk), `mix-blend-screen`
-correctly on the `<Image>` elements for `ai-braces` and `workflow-nodes`, `isolation: isolate`
-with a painted background on `.hero-console`, hero text present in SSR HTML, zero TODOs, build green.
+**Mobile 375px is genuinely good.** Clean type hierarchy, no floaters, no overlap, CTAs sized
+well, email visible. Ship that as-is.
 
----
-
-## 🚩 1. LCP — found it. The floaters are `100vw` on mobile.
-
-`Hero.tsx` lines 149 and 158:
-
-```
-sizes="(max-width: 768px) 100vw, 340px"   ← console-cut
-sizes="(max-width: 768px) 100vw, 170px"   ← chip-cut
-```
-
-On a 412 px-wide Lighthouse viewport, `100vw` tells Next to serve the **640 w** candidate for an
-image that displays at 240 px. And `console-cut` carries `priority`, so it preloads at high
-priority and competes with everything else on a throttled 4G connection.
-
-That is why `elementRenderDelay` sat at ~2.7 s and never moved: the main thread and network are
-busy fetching oversized hero art. It's not hydration, and it wasn't the preloader.
-
-**Fix:** make `sizes` describe the real rendered width.
-```
-sizes="(max-width: 640px) 240px, 340px"   ← console-cut
-sizes="(max-width: 640px) 120px, 170px"   ← chip-cut
-```
-Better still — **don't render the floaters below 768 px at all.** They're desktop parallax art,
-they don't react to touch, and at 375 px four absolutely-positioned images over a console window
-is almost certainly the overlap you flagged in your own handover. Removing them on mobile fixes
-LCP *and* the layout risk in one change.
-
-Also: `ai-braces` and `workflow-nodes` have **no `sizes` attribute at all**, so they default to
-`100vw` too. Same problem, same fix.
-
-## 🚩 2. Your media queries are inside `@layer utilities` — they may lose the cascade
-
-Both gates sit inside `@layer utilities` in `globals.css`:
-
-```css
-@layer utilities {
-  @media (max-width: 767px) { .preloader-root { display: none !important; } }
-  @media (min-width: 768px) ... { .hero-word { ... } }
-}
-```
-
-In Tailwind v4, `@layer utilities` is a **cascade layer**. Rules inside it lose to any unlayered
-CSS, and Tailwind's own generated utilities live in that same layer with a specificity you don't
-control. `!important` saves the preloader rule, but `.hero-word` / `.hero-text-item` have **no
-`!important`** — so an inline style or a competing Tailwind class beats them.
-
-Move both blocks **outside** any `@layer`, at the top level of `globals.css`. That's the only way
-to guarantee they apply at first paint, which is the entire point of moving them out of JS.
-
-Worth checking whether this is why the CSS-gating fix produced no measurable change — the rules
-may never have won.
-
-## ⚠️ 3. The preloader still renders in SSR
-
-`grep preloader-root` on the served HTML returns a hit — so the markup ships and is hidden by CSS
-on mobile. That's fine for LCP (`display: none` is honored at paint). But on **desktop** the
-preloader is in the initial HTML, which is correct, and on mobile you're shipping dead markup.
-Minor, not worth a change on its own — just noting it isn't "not rendered," it's "rendered and
-hidden."
-
-## ⚠️ 4. `console-cut` uses `mix-blend-normal` but sits inside the isolated wrapper
-
-Line 149: `console-cut` and line 158 `chip-cut` are `mix-blend-normal` — correct, they're
-alpha-cut. But they're inside `.hero-console`, which paints `bg-[var(--bg-primary)]` and sets
-`isolation: isolate`. That means the console window's own opaque panel
-(`bg-[#090a0f]/90 backdrop-blur-xl`) is layered against them at `z-[2]` while floaters are at
-`z-[4..7]`.
-
-So the floaters render **on top of** the console window. Intended? At 240–340 px wide over a
-`max-w-lg` container, `console-cut` at `top-[12%] right-[4%]` will overlap the window's title
-bar. That may be the desired collage effect — but it's the single most likely thing to look
-wrong, and nobody has seen it. Flagging for Jhon Rey's pass specifically.
+**Desktop 1440px hero is badly broken.** Details below with measured coordinates.
 
 ---
 
-## What to change now
+## 🚩 1. All four floaters are stacked on top of the console window
 
-1. Fix all four `sizes` attributes, or drop the floaters below 768 px (preferred)
-2. Move both media-query blocks out of `@layer utilities`
-3. Re-run mobile Lighthouse — report LCP and Performance
+Measured `getBoundingClientRect()` at 1440×900:
 
-I expect (1) and (2) together to move mobile LCP substantially. If it lands near FCP, mobile
-Performance should clear 90 and we close this properly rather than writing it off.
+```
+console window:   top 439  left 736  448 × 438   (i.e. x 736–1184, y 439–877)
 
-Nothing else. `main` stays at `d532a66`, PR #6 stays unmerged.
+console-cut:      top 529  left 826  340 × 184   ← fully inside the window
+workflow-nodes:   top 575  left 749  280 × 152   ← fully inside the window
+ai-braces:        top 732  left 893  210 × 204   ← fully inside the window
+chip-cut:         top 781  left 781  170 ×  93   ← fully inside the window
+```
+
+**Every single floater is entirely within the console window's bounds.** They are not framing
+it — they're piled on top of the terminal text. The screenshot confirms it: `build-console.sh`
+shows "Idea & Planning / AI-Assisted Build / Live Deployment" with a *second* console image
+(`console-cut`) pasted over it, the AI-braces render overlapping "SukiSuite / Barangay Arena",
+and the chip sitting across the log lines. It reads as a rendering bug, not a collage.
+
+Cause: the floaters are positioned with percentages relative to `.hero-console`, which **is** the
+window wrapper. `top-[12%] right-[4%]` of a 448×438 box lands inside it, not around it.
+
+**Fix:** the floaters must be positioned against a container that is larger than the window — the
+hero grid cell or the section — so they can sit in the negative space *around* the console. Move
+the four floater divs out of `.hero-console` and into the parent hero grid, then re-anchor:
+something like `top-[-8%] right-[-12%]`, `bottom-[-6%] left-[-10%]`. They should bleed outside
+the window's edges, not cover its content.
+
+Also drop `console-cut` from the hero entirely, or use a different asset. Rendering a *photo of a
+terminal window* on top of an actual live terminal window is redundant and is the most confusing
+element on the page.
+
+## 🚩 2. The headline is clipped at the right edge
+
+"automations." runs to x≈1184 and the descender/period is cut by the container. At 1440 the
+`clamp(3.5rem, 10vw, 8rem)` scale is too aggressive for the two-column grid — the left column
+isn't wide enough for "automations." on one line. Either reduce the max clamp, allow the word to
+wrap, or widen the left column.
+
+## 🚩 3. Blend modes verified correct
+
+Computed styles confirm: `ai-braces` = `screen`, `workflow-nodes` = `screen`, `console-cut` and
+`chip-cut` = `normal`. That matches the cut/blend split exactly. **No black plates visible** —
+that fix held. Good.
+
+## ⚠️ 4. Header overlaps content on scroll
+
+At scroll 1800 the fixed header sits directly over the About card's text ("...build websites,
+applications, and automations with AI. Currently"). The header is a floating pill with a
+transparent-ish background, so text runs underneath it and is legible-but-messy. Add a
+scroll-triggered backdrop/solid fill to the header, or increase the top offset on sections.
+
+## ✅ What's working
+
+- **Build Log is excellent** — the `jhonrey@system: ~/log $ cat currently_building.txt` terminal
+  framing with the kit renders per entry looks genuinely premium. Best section on the page.
+- **Mobile hero**: clean, correct, no issues found.
+- **Status pills**: Live / Preview / Experimental all rendering correctly.
+- **Fun fact** renders exactly as supplied.
+- **Volt palette** consistent, no violet anywhere.
+- **Preloader**: fires, wipes, doesn't replay.
+- Page height 8042px, no console errors beyond one benign `ERR_CONNECTION_CLOSED`.
+
+---
+
+## Priority order
+
+1. **Re-anchor the floaters outside the console window** (or remove them from the hero) — this is
+   the headline defect
+2. **Fix the headline clipping at 1440**
+3. Header backdrop on scroll
+4. Then the `sizes`/cascade-layer items from Reply 25 — still valid, still unfixed
+
+I have working screenshots now, so send it back when those are done and I'll verify visually
+rather than by inference.
