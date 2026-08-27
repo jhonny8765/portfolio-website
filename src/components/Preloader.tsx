@@ -47,17 +47,19 @@ export default function Preloader() {
         },
       });
 
-      // Simple boot sequence animation
+      // Simple boot sequence animation — hard-capped at ~950ms total.
+      // The old ~3s version directly inflated the desktop LCP measurement,
+      // since the overlay obscured the page while it played.
       tl.to('.boot-text', {
         opacity: 1,
-        duration: 0.1,
-        stagger: 0.2,
+        duration: 0.08,
+        stagger: 0.06,
         ease: 'none',
       })
-        .to({}, { duration: 0.4 }) // pause
+        .to({}, { duration: 0.05 }) // beat before the wipe
         .to(container.current, {
           clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)', // wipes up
-          duration: 1,
+          duration: 0.4,
           ease: 'power3.inOut',
         });
     }, container);

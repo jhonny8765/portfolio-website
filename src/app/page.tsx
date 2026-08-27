@@ -8,7 +8,6 @@ import AiStateManager from '@/components/AiStateManager';
 import PlaygroundTeaser from '@/components/PlaygroundTeaser';
 import HowIBuild from '@/components/HowIBuild';
 import BuildLog from '@/components/BuildLog';
-import AnimatedBackground from '@/components/AnimatedBackground';
 import Marquee from '@/components/Marquee';
 import AboutReadme from '@/components/AboutReadme';
 
@@ -18,8 +17,6 @@ export default function Home() {
       id="main-content"
       className="relative flex min-h-screen w-full flex-col items-center overflow-x-hidden selection:bg-[var(--color-volt)] selection:text-white"
     >
-      <AnimatedBackground />
-
       <AiStateManager>
         <div className="relative w-full">
           {/* Decorative Progress Line */}

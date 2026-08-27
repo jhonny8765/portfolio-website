@@ -5,8 +5,16 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
 import { X, Send, User, Loader2, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
-import ReactMarkdown from 'react-markdown';
+import dynamic from 'next/dynamic';
 import remarkGfm from 'remark-gfm';
+
+// The markdown engine (unified/remark/rehype chain) is the heaviest import in
+// this panel and is only needed once the user opens the chat. Load it lazily
+// so it stays out of the initial page bundle.
+const ReactMarkdown = dynamic(() => import('react-markdown'), {
+  ssr: false,
+  loading: () => null,
+});
 
 interface AskMyAIProps {
   isOpen: boolean;

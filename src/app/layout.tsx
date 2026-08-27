@@ -56,8 +56,7 @@ export const metadata: Metadata = {
 };
 
 import { LenisProvider } from '@/components/LenisProvider';
-import { CustomCursor } from '@/components/CustomCursor';
-import Preloader from '@/components/Preloader';
+import { EffectsLayer } from '@/components/EffectsLayer';
 import RouteTransition from '@/components/RouteTransition';
 
 export default function RootLayout({
@@ -85,9 +84,8 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <Preloader />
+        <EffectsLayer />
         <LenisProvider>
-          <CustomCursor />
           {/* Global Page Transition Overlay */}
           <div
             id="page-transition-overlay"

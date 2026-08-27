@@ -19,29 +19,22 @@ export function CustomCursor() {
     gsap.set(cursor, { xPercent: -50, yPercent: -50 });
     gsap.set(follower, { xPercent: -50, yPercent: -50 });
 
-    let mouseX = 0;
-    let mouseY = 0;
+    // quickTo-created tweeners are allocated ONCE and reused per move —
+    // the previous gsap.to() allocated 2 tween objects per pointer event
+    // (~120/sec), which was GC churn on the main thread during interaction.
+    const cursorXTo = gsap.quickTo(cursor, 'x', { duration: 0.1, ease: 'power2.out' });
+    const cursorYTo = gsap.quickTo(cursor, 'y', { duration: 0.1, ease: 'power2.out' });
+    const followerXTo = gsap.quickTo(follower, 'x', { duration: 0.5, ease: 'power2.out' });
+    const followerYTo = gsap.quickTo(follower, 'y', { duration: 0.5, ease: 'power2.out' });
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      gsap.to(cursor, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.1,
-        ease: 'power2.out',
-      });
-
-      gsap.to(follower, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.5,
-        ease: 'power2.out',
-      });
+    const onPointerMove = (e: PointerEvent) => {
+      cursorXTo(e.clientX);
+      cursorYTo(e.clientY);
+      followerXTo(e.clientX);
+      followerYTo(e.clientY);
     };
 
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
 
     // Handle interactive elements (hover states)
     const handleMouseOver = (e: MouseEvent) => {
@@ -64,11 +57,11 @@ export function CustomCursor() {
       gsap.to(follower, { scale: 1, opacity: 1, duration: 0.2 });
     };
 
-    document.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('mouseover', handleMouseOver, { passive: true });
+    document.addEventListener('mouseout', handleMouseOut, { passive: true });
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
     };
