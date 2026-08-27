@@ -76,7 +76,7 @@ export default function Projects() {
 
       const dist = Math.hypot(e.clientX - lastPosRef.current.x, e.clientY - lastPosRef.current.y);
       // Only spawn a new image if moved enough distance
-      if (dist < 40) return;
+      if (dist < 22) return;
 
       lastPosRef.current = { x: e.clientX, y: e.clientY };
 
@@ -92,15 +92,15 @@ export default function Projects() {
         x: e.clientX - 100, // offset by half width
         y: e.clientY - 60, // offset by half height
         scale: 1,
-        opacity: 0.8,
-        zIndex: gsap.getProperty(imgNode, "zIndex") as number + 1,
+        opacity: 0.95,
+        zIndex: (gsap.getProperty(imgNode, "zIndex") as number || 30) + 1,
       });
 
       gsap.to(imgNode, {
-        y: e.clientY - 40,
-        scale: 0.8,
+        y: e.clientY - 35,
+        scale: 0.85,
         opacity: 0,
-        duration: 0.8,
+        duration: 1.3,
         ease: "power2.out",
         onComplete: () => {
           gsap.set(imgNode, { opacity: 0 });

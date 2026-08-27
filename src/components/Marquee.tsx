@@ -18,36 +18,34 @@ export default function Marquee() {
   const tweenRef = useRef<gsap.core.Tween | null>(null);
 
   useGSAP(() => {
-    const mm = gsap.matchMedia();
+    if (!track.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      if (!track.current) return;
-      
-      tweenRef.current = gsap.to(track.current, {
-        xPercent: -50,
-        ease: "none",
-        duration: 35,
-        repeat: -1,
-      });
+    const tween = gsap.to(track.current, {
+      xPercent: -50,
+      ease: "none",
+      duration: 35,
+      repeat: -1,
     });
+    tweenRef.current = tween;
 
-    return () => mm.revert();
+    return () => {
+      tween.kill();
+      tweenRef.current = null;
+    };
   }, { scope: container });
 
   const handleMouseEnter = () => {
-    if (tweenRef.current) {
-      gsap.to(tweenRef.current, { timeScale: 0, duration: 0.25, overwrite: 'auto' });
-    }
+    tweenRef.current?.pause();
   };
 
   const handleMouseLeave = () => {
-    if (tweenRef.current) {
-      gsap.to(tweenRef.current, { timeScale: 1, duration: 0.25, overwrite: 'auto' });
-    }
+    tweenRef.current?.resume();
   };
 
   return (
     <section 
+      id="live-marquee"
       ref={container} 
       className="w-full relative overflow-hidden py-6 border-y border-white/5 bg-white/[0.01] cursor-default"
       onMouseEnter={handleMouseEnter}
@@ -55,7 +53,7 @@ export default function Marquee() {
     >
       <div 
         ref={track} 
-        className="flex whitespace-nowrap items-center w-max"
+        className="marquee-track flex whitespace-nowrap items-center w-max"
       >
         <div className="flex gap-8 items-center px-4">
           {marqueeItems.map((item, i) => (
