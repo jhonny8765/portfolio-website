@@ -9,19 +9,28 @@ interface TransitionLinkProps extends LinkProps {
   children: React.ReactNode;
   className?: string;
   href: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
-export const TransitionLink = ({ children, className, href, ...props }: TransitionLinkProps) => {
+export const TransitionLink = ({ children, className, href, onClick, ...props }: TransitionLinkProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
   const handleTransition = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
+    if (onClick) {
+      onClick(e);
+    }
 
-    // If navigating to the same path, just return
-    if (pathname === href) {
+    // Parse target path and hash
+    const [targetPath] = href.split('#');
+    const normalizedTarget = targetPath || '/';
+
+    // Same-page anchor or hash link: let browser/Lenis handle smooth scrolling without overlay
+    if (href.startsWith('#') || normalizedTarget === pathname) {
       return;
     }
+
+    e.preventDefault();
 
     const overlay = document.getElementById('page-transition-overlay');
     
@@ -31,7 +40,7 @@ export const TransitionLink = ({ children, className, href, ...props }: Transiti
       // Wipe up to cover
       tl.to(overlay, {
         y: "0%",
-        duration: 0.5,
+        duration: 0.4,
         ease: "power3.inOut",
         onComplete: () => {
           // Navigate once covered
@@ -54,3 +63,4 @@ export const TransitionLink = ({ children, className, href, ...props }: Transiti
     </Link>
   );
 };
+

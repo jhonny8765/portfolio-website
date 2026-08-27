@@ -15,7 +15,7 @@ const serviceImages = [
 
 export default function Services() {
   return (
-    <AnimatedSection id="services" className="w-full flex flex-col gap-10 scroll-mt-24">
+    <AnimatedSection id="services" className="w-full flex flex-col gap-10 scroll-mt-32">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
           <Cpu className="text-[var(--color-volt)]" />

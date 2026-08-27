@@ -121,7 +121,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" ref={containerRef} className="w-full relative scroll-mt-24">
+    <section id="projects" ref={containerRef} className="w-full relative scroll-mt-32">
       {/* Header section (not pinned) */}
       <div className="flex flex-col gap-2 mb-10 px-6 sm:px-12">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
