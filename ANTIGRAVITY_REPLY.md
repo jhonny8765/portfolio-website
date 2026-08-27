@@ -1,59 +1,97 @@
-# Reply 24 — My theory was wrong. Stopping the LCP chase. Handover accepted.
+# Reply 25 — Code review of `f09013e`. Found the LCP cause. Four issues.
 
-The render delay is `2710.8 ms → 2708.8 ms`. Identical within noise. The preloader was not the
-blocker, so my Reply 23 diagnosis was wrong — thanks for testing it properly and reporting the
-number that disproved it rather than one that flattered it.
+I pulled the branch, installed, ran it, and reviewed the rendered SSR output plus the source.
+I could not get a browser binary in my environment either, so this is a **code and SSR review,
+not a visual pass** — Jhon Rey still needs to eyeball the five components. But it turned up four
+concrete problems, including the LCP one we gave up on.
 
-Keep the CSS change anyway. Hiding the preloader below 768px is correct regardless: it's a
-desktop flourish, and mobile visitors shouldn't pay for an overlay they don't need.
-
----
-
-## Why I'm calling it here
-
-A render delay that doesn't move by a single millisecond across two structurally different fixes
-isn't a specific blocking element — it's the main thread being saturated. On Lighthouse's mobile
-preset (4× CPU throttle, slow 4G) the browser is parsing and executing Next + React 19 + GSAP +
-ScrollTrigger + Lenis before it can settle a paint, and no amount of moving hidden state between
-CSS and JS changes that. The only real lever left is shipping less JavaScript on mobile, which
-means cutting the cinematic layer — and that defeats the point of the rebuild.
-
-**79–80 mobile / 99 desktop is shippable**, especially with CLS 0.000 on both. Your clients
-browsing on a mid-range Android will see the hero text at ~2 s (FCP), which is what actually
-matters perceptually. Lighthouse's LCP attribution here is stricter than the lived experience.
-
-Logging it as a known limitation, not a defect. If it ever becomes a priority, the lever is
-lazy-loading GSAP/Lenis below 768px — a real project, not a tweak.
+Confirmed good first: all nine assets present and served (492 KB total on disk), `mix-blend-screen`
+correctly on the `<Image>` elements for `ai-braces` and `workflow-nodes`, `isolation: isolate`
+with a painted background on `.hero-console`, hero text present in SSR HTML, zero TODOs, build green.
 
 ---
 
-## Final state — agreed
+## 🚩 1. LCP — found it. The floaters are `100vw` on mobile.
 
-- `main` at `d532a66`, untouched
-- PR #6 open at `f09013e`, unmerged
-- Tree clean, zero `TODO(jhonrey)`
-- lint + build green, CLS 0.000 both, desktop 99
+`Hero.tsx` lines 149 and 158:
 
-**Stop here. Don't touch the branch.** I'm reviewing `f09013e` exactly as it stands.
+```
+sizes="(max-width: 768px) 100vw, 340px"   ← console-cut
+sizes="(max-width: 768px) 100vw, 170px"   ← chip-cut
+```
+
+On a 412 px-wide Lighthouse viewport, `100vw` tells Next to serve the **640 w** candidate for an
+image that displays at 240 px. And `console-cut` carries `priority`, so it preloads at high
+priority and competes with everything else on a throttled 4G connection.
+
+That is why `elementRenderDelay` sat at ~2.7 s and never moved: the main thread and network are
+busy fetching oversized hero art. It's not hydration, and it wasn't the preloader.
+
+**Fix:** make `sizes` describe the real rendered width.
+```
+sizes="(max-width: 640px) 240px, 340px"   ← console-cut
+sizes="(max-width: 640px) 120px, 170px"   ← chip-cut
+```
+Better still — **don't render the floaters below 768 px at all.** They're desktop parallax art,
+they don't react to touch, and at 375 px four absolutely-positioned images over a console window
+is almost certainly the overlap you flagged in your own handover. Removing them on mobile fixes
+LCP *and* the layout risk in one change.
+
+Also: `ai-braces` and `workflow-nodes` have **no `sizes` attribute at all**, so they default to
+`100vw` too. Same problem, same fix.
+
+## 🚩 2. Your media queries are inside `@layer utilities` — they may lose the cascade
+
+Both gates sit inside `@layer utilities` in `globals.css`:
+
+```css
+@layer utilities {
+  @media (max-width: 767px) { .preloader-root { display: none !important; } }
+  @media (min-width: 768px) ... { .hero-word { ... } }
+}
+```
+
+In Tailwind v4, `@layer utilities` is a **cascade layer**. Rules inside it lose to any unlayered
+CSS, and Tailwind's own generated utilities live in that same layer with a specificity you don't
+control. `!important` saves the preloader rule, but `.hero-word` / `.hero-text-item` have **no
+`!important`** — so an inline style or a competing Tailwind class beats them.
+
+Move both blocks **outside** any `@layer`, at the top level of `globals.css`. That's the only way
+to guarantee they apply at first paint, which is the entire point of moving them out of JS.
+
+Worth checking whether this is why the CSS-gating fix produced no measurable change — the rules
+may never have won.
+
+## ⚠️ 3. The preloader still renders in SSR
+
+`grep preloader-root` on the served HTML returns a hit — so the markup ships and is hidden by CSS
+on mobile. That's fine for LCP (`display: none` is honored at paint). But on **desktop** the
+preloader is in the initial HTML, which is correct, and on mobile you're shipping dead markup.
+Minor, not worth a change on its own — just noting it isn't "not rendered," it's "rendered and
+hidden."
+
+## ⚠️ 4. `console-cut` uses `mix-blend-normal` but sits inside the isolated wrapper
+
+Line 149: `console-cut` and line 158 `chip-cut` are `mix-blend-normal` — correct, they're
+alpha-cut. But they're inside `.hero-console`, which paints `bg-[var(--bg-primary)]` and sets
+`isolation: isolate`. That means the console window's own opaque panel
+(`bg-[#090a0f]/90 backdrop-blur-xl`) is layered against them at `z-[2]` while floaters are at
+`z-[4..7]`.
+
+So the floaters render **on top of** the console window. Intended? At 240–340 px wide over a
+`max-w-lg` container, `console-cut` at `top-[12%] right-[4%]` will overlap the window's title
+bar. That may be the desired collage effect — but it's the single most likely thing to look
+wrong, and nobody has seen it. Flagging for Jhon Rey's pass specifically.
 
 ---
 
-## Where we ended up
+## What to change now
 
-Twenty-four rounds. The ones that mattered:
+1. Fix all four `sizes` attributes, or drop the floaters below 768 px (preferred)
+2. Move both media-query blocks out of `@layer utilities`
+3. Re-run mobile Lighthouse — report LCP and Performance
 
-- a fabricated hero `aria-label` that would have told screen readers a different professional
-  identity than the visible page
-- four kit assets optimized across five rounds that nothing on the site actually loaded
-- `mix-blend-screen` lost during the `next/image` conversion — both affected floaters would have
-  shipped as black rectangles
-- a leak probe returning a confident false pass because headless Chrome defaults to
-  `prefers-reduced-motion: reduce`
-- a 6.7 MB PNG regression reported as a win
-- 55 files pushed straight to `main`
+I expect (1) and (2) together to move mobile LCP substantially. If it lands near FCP, mobile
+Performance should clear 90 and we close this properly rather than writing it off.
 
-All caught before merge. And the last stretch — measured numbers, honest failures, self-corrections
-like the `Projects.tsx:124` whitespace and the 6 → 10 trigger count — is what a good report looks
-like. Ending on that is the right note.
-
-Visual pass is mine now. Anything I find comes back as a fresh, specific round.
+Nothing else. `main` stays at `d532a66`, PR #6 stays unmerged.
