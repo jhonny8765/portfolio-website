@@ -46,8 +46,8 @@ export default function HowIBuild() {
     if (!container.current) return;
     const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      // Pin the entire section
+    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
+      // Pin the entire section on desktop
       ScrollTrigger.create({
         trigger: container.current,
         start: "top top",
@@ -62,7 +62,7 @@ export default function HowIBuild() {
         {
           opacity: 1,
           y: 0,
-          stagger: 1, // stagger works with scrub if timeline is used, but for simple scrollTrigger we can just map them
+          stagger: 1,
           ease: "power2.out",
           scrollTrigger: {
             trigger: container.current,
@@ -74,7 +74,7 @@ export default function HowIBuild() {
       );
     });
 
-    mm.add("(prefers-reduced-motion: reduce)", () => {
+    mm.add("(max-width: 767px), (prefers-reduced-motion: reduce)", () => {
       gsap.set(cardsRef.current, { opacity: 1, y: 0 });
     });
 
@@ -82,7 +82,7 @@ export default function HowIBuild() {
   }, { scope: container });
 
   return (
-    <section ref={container} className="w-full py-16 min-h-screen flex flex-col justify-center">
+    <section id="how-i-build" ref={container} className="w-full py-16 min-h-screen flex flex-col justify-center">
       <div className="mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
           How I <span className="text-[var(--color-volt)]">Build</span>
