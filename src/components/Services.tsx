@@ -34,7 +34,7 @@ export default function Services() {
                 className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-4 motion-safe:hover:-translate-y-1 hover:bg-white/[0.05] hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.3)] motion-safe:transition-all duration-300 cursor-default"
               >
                 <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 p-2">
-                  <Image src={imageSrc} alt={service.title} width={48} height={48} className={`object-contain drop-shadow-md ${isScreen ? 'mix-blend-screen' : ''}`} sizes="48px" />
+                  <Image src={imageSrc} alt={service.title} width={48} height={48} className={`object-contain drop-shadow-md ${isScreen ? 'mix-blend-screen' : ''}`} />
                 </div>
                 <h3 className="text-xl font-bold text-white">{service.title}</h3>
                 <p className="text-[var(--text-secondary)] leading-relaxed">
