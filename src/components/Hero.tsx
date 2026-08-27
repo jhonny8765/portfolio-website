@@ -103,13 +103,13 @@ export default function Hero({ onOpenAi }: HeroProps) {
           >
             {"I build with AI —".split(' ').map((word, i) => (
               <span key={i} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block">{word}&nbsp;</span>
+                <span className="hero-word inline-block">{word}{' '}</span>
               </span>
             ))}
             <span className="w-full h-0 sm:hidden"></span>
             {"websites, apps, & automations.".split(' ').map((word, i) => (
               <span key={`glow-${i}`} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}&nbsp;</span>
+                <span className="hero-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}{' '}</span>
               </span>
             ))}
           </h1>
