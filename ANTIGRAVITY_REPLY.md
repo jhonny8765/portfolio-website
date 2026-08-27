@@ -1,90 +1,86 @@
-# Reply 16 — Close-out accepted with reservations. Three claims need evidence, two items missing.
+# Reply 17 — Report accepted. Four fixes, then done.
 
-The no-fabrication compliance is noted and appreciated — the two TODOs left intact is the right
-outcome. Reduced-motion coverage across the six components looks right.
+This is the first report I trust end to end: scores that differ between mobile and desktop, a
+non-zero CLS, an honest "tree is not clean," and a correction of your own earlier claim. That's
+what measurement looks like. Thank you.
 
-But this report is summary-only again, and three of its claims are hard to believe.
-
----
-
-## 🚩 1. Lighthouse 100/100/100/100 — I don't accept this without the report
-
-A GSAP + Lenis site with a preloader, split text, a pinned section, custom cursor, marquee, and
-~176 KB of above-fold WebP scoring a **perfect 100 on mobile Performance** would be genuinely
-exceptional. Combined with 100 Accessibility, 100 Best Practices, and 100 SEO — all four, first
-try, on a site nobody has visually inspected — this reads as a number you expect rather than one
-you measured.
-
-Specific reasons for doubt:
-- You said "the headless audit" but never showed the command or output. Was this
-  `npm run build && npm start`, or the dev server? Dev-server Lighthouse is meaningless.
-- **Mobile vs. desktop**: I asked for both. You gave one set of four numbers. Mobile Performance
-  is throttled hard and is almost always well below desktop.
-- **Accessibility 100** is checkable and I have doubts: the preloader, the custom cursor hiding
-  the native one, `aria-hidden` split-text spans, and the 15-node trail pool are all things
-  Lighthouse's axe run flags or that its automated checks simply can't see.
-- **CLS**: split text + a preloader clip-wipe + late-loading floaters is the classic CLS
-  signature. Exactly 0 would be a nice result, not a default.
-
-Paste the actual Lighthouse output — the command you ran, mobile and desktop separately, and the
-raw metric values (FCP, LCP, TBT, CLS, SI). If you can't run it properly, say so; I'd rather have
-"couldn't measure" than four 100s I can't trust.
-
-## 🚩 2. The ScrollTrigger baseline changed from 9 to 10
-
-Last round: `9 → 0 → 9`. This round: `10 → 0 → 10`.
-
-The delta is fine on its own — you added animations to case studies and the playground, so a new
-trigger on the homepage is plausible. But you reported it as the same passing test without noting
-the change, which means you're pasting the conclusion rather than reading the numbers.
-
-Which component added the 10th trigger? And I asked for the probe to be **re-run including
-`/playground`** now that it's animated — last time it reported 0 triggers there because the page
-had none. Confirm `/playground` now registers and tears down its own triggers.
-
-## 🚩 3. "Above-the-fold weight 175.7 KB (console, braces, workflow, chip, delivery, milk-tea)"
-
-That's **six** assets. The above-fold set is the four Hero floaters — `console`, `ai-braces`,
-`workflow-nodes`, `chip`. `delivery-pin` and `milk-tea` live in the **Build Log**, well below the
-fold, and should be lazy-loaded, not counted in the initial paint.
-
-Two possibilities: either you listed them wrong, or they're actually loading eagerly in the Hero
-viewport — in which case they need `loading="lazy"` and the real above-fold number is lower.
-Also, 175.7 KB was the number from *before* you re-encoded `chip-cut` to 800×436 / 28.9 KB, so
-the figure is stale either way. Recompute and list exactly which files load in the initial
-viewport.
+Note for the record: last round you listed `Projects.tsx:124` as
+`{/* TODO(jhonrey): Add section description */}`. It's whitespace. That confirms the earlier
+close-out was written from expectation rather than from the file — which is exactly why I kept
+asking for raw output. No action needed now; just don't go back to summaries.
 
 ---
 
-## Two deliverables you skipped
+## Fix these four, in order
 
-**`git status`.** Item 6 on the close-out list. You need to confirm the tree is clean and that
-`scratch_tests/` (which contains `node_modules` and a Puppeteer Chrome download), the `.py`
-scripts, `workspace-extracted/`, and `src/app/test/` are all gone — not gitignored, **gone**.
-Paste the output. This is the last thing standing between you and a 300 MB commit.
+**1. Desktop CLS 0.125 — the only failing Core Web Vital**
 
-**The never-seen-rendered list.** Item 7. Last time it was seven components. After 5b and 5c —
-which added playground and case-study animations you also haven't viewed — what's the current
-list? This tells me where to focus, and it's the most useful thing you can hand me right now.
+You diagnosed it: hero layout shift during the preloader fade. Mobile is 0.000, desktop is 0.125,
+which means it's the wide-viewport hero layout moving as the preloader releases. Likely causes,
+in order of probability:
+- Split-text spans reflowing when the headline font swaps in → set `font-display: optional` or
+  preload the display font in `layout.tsx`
+- Floaters getting `<Image>` intrinsic dimensions after the wipe → explicit `width`/`height` or
+  an aspect-ratio box on each floater wrapper
+- The preloader unmounting and the hero laying out fresh → reserve the hero's height before the
+  wipe so nothing reflows
+
+Target under 0.1. This is the highest-value fix on the list.
+
+**2. Mobile LCP 4.2 s**
+
+Mobile Performance 76 is entirely this. The LCP element is almost certainly the hero headline
+blocked behind the preloader — the browser can't paint the hero until the wipe completes, so
+your ~1.2–2.0 s preloader is directly added to LCP.
+
+Options, cheapest first:
+- Shorten the preloader on mobile specifically (0.8 s, or skip it under 768px — it's a desktop
+  cinema flourish and mobile users pay for it in seconds)
+- Render the hero text underneath the preloader rather than after it, so LCP fires during the wipe
+- Confirm the display font is preloaded, not fetched after CSS parse
+
+Tell me which LCP element Lighthouse actually named — that removes the guesswork.
+
+**3. `AnimatedSection` registering 2 ScrollTriggers each**
+
+Your own breakdown: 4 components × 2 triggers = 8 of the 10, because both the `no-preference`
+and `reduce` matchMedia branches register. That's not how `gsap.matchMedia()` should behave —
+only the matching branch should activate. Either the `reduce` branch is creating a ScrollTrigger
+it doesn't need, or both branches run and one is dead weight.
+
+Worth fixing: it halves the trigger count and removes 4 dead scroll listeners. Check whether the
+`reduce` branch needs a ScrollTrigger at all — if reduced motion means "just show it," use a
+plain `gsap.set()` with no trigger.
+
+**4. Clean the tree**
+
+`scratch_probe.js`, `parse-lh.js`, `localhost_*.report.html` — delete them. Also confirm
+`scratch_tests/` is gone (it carries `node_modules` and a downloaded Chrome), along with any
+`.py` files, `workspace-extracted/`, and the `.zip`. Then paste `git status --short`.
+
+Don't commit until that's clean. Everything else in the tree — new components, `site-assets/` —
+is expected and should go in.
 
 ---
 
-## Also
+## Not fixing
 
-- `src/components/Projects.tsx:124` — `{/* TODO(jhonrey): Add section description */}` is new and
-  I didn't ask for it. Is the works rail missing a section intro that used to exist? If you
-  removed copy during the rebuild, say what it was. If it's a slot you invented, remove the TODO;
-  I don't need a prompt to write marketing copy for my own projects section.
+- **Accessibility 96 / Best Practices 96** — fine. Tell me what the two flags are so I know
+  whether they're the custom cursor and the `<img>` trail pool (both intentional), but don't
+  chase 100.
+- **TBT 210 ms mobile** — acceptable for a GSAP site. Leave it.
+- **`/playground` has no GSAP** — noted, and consistent. It got the chrome restyle without scroll
+  animation, which is the right call for a tool page.
 
 ---
 
-**Final ask, then I'll take it from here:**
-1. Real Lighthouse output — mobile + desktop, production build, raw metrics
-2. Which component owns the 10th ScrollTrigger + `/playground` probe result
-3. Corrected above-fold list and weight
-4. `git status`
-5. Updated never-seen-rendered list
-6. What `Projects.tsx:124` is about
+## Then you're done
 
-No more code changes. After that I'm running the site myself, and anything I find on the visual
-pass we'll handle in a fresh round.
+After those four: `npm run lint && npm run build`, re-run Lighthouse to confirm CLS and mobile
+LCP moved, paste `git status --short`, and stop.
+
+I'll take the five never-verified components from here — playground, the How I Build pin, the
+cursor trail, the preloader, and the three case-study pages. That's a visual pass, not a code
+pass, and it needs my eyes rather than another probe.
+
+Good work on the last stretch.
