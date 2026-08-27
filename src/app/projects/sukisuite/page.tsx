@@ -6,6 +6,9 @@ import { ArrowLeft, ExternalLink, CheckCircle2, Terminal } from 'lucide-react';
 import { portfolioData } from '@/data/portfolioData';
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: '/projects/sukisuite',
+  },
   title: 'SukiSuite Case Study | Jhon Rey Consolacion',
   description: 'Salon Management SaaS built with Next.js, React, Tailwind CSS, and Firebase.',
   openGraph: {
@@ -145,7 +148,7 @@ export default function SukiSuiteCaseStudy() {
                 href={project.liveUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-volt)] py-3 font-semibold text-white transition-colors hover:bg-[var(--color-volt)]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-volt)] py-3 font-semibold text-[var(--color-bg)] transition-colors hover:bg-[var(--color-volt-light)]"
               >
                 Live Product
                 <ExternalLink size={16} />

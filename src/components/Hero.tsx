@@ -211,7 +211,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
                 <div className="h-3 w-3 rounded-full border border-yellow-500/50 bg-yellow-500/20" />
                 <div className="h-3 w-3 rounded-full border border-green-500/50 bg-green-500/20" />
               </div>
-              <div className="flex-1 text-center font-mono text-xs text-white/40">
+              <div className="flex-1 text-center font-mono text-xs text-white/60">
                 build-console.sh
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
                   </div>
                   <div className="flex-1">
                     <div className="font-medium text-white">Idea & Planning</div>
-                    <div className="text-xs text-white/40">Requirements gathered</div>
+                    <div className="text-xs text-white/60">Requirements gathered</div>
                   </div>
                 </div>
 
@@ -242,16 +242,16 @@ export default function Hero({ onOpenAi }: HeroProps) {
                   </div>
                   <div className="flex-1">
                     <div className="font-medium text-white">AI-Assisted Build</div>
-                    <div className="text-xs text-white/40">Next.js + Tailwind</div>
+                    <div className="text-xs text-white/60">Next.js + Tailwind</div>
                   </div>
                 </div>
 
                 {/* Step 3: Product */}
-                <div className="relative z-10 flex w-full items-center gap-4 pl-0 opacity-50">
+                <div className="relative z-10 flex w-full items-center gap-4 pl-0 opacity-75">
                   <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-white/20 bg-transparent"></div>
                   <div className="flex-1">
-                    <div className="font-medium text-white/60">Live Deployment</div>
-                    <div className="text-xs text-white/30">Awaiting final checks...</div>
+                    <div className="font-medium text-white/80">Live Deployment</div>
+                    <div className="text-xs text-white/80">Awaiting final checks...</div>
                   </div>
                 </div>
               </div>

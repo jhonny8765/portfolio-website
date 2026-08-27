@@ -6,6 +6,9 @@ import { ArrowLeft, ExternalLink, CheckCircle2, Terminal } from 'lucide-react';
 import { portfolioData } from '@/data/portfolioData';
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: '/projects/barangay-arena',
+  },
   title: 'Barangay Arena Case Study | Jhon Rey Consolacion',
   description:
     'Community Tournament Platform built with Next.js, React, Tailwind CSS, and Supabase.',

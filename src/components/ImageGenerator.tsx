@@ -152,7 +152,7 @@ export default function ImageGenerator() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="A futuristic city in the clouds, cyberpunk style..."
-            className="max-h-[200px] min-h-[100px] w-full resize-y rounded-2xl border border-white/10 bg-black/40 p-4 text-white transition-all placeholder:text-white/30 focus:border-[var(--color-volt)] focus:ring-1 focus:ring-[var(--color-volt)] focus:outline-none"
+            className="max-h-[200px] min-h-[100px] w-full resize-y rounded-2xl border border-white/10 bg-black/40 p-4 text-white transition-all placeholder:text-white/50 focus:border-[var(--color-volt)] focus:ring-1 focus:ring-[var(--color-volt)] focus:outline-none"
             disabled={isGenerating || isEnhancing}
           />
 
@@ -229,7 +229,7 @@ export default function ImageGenerator() {
               href={imageUrl}
               onClick={handleDownload}
               download="ai-generated-image.png"
-              className="absolute right-4 bottom-4 z-20 flex items-center gap-2 rounded-xl border border-white/10 bg-[var(--color-volt)] p-3 text-white opacity-100 shadow-lg backdrop-blur-md transition-all hover:bg-[var(--color-volt)] md:bg-black/60 md:opacity-0 md:group-hover:opacity-100"
+              className="absolute right-4 bottom-4 z-20 flex items-center gap-2 rounded-xl border border-white/10 bg-[var(--color-volt)] p-3 text-[var(--color-bg)] opacity-100 shadow-lg backdrop-blur-md transition-all hover:bg-[var(--color-volt)] md:bg-black/60 md:opacity-0 md:group-hover:opacity-100"
               title="Download Image"
             >
               <Download size={18} />
@@ -237,7 +237,7 @@ export default function ImageGenerator() {
             </a>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-3 text-white/20">
+          <div className="flex flex-col items-center gap-3 text-white/60">
             <ImageIcon size={48} strokeWidth={1} />
             <p className="text-sm font-medium">Your image will appear here</p>
           </div>

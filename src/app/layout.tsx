@@ -15,10 +15,23 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mon
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jhon Rey Consolacion',
+  jobTitle: 'AI Developer & Automation Builder',
+  url: siteUrl,
+  email: 'mailto:jhonreyc2001@gmail.com',
+  sameAs: ['https://github.com/jhonny8765'],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: 'Jhon Rey Consolacion | AI Developer & Automation Builder',
   description: 'I build with AI — websites, applications, and automations.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Jhon Rey Consolacion | AI Developer & Automation Builder',
     description: 'I build with AI — websites, applications, and automations.',
@@ -58,6 +71,14 @@ export default function RootLayout({
       className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} scroll-smooth`}
     >
       <body>
+        {/* Structured data: Person schema for knowledge-panel/card eligibility */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* NOTE: no <noscript> fallback needed — Preloader is mount-gated client-side,
+            so without JS there is no overlay to hide. The route-transition overlay
+            is CSS-translated off-screen by default (translate-y-full). */}
         <a
           href="#main-content"
           className="sr-only z-[var(--z-skiplink)] rounded-md bg-[var(--color-volt)] px-4 py-2 font-medium text-[var(--color-bg)] focus:not-sr-only focus:absolute focus:top-4 focus:left-4"

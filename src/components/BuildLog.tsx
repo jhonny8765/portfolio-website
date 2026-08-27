@@ -67,9 +67,9 @@ export default function BuildLog() {
             const opacityClass =
               [
                 'opacity-100',
-                'opacity-80 md:opacity-70',
-                'opacity-60 md:opacity-50',
-                'opacity-50 md:opacity-40',
+                'opacity-95 md:opacity-90',
+                'opacity-95 md:opacity-85',
+                'opacity-90 md:opacity-85',
               ][index] || 'opacity-100';
             return (
               <div
@@ -78,7 +78,7 @@ export default function BuildLog() {
               >
                 <div className="mb-2 flex items-center gap-2">
                   <span className="text-[var(--color-volt)]">jhonrey@system:</span>
-                  <span className="text-blue-400">~/log</span>
+                  <span className="text-blue-300">~/log</span>
                   <span className="text-white">$</span>
                   <span className="ml-2 text-white">
                     cat {item.label.toLowerCase().replace(' ', '_')}.txt
@@ -129,7 +129,7 @@ export default function BuildLog() {
 
           <div className="mt-8 flex items-center gap-2 opacity-70">
             <span className="text-[var(--color-volt)]">jhonrey@system:</span>
-            <span className="text-blue-400">~/log</span>
+            <span className="text-blue-300">~/log</span>
             <span className="text-white">$</span>
             <span className="ml-2 h-4 w-2 animate-pulse bg-[var(--color-volt)]" />
           </div>

@@ -6,29 +6,34 @@ import gsap from 'gsap';
 import Image from 'next/image';
 
 export default function Preloader() {
-  const [shouldRender, setShouldRender] = useState(true);
+  // Mount-gated: SSR emits NO preloader markup at all. The overlay only mounts
+  // post-hydration when the browser can actually animate it away — so a no-JS
+  // (or failed-JS) visitor is never trapped behind a stuck full-screen overlay,
+  // and no <noscript> hack is required.
+  const [shouldRender, setShouldRender] = useState(false);
   const container = useRef<HTMLDivElement>(null);
-  const textContainer = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
+  // Decide client-side whether to show (desktop only, once per session, motion allowed)
   useEffect(() => {
-    if (pathname !== '/') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShouldRender(false);
-      return;
-    }
+    if (pathname !== '/') return;
 
-    // Check if already seen in this session
     const hasSeen = sessionStorage.getItem('hasSeenPreloader');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // Skip on mobile — the animation is a desktop flourish and costs ~1.2s LCP on small screens.
     // Use matchMedia, not innerWidth — innerWidth can read 0 at hydration on some renderers.
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
 
-    if (hasSeen || prefersReducedMotion || isMobile) {
-      setShouldRender(false);
-      return;
-    }
+    if (hasSeen || prefersReducedMotion || isMobile) return;
+
+    // rAF-deferred to avoid synchronous setState inside the effect body.
+    const raf = requestAnimationFrame(() => setShouldRender(true));
+    return () => cancelAnimationFrame(raf);
+  }, [pathname]);
+
+  // Run the boot animation only once the overlay exists in the DOM.
+  useEffect(() => {
+    if (!shouldRender) return;
 
     // Lock scroll during preloader
     document.body.style.overflow = 'hidden';
@@ -61,7 +66,7 @@ export default function Preloader() {
       ctx.revert();
       document.body.style.overflow = '';
     };
-  }, [pathname]);
+  }, [shouldRender]);
 
   if (!shouldRender) return null;
 
@@ -81,7 +86,7 @@ export default function Preloader() {
         style={{ backgroundImage: 'url(/site-assets/overlays/scanlines.svg)' }}
       />
 
-      <div className="relative z-10 w-full max-w-2xl px-6" ref={textContainer}>
+      <div className="relative z-10 w-full max-w-2xl px-6">
         <div className="boot-text mb-10 flex justify-center opacity-0">
           <Image
             src="/site-assets/brand/preloader-glyph.webp"

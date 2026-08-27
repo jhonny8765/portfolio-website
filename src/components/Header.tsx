@@ -157,7 +157,7 @@ export default function Header({ onOpenAi }: HeaderProps) {
             <Magnetic strength={0.25}>
               <button
                 onClick={onOpenAi}
-                className="pointer-events-auto hidden items-center gap-2 rounded-full border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-4 py-2 text-sm font-medium text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-white md:flex"
+                className="pointer-events-auto hidden items-center gap-2 rounded-full border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-4 py-2 text-sm font-medium text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)] md:flex"
               >
                 <Image
                   src="/site-assets/brand/preloader-glyph.webp"
@@ -267,7 +267,7 @@ export default function Header({ onOpenAi }: HeaderProps) {
             <div className="mx-auto mt-4 flex w-full max-w-sm flex-col gap-4">
               <button
                 onClick={handleAskMyAiClick}
-                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-6 py-3 font-semibold text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-white"
+                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-6 py-3 font-semibold text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)]"
               >
                 <Image
                   src="/site-assets/brand/preloader-glyph.webp"

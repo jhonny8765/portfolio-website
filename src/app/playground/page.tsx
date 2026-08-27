@@ -7,6 +7,9 @@ import Image from 'next/image';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: '/playground',
+  },
   title: 'AI Playground | Jhon Rey Consolacion',
   description: 'Experiment with AI image generation and prompt enhancement.',
   openGraph: {
@@ -90,7 +93,7 @@ export default function PlaygroundPage() {
         </div>
 
         {/* Footer/Note */}
-        <div className="mx-auto mt-16 max-w-md text-center text-xs text-[var(--text-secondary)]/50">
+        <div className="mx-auto mt-16 max-w-md text-center text-xs text-[var(--text-secondary)]">
           Generations are strictly rate-limited per user and reset daily at UTC midnight to ensure
           fair usage. Generated images are not permanently stored.
         </div>

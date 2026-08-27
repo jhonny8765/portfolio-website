@@ -14,6 +14,18 @@ const MAX_REQUESTS_PER_WINDOW = 3; // Max 3 contact form submissions per minute 
 
 const ALLOWED_SERVICES = ['inquiry', 'dev', 'automation', 'resume'];
 
+// Escape user input before interpolating into the notification email HTML.
+// Without this, a submitter can inject arbitrary markup into mail delivered
+// from our own Resend address (phishing-by-self).
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function submitContactForm(formData: FormData) {
   try {
     // 1. Rate Limiting
@@ -94,11 +106,11 @@ export async function submitContactForm(formData: FormData) {
         to: 'jhonreyc2001@gmail.com',
         subject: `New Contact Form Submission: ${service}`,
         html: `
-          <h3>New Message from ${name}</h3>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Service Requested:</strong> ${service}</p>
+          <h3>New Message from ${escapeHtml(name)}</h3>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          <p><strong>Service Requested:</strong> ${escapeHtml(service)}</p>
           <p><strong>Message:</strong></p>
-          <p>${message.replace(/\\n/g, '<br/>')}</p>
+          <p>${escapeHtml(message).replace(/\n/g, '<br/>')}</p>
         `,
       });
     } catch (emailErr) {

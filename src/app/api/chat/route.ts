@@ -66,10 +66,13 @@ CRITICAL RULES:
 
     return result.toDataStreamResponse();
   } catch (error: unknown) {
+    // Log the full error server-side only — never leak internals to the client.
     console.error('API Chat Error:', error);
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response('An error occurred while processing your request: ' + errorMessage, {
-      status: 500,
-    });
+    return new Response(
+      'An error occurred while processing your request. Please try again later.',
+      {
+        status: 500,
+      },
+    );
   }
 }

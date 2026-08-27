@@ -6,6 +6,9 @@ import { ArrowLeft, ExternalLink, CheckCircle2, Terminal } from 'lucide-react';
 import { portfolioData } from '@/data/portfolioData';
 
 export const metadata: Metadata = {
+  alternates: {
+    canonical: '/projects/betteryield',
+  },
   title: 'BetterYield Case Study | Jhon Rey Consolacion',
   description:
     'Agricultural product catalog and local-commerce experience serving farmers across Regions 11 and 12.',

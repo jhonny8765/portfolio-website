@@ -111,7 +111,7 @@ export default function Contact() {
                 <div>
                   <label
                     htmlFor="name"
-                    className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                    className="mb-1 block font-mono text-xs tracking-wider text-white/60 uppercase"
                   >
                     Name{' '}
                     <span aria-hidden="true" className="text-[var(--color-volt)]">
@@ -135,7 +135,7 @@ export default function Contact() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                    className="mb-1 block font-mono text-xs tracking-wider text-white/60 uppercase"
                   >
                     Email{' '}
                     <span aria-hidden="true" className="text-[var(--color-volt)]">
@@ -161,7 +161,7 @@ export default function Contact() {
               <div>
                 <label
                   htmlFor="service"
-                  className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                  className="mb-1 block font-mono text-xs tracking-wider text-white/60 uppercase"
                 >
                   Request_Type{' '}
                   <span aria-hidden="true" className="text-[var(--color-volt)]">
@@ -195,7 +195,7 @@ export default function Contact() {
               <div>
                 <label
                   htmlFor="message"
-                  className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                  className="mb-1 block font-mono text-xs tracking-wider text-white/60 uppercase"
                 >
                   Payload{' '}
                   <span aria-hidden="true" className="text-[var(--color-volt)]">

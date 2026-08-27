@@ -248,7 +248,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
                   <div
                     className={`max-w-[85%] rounded-2xl px-5 py-4 ${
                       message.role === 'user'
-                        ? 'bg-[var(--color-volt)] text-white'
+                        ? 'bg-[var(--color-volt)] text-[var(--color-bg)]'
                         : 'border border-white/10 bg-white/5 text-white/90'
                     }`}
                   >
@@ -317,7 +317,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               type="submit"
               disabled={isLoading || !input.trim()}
               aria-label="Send message"
-              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-volt)] text-white transition-colors hover:bg-[var(--color-volt)] disabled:bg-white/10 disabled:text-white/30"
+              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-volt)] text-[var(--color-bg)] transition-colors hover:bg-[var(--color-volt-light)] disabled:bg-white/10 disabled:text-white/30"
             >
               <Send size={16} className="ml-0.5" aria-hidden="true" />
             </button>
