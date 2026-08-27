@@ -1,63 +1,79 @@
-# Reply 22 — LCP didn't move, and I don't think it's hydration. One check, then hand over.
+# Reply 23 — Found it. The preloader is still covering the hero on mobile.
 
-Handover notes are genuinely useful — specific, honest about what you couldn't see, and the
-768–1024px floater question is exactly the kind of thing I'd have found the slow way. Thank you.
-
-But the LCP explanation doesn't add up, and it's a 30-second check to settle.
+Thank you for the full LCP node — that's the piece that cracks it. But your reading of it is
+wrong, and the numbers say exactly where to look.
 
 ---
 
-## The numbers say the LCP element isn't the text anymore
+## What the data actually says
 
-FCP **2.05 s**, LCP **4.08 s**. You attribute the 2-second gap to hydration of the
-Next/Lenis/GSAP bundles on a throttled CPU.
+```
+timeToFirstByte:     14.7 ms
+elementRenderDelay:  2710.8 ms
+```
 
-That doesn't follow. Both `.hero-word` and `.hero-text-item` now render **visible in the SSR
-HTML** with no JS gate — so they paint at FCP. If the largest contentful element were text, LCP
-would fire at or very near 2.05 s. A 2-second gap means **something else is now the largest
-element**, and it's arriving late.
+Two things follow from this:
 
-Most likely candidate: **one of the hero floater images.** `ai-braces.webp` is 78 KB,
-`chip-cut.webp` 29 KB, and they're above the fold. On a throttled slow-4G profile an image that
-size landing ~2 s after FCP is exactly this signature. Hydration delays *interactivity* (that's
-TBT, which is only 104 ms — fine); it doesn't hold back a paint of already-visible text.
+**1. It's not the font.** You attribute the delay to "web-font download + font swaps." But you
+configured `display: swap` with `adjustFontFallback: true` — that means the text paints
+*immediately* in a metric-matched fallback and never blocks. That's the whole point of the fix,
+and it's confirmed by **CLS 0.000**: if a font swap were reflowing that paragraph, CLS would not
+be zero. The font is exonerated by your own numbers.
 
-**One question:** what does Lighthouse name as the LCP element now? It's in the report under
-"Largest Contentful Paint element." Paste that line.
+**2. There's no load delay and no resource load time** — only render delay. For a text node
+that means the element was in the DOM, unstyled-hidden or **obscured**, and simply not eligible
+to count as a contentful paint for 2.7 seconds.
 
-If it's a floater image, two options:
-- **Don't render the floaters below 768px at all.** They're desktop parallax art, they're not
-  mouse-reactive on touch anyway, and at 375px they're likely overlapping the text (see your own
-  handover note). Removing them from mobile fixes LCP and probably a layout problem at once.
-- Or keep them and drop `priority`, so the text wins LCP.
+## The cause: the preloader still paints on mobile
 
-I'd take the first. If the answer turns out to be something else entirely, tell me and we'll
-leave it — 80 mobile / 99 desktop is shippable, and I'd rather not chase it blind.
+Your mobile preloader skip is **JavaScript-gated** — `matchMedia` evaluated in an effect. On the
+server there is no `window`, so the preloader renders into the SSR HTML and covers the viewport.
+It's only removed *after* React hydrates and the effect runs.
+
+LCP doesn't fire for an element hidden behind a full-screen overlay. So the sequence on a
+throttled mobile CPU is:
+
+```
+2.05 s  FCP        — preloader paints
+        ...        — bundle parse + hydration
+4.08 s  LCP        — effect runs, preloader unmounts, hero <p> finally counts
+```
+
+`4.08 − 2.05 ≈ 2.0 s`, and `elementRenderDelay` of 2.7 s from TTFB. That fits precisely.
+
+This is the same class of bug I flagged in Reply 18 — you moved the *hero text* to CSS gating,
+which was right, but the **preloader itself is still JS-gated**. It's the overlay, not the text,
+that's blocking.
+
+## The fix
+
+Hide the preloader with CSS, so it never paints below 768px regardless of JS timing:
+
+```css
+@media (max-width: 767px) {
+  .preloader-root { display: none !important; }
+}
+```
+
+Add the class to the preloader's outermost element. Keep the JS `matchMedia` guard too — belt and
+braces, so the animation timeline also doesn't run — but **CSS must own the visibility**, because
+CSS applies at first paint and JS does not.
+
+While you're there, confirm the same isn't true of the grain/scanline overlay or the
+`RouteTransition` wipe — any full-viewport element that renders in SSR and is only dismissed by
+JS will do this. `RouteTransition` in particular: if its overlay starts opaque and is cleared on
+mount, it has the identical problem.
+
+Expected result: mobile LCP drops to roughly FCP (~2.1 s) and Performance should clear 90.
 
 ---
 
-## Everything else — accepted, and we're done
+## Then stop
 
-- Both hero elements CSS-gated correctly this time
-- CLS 0.000 both, desktop 99, TBT 104 ms
-- `main` at `d532a66`, PR #6 open with `56168ac`, tree clean
-- Zero `TODO(jhonrey)` remaining
+Make that one change, re-run mobile Lighthouse, paste LCP and Performance. Push to
+`rebuild/cinematic-hybrid`. Nothing else.
 
----
+If LCP doesn't move, paste the new LCP node and we'll stop chasing it — 80 mobile is shippable
+and I'd rather spend the remaining effort on the visual pass.
 
-## Handover
-
-After the LCP element line, **stop and don't touch the branch.** I'm doing the visual pass on
-PR #6 against your five flagged areas:
-
-1. Floaters at 768–1024px and 375px (plus: are they even needed on mobile?)
-2. `HowIBuild` pin handoff
-3. Cursor + trail decay on the project cards
-4. Preloader wipe and the `hasSeenPreloader` suppression
-5. `/playground` and `/projects/*` at 375px
-
-Anything I find comes back as a fresh round with specifics. Don't pre-emptively fix things in the
-meantime — I want to review the exact commit that's in the PR.
-
-Good work on the last stretch. The reports since Reply 17 have been measured, honest about
-failures, and self-correcting, and that's what got this over the line.
+`main` stays at `d532a66`, PR #6 stays unmerged.
