@@ -87,7 +87,7 @@ export default function Header({ onOpenAi }: HeaderProps) {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-[var(--z-header)] py-4 px-4 sm:px-6 pointer-events-none">
-        <div className="max-w-5xl mx-auto flex items-center justify-between glass-panel rounded-full px-4 sm:px-6 py-3 pointer-events-auto shadow-2xl">
+        <div className="max-w-5xl mx-auto flex items-center justify-between bg-[#07080A]/90 backdrop-blur-xl border border-white/10 rounded-full px-4 sm:px-6 py-3 pointer-events-auto shadow-2xl">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.05)] overflow-hidden p-1.5">
               <Image src="/site-assets/brand/monogram-jr-cut.webp" alt="JR Logo" width={24} height={24} className="object-contain opacity-90" />

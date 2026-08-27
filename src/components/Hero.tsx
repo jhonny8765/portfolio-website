@@ -97,7 +97,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
           </div>
           
           <h1 
-            className="hero-text-item text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-tight flex flex-wrap gap-[0.25em]"
+            className="hero-text-item text-4xl sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-6 leading-[1.1] flex flex-wrap gap-[0.25em]"
             aria-label="I build with AI — websites, apps, & automations."
           >
             {"I build with AI —".split(' ').map((word, i) => (
@@ -140,26 +140,25 @@ export default function Hero({ onOpenAi }: HeroProps) {
         </div>
 
         {/* Right: Build Console & Floating Images */}
-        <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto z-10 hero-console bg-[var(--bg-primary)] rounded-3xl" style={{ isolation: 'isolate' }}>
+        <div className="relative w-full max-w-lg mx-auto lg:mx-0 lg:ml-auto z-10 hero-console">
           
           {/* Subtle background glow */}
           <div className="absolute inset-0 bg-[var(--color-volt)]/10 blur-[80px] rounded-full pointer-events-none z-[-1]" />
           
-          {/* Floating Hero Assets */}
-          <div className="absolute top-[12%] right-[4%] w-[240px] sm:w-[340px] pointer-events-none hero-floater mix-blend-normal z-[5]">
-            <Image src="/site-assets/floating/console-cut.webp" alt="Console window" width={340} height={200} className="w-full h-auto object-contain" priority sizes="(max-width: 768px) 100vw, 340px" />
-          </div>
-          <div className="absolute top-[58%] right-[18%] w-[150px] sm:w-[210px] pointer-events-none hero-floater mix-blend-screen z-[4]">
-            <Image src="/site-assets/floating/ai-braces.webp" alt="AI Braces logic block" width={210} height={150} className="w-full h-auto object-contain mix-blend-screen" />
-          </div>
-          <div className="absolute top-[22%] left-[3%] w-[200px] sm:w-[280px] pointer-events-none hero-floater mix-blend-screen z-[6]">
-            <Image src="/site-assets/floating/workflow-nodes.webp" alt="Workflow nodes diagram" width={280} height={180} className="w-full h-auto object-contain mix-blend-screen" />
-          </div>
-          <div className="absolute bottom-[10%] left-[10%] w-[120px] sm:w-[170px] pointer-events-none hero-floater mix-blend-normal z-[7]">
-            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={170} height={120} className="w-full h-auto object-contain" sizes="(max-width: 768px) 100vw, 170px" />
+          {/* Floating Hero Assets (Outside the Console Window, Framing the Edges) */}
+          <div className="hidden md:block absolute -top-16 -left-16 lg:-top-20 lg:-left-20 w-[160px] lg:w-[190px] pointer-events-none hero-floater mix-blend-screen z-[10]">
+            <Image src="/site-assets/floating/workflow-nodes.webp" alt="Workflow nodes diagram" width={190} height={130} className="w-full h-auto object-contain mix-blend-screen" priority />
           </div>
 
-          <div className="relative rounded-2xl border border-white/10 bg-[#090a0f]/90 backdrop-blur-xl overflow-hidden shadow-2xl z-[2] hero-console-window">
+          <div className="hidden md:block absolute -top-12 -right-12 lg:-top-16 lg:-right-16 w-[130px] lg:w-[150px] pointer-events-none hero-floater mix-blend-screen z-[10]">
+            <Image src="/site-assets/floating/ai-braces.webp" alt="AI Braces logic block" width={150} height={110} className="w-full h-auto object-contain mix-blend-screen" />
+          </div>
+
+          <div className="hidden md:block absolute -bottom-10 -right-10 lg:-bottom-12 lg:-right-14 w-[110px] lg:w-[130px] pointer-events-none hero-floater mix-blend-normal z-[10]">
+            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={130} height={90} className="w-full h-auto object-contain" sizes="130px" />
+          </div>
+
+          <div className="relative rounded-2xl border border-white/10 bg-[#090a0f]/95 backdrop-blur-xl overflow-hidden shadow-2xl z-[2] hero-console-window">
             {/* Window Header */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
               <div className="flex gap-1.5">
