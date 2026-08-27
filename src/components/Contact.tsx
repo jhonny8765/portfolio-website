@@ -34,26 +34,31 @@ export default function Contact() {
   };
 
   return (
-    <AnimatedSection id="contact" className="w-full flex justify-center pb-24 scroll-mt-32">
-      <div className="w-full max-w-2xl glass-panel rounded-3xl p-8 sm:p-12 shadow-[0_0_40px_rgba(232,245,74,0.05)] relative overflow-hidden">
+    <AnimatedSection id="contact" className="flex w-full scroll-mt-32 justify-center pb-24">
+      <div className="glass-panel relative w-full max-w-2xl overflow-hidden rounded-3xl p-8 shadow-[0_0_40px_rgba(232,245,74,0.05)] sm:p-12">
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--color-volt)]/10 rounded-full blur-[80px] pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[var(--color-volt)]/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-[var(--color-volt)]/10 blur-[80px]"></div>
+        <div className="pointer-events-none absolute bottom-0 left-0 h-64 w-64 rounded-full bg-[var(--color-volt)]/10 blur-[80px]"></div>
 
         <div className="relative z-10">
           <div className="mb-10 font-mono">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-2 h-2 rounded-full bg-[var(--color-volt)] animate-pulse"></div>
-              <span className="text-[var(--color-volt-light)] text-sm uppercase tracking-widest">Connect_</span>
+            <div className="mb-4 flex items-center gap-2">
+              <div className="h-2 w-2 animate-pulse rounded-full bg-[var(--color-volt)]"></div>
+              <span className="text-sm tracking-widest text-[var(--color-volt-light)] uppercase">
+                Connect_
+              </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 tracking-tight font-sans">
+            <h2 className="mb-4 font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Initiate <span className="text-[var(--color-volt)]">Handshake</span>
             </h2>
-            <p className="text-[var(--text-secondary)] text-base">
+            <p className="text-base text-[var(--text-secondary)]">
               Have a project in mind or need an AI/Automation builder? Open a channel below.
             </p>
-            <p className="text-[var(--text-secondary)]/60 text-xs mt-4">
-              <span aria-hidden="true" className="text-[var(--color-volt)]">*</span> required parameter
+            <p className="mt-4 text-xs text-[var(--text-secondary)]/60">
+              <span aria-hidden="true" className="text-[var(--color-volt)]">
+                *
+              </span>{' '}
+              required parameter
             </p>
           </div>
 
@@ -63,27 +68,32 @@ export default function Contact() {
           </div>
 
           {status === 'success' ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center animate-in fade-in zoom-in duration-500">
-              <div className="w-20 h-20 bg-[var(--color-volt)]/20 rounded-full flex items-center justify-center mb-6 border border-[var(--color-volt)]/50">
+            <div className="animate-in fade-in zoom-in flex flex-col items-center justify-center py-12 text-center duration-500">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-[var(--color-volt)]/50 bg-[var(--color-volt)]/20">
                 <CheckCircle2 size={40} className="text-[var(--color-volt)]" aria-hidden="true" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-              <p className="text-[var(--text-secondary)] mb-8 max-w-sm">
+              <h3 className="mb-2 text-2xl font-bold text-white">Message Sent!</h3>
+              <p className="mb-8 max-w-sm text-[var(--text-secondary)]">
                 Thank you for reaching out. I&apos;ll get back to you as soon as possible.
               </p>
               <button
                 onClick={() => setStatus('idle')}
-                className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors"
+                className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-medium text-white transition-colors hover:bg-white/10"
               >
                 Send Another Message
               </button>
             </div>
           ) : (
-            <form ref={formRef} onSubmit={handleSubmit} className="space-y-6" aria-busy={status === 'submitting'}>
+            <form
+              ref={formRef}
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              aria-busy={status === 'submitting'}
+            >
               <div role="alert" aria-live="assertive">
                 {status === 'error' && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 text-red-400 mb-2">
-                    <AlertCircle size={20} className="shrink-0 mt-0.5" aria-hidden="true" />
+                  <div className="mb-2 flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+                    <AlertCircle size={20} className="mt-0.5 shrink-0" aria-hidden="true" />
                     <p className="text-sm">{errorMessage}</p>
                   </div>
                 )}
@@ -97,10 +107,16 @@ export default function Contact() {
                 </label>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="name" className="text-xs font-mono text-white/50 uppercase tracking-wider mb-1 block">
-                    Name <span aria-hidden="true" className="text-[var(--color-volt)]">*</span>
+                  <label
+                    htmlFor="name"
+                    className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                  >
+                    Name{' '}
+                    <span aria-hidden="true" className="text-[var(--color-volt)]">
+                      *
+                    </span>
                     <span className="sr-only"> (required)</span>
                   </label>
                   <input
@@ -112,13 +128,19 @@ export default function Contact() {
                     autoComplete="name"
                     maxLength={100}
                     disabled={status === 'submitting'}
-                    className="w-full bg-transparent border-b border-white/10 px-0 py-2 min-h-[44px] text-white font-mono placeholder-white/20 focus:outline-none focus:border-[var(--color-volt)] transition-all disabled:opacity-50 rounded-none"
+                    className="min-h-[44px] w-full rounded-none border-b border-white/10 bg-transparent px-0 py-2 font-mono text-white placeholder-white/20 transition-all focus:border-[var(--color-volt)] focus:outline-none disabled:opacity-50"
                     placeholder="guest_user"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="text-xs font-mono text-white/50 uppercase tracking-wider mb-1 block">
-                    Email <span aria-hidden="true" className="text-[var(--color-volt)]">*</span>
+                  <label
+                    htmlFor="email"
+                    className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                  >
+                    Email{' '}
+                    <span aria-hidden="true" className="text-[var(--color-volt)]">
+                      *
+                    </span>
                     <span className="sr-only"> (required)</span>
                   </label>
                   <input
@@ -130,15 +152,21 @@ export default function Contact() {
                     autoComplete="email"
                     maxLength={150}
                     disabled={status === 'submitting'}
-                    className="w-full bg-transparent border-b border-white/10 px-0 py-2 min-h-[44px] text-white font-mono placeholder-white/20 focus:outline-none focus:border-[var(--color-volt)] transition-all disabled:opacity-50 rounded-none"
+                    className="min-h-[44px] w-full rounded-none border-b border-white/10 bg-transparent px-0 py-2 font-mono text-white placeholder-white/20 transition-all focus:border-[var(--color-volt)] focus:outline-none disabled:opacity-50"
                     placeholder="guest@network.local"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="service" className="text-xs font-mono text-white/50 uppercase tracking-wider mb-1 block">
-                  Request_Type <span aria-hidden="true" className="text-[var(--color-volt)]">*</span>
+                <label
+                  htmlFor="service"
+                  className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                >
+                  Request_Type{' '}
+                  <span aria-hidden="true" className="text-[var(--color-volt)]">
+                    *
+                  </span>
                   <span className="sr-only"> (required)</span>
                 </label>
                 <select
@@ -147,18 +175,32 @@ export default function Contact() {
                   required
                   aria-required="true"
                   disabled={status === 'submitting'}
-                  className="w-full bg-transparent border-b border-white/10 px-0 py-2 min-h-[44px] text-white font-mono focus:outline-none focus:border-[var(--color-volt)] transition-all appearance-none disabled:opacity-50 rounded-none cursor-pointer"
+                  className="min-h-[44px] w-full cursor-pointer appearance-none rounded-none border-b border-white/10 bg-transparent px-0 py-2 font-mono text-white transition-all focus:border-[var(--color-volt)] focus:outline-none disabled:opacity-50"
                 >
-                  <option value="inquiry" className="bg-[#151518]">General Inquiry</option>
-                  <option value="dev" className="bg-[#151518]">Web & SaaS Development</option>
-                  <option value="automation" className="bg-[#151518]">Business Automation (n8n)</option>
-                  <option value="resume" className="bg-[#151518]">Resume & Portfolio Sites</option>
+                  <option value="inquiry" className="bg-[#151518]">
+                    General Inquiry
+                  </option>
+                  <option value="dev" className="bg-[#151518]">
+                    Web & SaaS Development
+                  </option>
+                  <option value="automation" className="bg-[#151518]">
+                    Business Automation (n8n)
+                  </option>
+                  <option value="resume" className="bg-[#151518]">
+                    Resume & Portfolio Sites
+                  </option>
                 </select>
               </div>
 
               <div>
-                <label htmlFor="message" className="text-xs font-mono text-white/50 uppercase tracking-wider mb-1 block">
-                  Payload <span aria-hidden="true" className="text-[var(--color-volt)]">*</span>
+                <label
+                  htmlFor="message"
+                  className="mb-1 block font-mono text-xs tracking-wider text-white/50 uppercase"
+                >
+                  Payload{' '}
+                  <span aria-hidden="true" className="text-[var(--color-volt)]">
+                    *
+                  </span>
                   <span className="sr-only"> (required)</span>
                 </label>
                 <textarea
@@ -169,7 +211,7 @@ export default function Contact() {
                   rows={4}
                   maxLength={1000}
                   disabled={status === 'submitting'}
-                  className="w-full bg-transparent border-b border-white/10 px-0 py-2 min-h-[100px] text-white font-mono placeholder-white/20 focus:outline-none focus:border-[var(--color-volt)] transition-all resize-y disabled:opacity-50 rounded-none"
+                  className="min-h-[100px] w-full resize-y rounded-none border-b border-white/10 bg-transparent px-0 py-2 font-mono text-white placeholder-white/20 transition-all focus:border-[var(--color-volt)] focus:outline-none disabled:opacity-50"
                   placeholder="Enter message body..."
                 ></textarea>
               </div>
@@ -178,7 +220,7 @@ export default function Contact() {
                 type="submit"
                 disabled={status === 'submitting'}
                 aria-disabled={status === 'submitting'}
-                className="w-full py-4 bg-[var(--color-volt)] text-black font-mono font-bold uppercase tracking-wider text-sm hover:bg-[var(--color-volt)] transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed group"
+                className="group flex w-full items-center justify-center gap-2 bg-[var(--color-volt)] py-4 font-mono text-sm font-bold tracking-wider text-black uppercase transition-all hover:bg-[var(--color-volt)] disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {status === 'submitting' ? (
                   <>
@@ -187,7 +229,11 @@ export default function Contact() {
                   </>
                 ) : (
                   <>
-                    <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" aria-hidden="true" />
+                    <Send
+                      size={20}
+                      className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                      aria-hidden="true"
+                    />
                     Send Message
                   </>
                 )}
@@ -199,4 +245,3 @@ export default function Contact() {
     </AnimatedSection>
   );
 }
-

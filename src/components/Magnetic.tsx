@@ -19,8 +19,8 @@ export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
     const element = magneticRef.current;
     if (!element) return;
 
-    const xTo = gsap.quickTo(element, "x", { duration: 1, ease: "elastic.out(1, 0.3)" });
-    const yTo = gsap.quickTo(element, "y", { duration: 1, ease: "elastic.out(1, 0.3)" });
+    const xTo = gsap.quickTo(element, 'x', { duration: 1, ease: 'elastic.out(1, 0.3)' });
+    const yTo = gsap.quickTo(element, 'y', { duration: 1, ease: 'elastic.out(1, 0.3)' });
 
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -36,14 +36,16 @@ export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
       yTo(0);
     };
 
-    element.addEventListener("mousemove", handleMouseMove as EventListener);
-    element.addEventListener("mouseleave", handleMouseLeave as EventListener);
+    element.addEventListener('mousemove', handleMouseMove as EventListener);
+    element.addEventListener('mouseleave', handleMouseLeave as EventListener);
 
     return () => {
-      element.removeEventListener("mousemove", handleMouseMove as EventListener);
-      element.removeEventListener("mouseleave", handleMouseLeave as EventListener);
+      element.removeEventListener('mousemove', handleMouseMove as EventListener);
+      element.removeEventListener('mouseleave', handleMouseLeave as EventListener);
     };
   }, [prefersReducedMotion, isTouchDevice, strength]);
 
-  return React.cloneElement(children, { ref: magneticRef } as React.HTMLAttributes<HTMLElement> & { ref: React.Ref<HTMLElement> });
+  return React.cloneElement(children, { ref: magneticRef } as React.HTMLAttributes<HTMLElement> & {
+    ref: React.Ref<HTMLElement>;
+  });
 }

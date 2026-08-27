@@ -10,7 +10,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 
 // Register ScrollTrigger
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
@@ -19,51 +19,57 @@ export default function Projects() {
   const scrollWrapperRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = React.useState(false);
-  
+
   // Trail DOM Pool refs
   const poolRef = useRef<(HTMLImageElement | null)[]>([]);
   const currentIndexRef = useRef(0);
   const lastPosRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    setMounted(true);
+    // Defer via rAF (not sync setState in effect) to avoid cascading renders —
+    // matches the pattern in useCapabilities.
+    const raf = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
-  useGSAP(() => {
-    const mm = gsap.matchMedia();
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
 
-    // Desktop Horizontal Scroll
-    mm.add("(min-width: 768px) and (prefers-reduced-motion: no-preference)", () => {
-      if (!scrollContainerRef.current || !scrollWrapperRef.current) return;
-      
-      const sections = gsap.utils.toArray('.project-card', scrollContainerRef.current);
-      
-      // Calculate total scroll distance
-      const getScrollAmount = () => {
-        const containerWidth = scrollContainerRef.current!.scrollWidth;
-        const viewportWidth = window.innerWidth;
-        return -(containerWidth - viewportWidth + 100); // 100px padding
-      };
+      // Desktop Horizontal Scroll
+      mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+        if (!scrollContainerRef.current || !scrollWrapperRef.current) return;
 
-      const tween = gsap.to(sections, {
-        x: getScrollAmount,
-        ease: "none",
-        scrollTrigger: {
-          trigger: scrollWrapperRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 0.5,
-          invalidateOnRefresh: true,
-        }
+        const sections = gsap.utils.toArray('.project-card', scrollContainerRef.current);
+
+        // Calculate total scroll distance
+        const getScrollAmount = () => {
+          const containerWidth = scrollContainerRef.current!.scrollWidth;
+          const viewportWidth = window.innerWidth;
+          return -(containerWidth - viewportWidth + 100); // 100px padding
+        };
+
+        const tween = gsap.to(sections, {
+          x: getScrollAmount,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: scrollWrapperRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.5,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        return () => {
+          tween.kill();
+        };
       });
 
-      return () => {
-        tween.kill();
-      };
-    });
-
-    return () => mm.revert();
-  }, { scope: containerRef });
+      return () => mm.revert();
+    },
+    { scope: containerRef },
+  );
 
   // Handle Hover Trail
   useEffect(() => {
@@ -73,7 +79,7 @@ export default function Projects() {
 
       const target = e.target as HTMLElement;
       const card = target.closest('.project-card') as HTMLElement;
-      
+
       if (!card) return;
 
       const imgSrc = card.dataset.image;
@@ -90,7 +96,7 @@ export default function Projects() {
 
       // Update image source and position
       imgNode.src = imgSrc;
-      
+
       // Animate the cloned image
       gsap.killTweensOf(imgNode);
       gsap.set(imgNode, {
@@ -98,7 +104,7 @@ export default function Projects() {
         y: e.clientY - 60, // offset by half height
         scale: 1,
         opacity: 0.95,
-        zIndex: (gsap.getProperty(imgNode, "zIndex") as number || 30) + 1,
+        zIndex: ((gsap.getProperty(imgNode, 'zIndex') as number) || 30) + 1,
       });
 
       gsap.to(imgNode, {
@@ -106,10 +112,10 @@ export default function Projects() {
         scale: 0.85,
         opacity: 0,
         duration: 1.3,
-        ease: "power2.out",
+        ease: 'power2.out',
         onComplete: () => {
           gsap.set(imgNode, { opacity: 0 });
-        }
+        },
       });
 
       // Increment index (pool size 15)
@@ -121,119 +127,132 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" ref={containerRef} className="w-full relative scroll-mt-32">
+    <section id="projects" ref={containerRef} className="relative w-full scroll-mt-32">
       {/* Header section (not pinned) */}
-      <div className="flex flex-col gap-2 mb-10 px-6 sm:px-12">
-        <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
+      <div className="mb-10 flex flex-col gap-2 px-6 sm:px-12">
+        <h2 className="flex items-center gap-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
           <FolderOpen className="text-[var(--color-volt)]" />
           Proof of Work
         </h2>
       </div>
 
       {/* Pinned Wrapper for Desktop */}
-      <div ref={scrollWrapperRef} className="w-full h-full relative">
+      <div ref={scrollWrapperRef} className="relative h-full w-full">
         {/* Scroll Container */}
-        <div 
-          ref={scrollContainerRef} 
-          className="flex flex-nowrap gap-6 md:gap-10 w-full md:w-max px-6 sm:px-12 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-8 md:pb-0 scrollbar-hide"
+        <div
+          ref={scrollContainerRef}
+          className="scrollbar-hide flex w-full snap-x snap-mandatory flex-nowrap gap-6 overflow-x-auto px-6 pb-8 sm:px-12 md:w-max md:snap-none md:gap-10 md:overflow-visible md:pb-0"
         >
           {portfolioData.projects.map((project) => (
-            <div 
+            <div
               key={project.id}
               data-image={project.imagePlaceholder}
-              className="project-card flex-shrink-0 w-[85vw] sm:w-[500px] md:w-[600px] snap-center snap-always glass-panel rounded-2xl overflow-hidden flex flex-col group hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.5)] transition-all duration-300 relative z-10 bg-[var(--bg-primary)]"
+              className="project-card glass-panel group relative z-10 flex w-[85vw] flex-shrink-0 snap-center snap-always flex-col overflow-hidden rounded-2xl bg-[var(--bg-primary)] transition-all duration-300 hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.5)] sm:w-[500px] md:w-[600px]"
             >
               {/* Project Image */}
-              <div className="aspect-video w-full relative border-b border-white/10 overflow-hidden bg-black/40">
+              <div className="relative aspect-video w-full overflow-hidden border-b border-white/10 bg-black/40">
                 {project.imagePlaceholder ? (
-                  <div className="absolute inset-0 w-full h-full group-hover:scale-105 group-hover:-rotate-1 transition-transform duration-500 ease-out">
+                  <div className="absolute inset-0 h-full w-full transition-transform duration-500 ease-out group-hover:scale-105 group-hover:-rotate-1">
                     <Image
                       src={project.imagePlaceholder}
                       alt={`${project.title} screenshot`}
                       fill
                       sizes="(max-width: 768px) 100vw, 600px"
-                      className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                      className="object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
                     />
                   </div>
                 ) : (
-                  <div aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
                     <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-volt)]/10 to-transparent"></div>
-                    <div className="relative z-10 flex flex-col items-center gap-3 opacity-80 md:opacity-50 md:group-hover:opacity-80 md:group-hover:scale-105 transition-all duration-500">
-                      <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center bg-white/5">
+                    <div className="relative z-10 flex flex-col items-center gap-3 opacity-80 transition-all duration-500 md:opacity-50 md:group-hover:scale-105 md:group-hover:opacity-80">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/5">
                         <FolderOpen size={20} className="text-white" />
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-              
-              <div className="p-6 sm:p-8 flex flex-col gap-4 flex-1">
-                <div className="flex justify-between items-start gap-4">
+
+              <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 group-hover:text-[var(--color-volt)] transition-colors">
+                    <h3 className="mb-1 text-xl font-bold text-white transition-colors group-hover:text-[var(--color-volt)] sm:text-2xl">
                       {project.title}
                     </h3>
-                    <p className="text-[var(--color-volt)] text-sm font-medium">{project.tagline}</p>
+                    <p className="text-sm font-medium text-[var(--color-volt)]">
+                      {project.tagline}
+                    </p>
                   </div>
-                  {project.liveUrl === "preview-on-request" ? (
-                    <span 
-                      className="h-8 px-3 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/50 text-xs font-medium cursor-not-allowed shrink-0"
+                  {project.liveUrl === 'preview-on-request' ? (
+                    <span
+                      className="flex h-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-white/10 bg-white/5 px-3 text-xs font-medium text-white/50"
                       title="Preview available on request"
                     >
                       Preview on request
                     </span>
-                  ) : project.id === "sukisuite" ? (
-                    <a 
-                      href={project.liveUrl} 
-                      target="_blank" 
+                  ) : project.id === 'sukisuite' ? (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
                       rel="noreferrer"
                       aria-label={`View ${project.title} live`}
-                      className="h-8 px-3 rounded-full bg-[var(--color-volt)]/10 border border-[var(--color-volt)]/30 flex items-center justify-center text-[var(--color-volt)] hover:bg-[var(--color-volt)]/20 hover:border-[var(--color-volt)]/50 transition-all text-xs font-semibold shrink-0"
+                      className="flex h-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/10 px-3 text-xs font-semibold text-[var(--color-volt)] transition-all hover:border-[var(--color-volt)]/50 hover:bg-[var(--color-volt)]/20"
                     >
                       Live
                     </a>
                   ) : (
-                    <a 
-                      href={project.liveUrl} 
-                      target="_blank" 
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
                       rel="noreferrer"
                       aria-label={`View ${project.title} live`}
-                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-white/20 transition-all text-white shrink-0"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:border-white/20 hover:bg-white/10"
                     >
                       <ExternalLink size={18} aria-hidden="true" />
                     </a>
                   )}
                 </div>
-                
-                <p className="text-[var(--text-secondary)] text-sm sm:text-base leading-relaxed">
+
+                <p className="text-sm leading-relaxed text-[var(--text-secondary)] sm:text-base">
                   {project.description}
                 </p>
-                
-                <div className="mt-auto pt-6 flex flex-col gap-4">
+
+                <div className="mt-auto flex flex-col gap-4 pt-6">
                   <div className="flex flex-col gap-2">
-                    <span className="text-xs text-[var(--text-secondary)] uppercase tracking-wider font-semibold">Features</span>
-                    <ul className="text-sm text-white/80 list-disc list-inside space-y-1">
+                    <span className="text-xs font-semibold tracking-wider text-[var(--text-secondary)] uppercase">
+                      Features
+                    </span>
+                    <ul className="list-inside list-disc space-y-1 text-sm text-white/80">
                       {project.features.map((feature, i) => (
                         <li key={i}>{feature}</li>
                       ))}
                     </ul>
                   </div>
-                  
-                  <div className="flex flex-wrap gap-2 mt-2">
+
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {project.techStack.map((tech) => (
-                      <span 
-                        key={tech} 
-                        className="px-2.5 py-1 rounded-md border text-xs font-mono bg-white/5 border-white/10 text-[var(--text-secondary)]"
+                      <span
+                        key={tech}
+                        className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 font-mono text-xs text-[var(--text-secondary)]"
                       >
                         {tech}
                       </span>
                     ))}
                   </div>
-                  
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <Link href={`/projects/${project.id}`} className="text-[var(--color-volt)] text-sm font-semibold hover:text-white transition-colors flex items-center gap-2 w-max group/link">
-                      Read Case Study 
-                      <ArrowRight size={16} className="transition-transform group-hover/link:translate-x-1" />
+
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="group/link flex w-max items-center gap-2 text-sm font-semibold text-[var(--color-volt)] transition-colors hover:text-white"
+                    >
+                      Read Case Study
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform group-hover/link:translate-x-1"
+                      />
                     </Link>
                   </div>
                 </div>
@@ -244,7 +263,10 @@ export default function Projects() {
       </div>
 
       {mounted && (
-        <div aria-hidden="true" className="hidden md:block pointer-events-none fixed inset-0 z-[30]">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-[30] hidden md:block"
+        >
           {[...Array(15)].map((_, i) => {
             return (
               /* eslint-disable-next-line @next/next/no-img-element */
@@ -255,7 +277,7 @@ export default function Projects() {
                 }}
                 src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                 alt=""
-                className="absolute top-0 left-0 w-[200px] h-[120px] object-cover rounded-lg border border-[var(--color-volt)]/20 shadow-2xl opacity-0"
+                className="absolute top-0 left-0 h-[120px] w-[200px] rounded-lg border border-[var(--color-volt)]/20 object-cover opacity-0 shadow-2xl"
                 style={{ transformOrigin: 'center center' }}
               />
             );

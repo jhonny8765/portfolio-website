@@ -20,11 +20,11 @@ export async function submitContactForm(formData: FormData) {
     const headersList = await headers();
     const ip = headersList.get('x-forwarded-for') || 'unknown';
     const now = Date.now();
-    
-    // Hash or mask the IP for memory if privacy is a concern, but since it's just in-memory 
+
+    // Hash or mask the IP for memory if privacy is a concern, but since it's just in-memory
     // and wiped on restart, raw IP in memory is standard. We will NOT store it in the database.
     const rateLimitInfo = rateLimitMap.get(ip) || { count: 0, timestamp: now };
-    
+
     if (now - rateLimitInfo.timestamp > RATE_LIMIT_WINDOW_MS) {
       rateLimitInfo.count = 1;
       rateLimitInfo.timestamp = now;
@@ -56,7 +56,8 @@ export async function submitContactForm(formData: FormData) {
 
     // Length constraints
     if (name.length > 100) return { success: false, error: 'Name is too long.' };
-    if (email.length > 150 || !email.includes('@')) return { success: false, error: 'Invalid email address.' };
+    if (email.length > 150 || !email.includes('@'))
+      return { success: false, error: 'Invalid email address.' };
     if (message.length > 3000) return { success: false, error: 'Message is too long.' };
 
     // Service allowlist
@@ -73,13 +74,16 @@ export async function submitContactForm(formData: FormData) {
         service,
         message,
         // created_at is handled by Postgres default
-      }
+      },
     ]);
 
     if (error) {
       // Log the actual error internally, but do NOT expose it to the client
       console.error('Supabase Insert Error:', error.message);
-      return { success: false, error: 'An error occurred while sending your message. Please try again later.' };
+      return {
+        success: false,
+        error: 'An error occurred while sending your message. Please try again later.',
+      };
     }
 
     // 5. Send Email via Resend

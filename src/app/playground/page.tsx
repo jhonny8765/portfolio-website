@@ -17,66 +17,84 @@ export const metadata: Metadata = {
   twitter: {
     title: 'AI Playground | Jhon Rey Consolacion',
     description: 'Experiment with AI image generation and prompt enhancement.',
-  }
+  },
 };
 
 export default function PlaygroundPage() {
   return (
-    <main className="min-h-screen bg-[var(--bg-primary)] pt-24 pb-12 px-4 sm:px-6 flex flex-col relative overflow-hidden selection:bg-[var(--color-volt)] selection:text-white">
+    <main
+      id="main-content"
+      className="relative flex min-h-screen flex-col overflow-hidden bg-[var(--bg-primary)] px-4 pt-24 pb-12 selection:bg-[var(--color-volt)] selection:text-white sm:px-6"
+    >
       {/* Background Glows (matching the main page) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-[var(--color-volt)]/10 blur-[100px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-1/4 right-0 w-[300px] h-[300px] bg-[var(--color-volt)]/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="pointer-events-none absolute top-0 left-1/2 h-[400px] w-full max-w-4xl -translate-x-1/2 rounded-full bg-[var(--color-volt)]/10 blur-[100px]"></div>
+      <div className="pointer-events-none absolute top-1/4 right-0 h-[300px] w-[300px] rounded-full bg-[var(--color-volt)]/5 blur-[120px]"></div>
 
-      <div className="w-full max-w-5xl mx-auto flex-1 flex flex-col relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-        <Link href="/" className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-white transition-colors mb-12">
+      <div className="animate-in fade-in slide-in-from-bottom-8 relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col duration-700">
+        <Link
+          href="/"
+          className="mb-12 inline-flex items-center gap-2 text-[var(--text-secondary)] transition-colors hover:text-white"
+        >
           <ArrowLeft size={16} />
           Back to Portfolio
         </Link>
-        
+
         {/* Header Section */}
-        <div className="text-center mb-16 relative">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[rgba(232,245,74,0.1)] border border-[var(--color-volt)]/20 mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-volt)] animate-pulse"></span>
-            <span className="text-[10px] uppercase font-semibold text-[var(--color-volt-light)] tracking-wider">Experimental</span>
+        <div className="relative mb-16 text-center">
+          <div className="mb-6 inline-flex items-center gap-1.5 rounded-full border border-[var(--color-volt)]/20 bg-[rgba(232,245,74,0.1)] px-3 py-1">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-volt)]"></span>
+            <span className="text-[10px] font-semibold tracking-wider text-[var(--color-volt-light)] uppercase">
+              Experimental
+            </span>
           </div>
-          
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-            AI <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt)] to-[var(--color-volt-light)]">Playground</span>
+
+          <h1 className="mb-6 text-4xl font-bold tracking-tight text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] sm:text-5xl lg:text-7xl">
+            AI{' '}
+            <span className="bg-gradient-to-r from-[var(--color-volt)] to-[var(--color-volt-light)] bg-clip-text text-transparent">
+              Playground
+            </span>
           </h1>
-          
-          <p className="text-lg sm:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto font-light leading-relaxed">
-            A sandbox for AI experimentation. Use the Gemini prompt enhancer to craft the perfect description, then generate unique images powered by Cloudflare Workers AI.
+
+          <p className="mx-auto max-w-2xl text-lg leading-relaxed font-light text-[var(--text-secondary)] sm:text-xl">
+            A sandbox for AI experimentation. Use the Gemini prompt enhancer to craft the perfect
+            description, then generate unique images powered by Cloudflare Workers AI.
           </p>
-          
-          <div className="absolute top-1/2 left-[5%] -translate-y-1/2 w-[120px] pointer-events-none opacity-20 md:opacity-40 mix-blend-screen hidden md:block">
-             <Image src="/site-assets/floating/ai-braces.webp" alt="Decoration" width={120} height={80} className="w-full h-auto" />
+
+          <div className="pointer-events-none absolute top-1/2 left-[5%] hidden w-[120px] -translate-y-1/2 opacity-20 mix-blend-screen md:block md:opacity-40">
+            <Image
+              src="/site-assets/floating/ai-braces.webp"
+              alt="Decoration"
+              width={120}
+              height={80}
+              className="h-auto w-full"
+            />
           </div>
         </div>
 
         {/* Console Framed Generator Component */}
-        <div className="glass-panel rounded-2xl sm:rounded-3xl border border-white/10 overflow-hidden relative shadow-2xl">
+        <div className="glass-panel relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl sm:rounded-3xl">
           {/* Mac-style Window Header */}
-          <div className="h-10 bg-white/5 border-b border-white/10 flex items-center px-4 gap-2 relative">
+          <div className="relative flex h-10 items-center gap-2 border-b border-white/10 bg-white/5 px-4">
             <div className="flex gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-              <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+              <div className="h-3 w-3 rounded-full border border-red-500/50 bg-red-500/20"></div>
+              <div className="h-3 w-3 rounded-full border border-yellow-500/50 bg-yellow-500/20"></div>
+              <div className="h-3 w-3 rounded-full border border-green-500/50 bg-green-500/20"></div>
             </div>
-            <div className="absolute left-1/2 -translate-x-1/2 text-xs font-mono text-[var(--text-secondary)]">
+            <div className="absolute left-1/2 -translate-x-1/2 font-mono text-xs text-[var(--text-secondary)]">
               /usr/bin/generator --engine=cloudflare
             </div>
           </div>
-          <div className="p-4 sm:p-6 lg:p-8 bg-black/40">
+          <div className="bg-black/40 p-4 sm:p-6 lg:p-8">
             <ImageGenerator />
           </div>
         </div>
-        
+
         {/* Footer/Note */}
-        <div className="mt-16 text-center text-xs text-[var(--text-secondary)]/50 max-w-md mx-auto">
-          Generations are strictly rate-limited per user and reset daily at UTC midnight to ensure fair usage. Generated images are not permanently stored.
+        <div className="mx-auto mt-16 max-w-md text-center text-xs text-[var(--text-secondary)]/50">
+          Generations are strictly rate-limited per user and reset daily at UTC midnight to ensure
+          fair usage. Generated images are not permanently stored.
         </div>
       </div>
     </main>
   );
 }
-

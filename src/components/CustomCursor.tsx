@@ -25,19 +25,19 @@ export function CustomCursor() {
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      
+
       gsap.to(cursor, {
         x: mouseX,
         y: mouseY,
         duration: 0.1,
-        ease: "power2.out"
+        ease: 'power2.out',
       });
-      
+
       gsap.to(follower, {
         x: mouseX,
         y: mouseY,
         duration: 0.5,
-        ease: "power2.out"
+        ease: 'power2.out',
       });
     };
 
@@ -46,12 +46,13 @@ export function CustomCursor() {
     // Handle interactive elements (hover states)
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isClickable = target.tagName.toLowerCase() === 'a' || 
-                          target.tagName.toLowerCase() === 'button' ||
-                          target.closest('a') || 
-                          target.closest('button') ||
-                          target.classList.contains('cursor-pointer');
-                          
+      const isClickable =
+        target.tagName.toLowerCase() === 'a' ||
+        target.tagName.toLowerCase() === 'button' ||
+        target.closest('a') ||
+        target.closest('button') ||
+        target.classList.contains('cursor-pointer');
+
       if (isClickable) {
         gsap.to(cursor, { scale: 1.5, opacity: 0.5, duration: 0.2 });
         gsap.to(follower, { scale: 0.5, opacity: 0, duration: 0.2 });
@@ -77,13 +78,13 @@ export function CustomCursor() {
 
   return (
     <>
-      <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 w-2 h-2 bg-[var(--color-volt)] rounded-full pointer-events-none z-[9999] mix-blend-screen hidden [@media(pointer:fine)]:block"
+      <div
+        ref={cursorRef}
+        className="pointer-events-none fixed top-0 left-0 z-[9999] hidden h-2 w-2 rounded-full bg-[var(--color-volt)] mix-blend-screen [@media(pointer:fine)]:block"
       />
-      <div 
-        ref={followerRef} 
-        className="fixed top-0 left-0 w-8 h-8 border border-[var(--color-volt)] rounded-full pointer-events-none z-[9998] mix-blend-screen opacity-50 hidden [@media(pointer:fine)]:block"
+      <div
+        ref={followerRef}
+        className="pointer-events-none fixed top-0 left-0 z-[9998] hidden h-8 w-8 rounded-full border border-[var(--color-volt)] opacity-50 mix-blend-screen [@media(pointer:fine)]:block"
       />
     </>
   );

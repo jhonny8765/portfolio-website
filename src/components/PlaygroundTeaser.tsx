@@ -4,44 +4,46 @@ import { Sparkles, ArrowRight, Image as ImageIcon } from 'lucide-react';
 
 export default function PlaygroundTeaser() {
   return (
-    <section className="w-full py-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="relative w-full rounded-3xl border border-[var(--color-volt)]/20 bg-gradient-to-br from-[#090a0f] to-[#161821] p-8 sm:p-12 overflow-hidden shadow-2xl group">
-        
+    <section className="animate-in fade-in slide-in-from-bottom-8 w-full py-12 duration-700">
+      <div className="group relative w-full overflow-hidden rounded-3xl border border-[var(--color-volt)]/20 bg-gradient-to-br from-[#090a0f] to-[#161821] p-8 shadow-2xl sm:p-12">
         {/* Glow effect */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--color-volt)]/10 blur-[100px] rounded-full pointer-events-none transition-opacity duration-700 group-hover:opacity-100 opacity-50" />
-        
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex-1 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#E8F54A]/30 bg-[#E8F54A]/5 text-[#E8F54A] text-xs font-semibold uppercase tracking-widest mb-6">
+        <div className="pointer-events-none absolute top-0 right-0 h-96 w-96 rounded-full bg-[var(--color-volt)]/10 opacity-50 blur-[100px] transition-opacity duration-700 group-hover:opacity-100" />
+
+        <div className="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="max-w-xl flex-1">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E8F54A]/30 bg-[#E8F54A]/5 px-3 py-1.5 text-xs font-semibold tracking-widest text-[#E8F54A] uppercase">
               <Sparkles size={14} />
               Experimental
             </div>
-            
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              AI Image <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt)] to-[var(--color-volt-light)]">Playground</span>
+
+            <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">
+              AI Image{' '}
+              <span className="bg-gradient-to-r from-[var(--color-volt)] to-[var(--color-volt-light)] bg-clip-text text-transparent">
+                Playground
+              </span>
             </h2>
-            
-            <p className="text-[var(--text-secondary)] text-lg mb-8 leading-relaxed">
-              Test my integration of Cloudflare Workers AI and Google Gemini. Craft enhanced prompts and generate unique images in real-time.
+
+            <p className="mb-8 text-lg leading-relaxed text-[var(--text-secondary)]">
+              Test my integration of Cloudflare Workers AI and Google Gemini. Craft enhanced prompts
+              and generate unique images in real-time.
             </p>
-            
-            <Link 
+
+            <Link
               href="/playground"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-black font-semibold hover:bg-gray-200 transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-semibold text-black shadow-lg transition-colors hover:bg-gray-200"
             >
               <ImageIcon size={18} />
               Enter Playground
               <ArrowRight size={16} />
             </Link>
           </div>
-          
-          <div className="w-full md:w-1/3 aspect-square max-w-xs rounded-2xl border border-white/10 bg-black/50 overflow-hidden relative flex items-center justify-center">
+
+          <div className="relative flex aspect-square w-full max-w-xs items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black/50 md:w-1/3">
             <div className="absolute inset-0 bg-gradient-to-tr from-[var(--color-volt)]/20 to-[#E8F54A]/20 opacity-50" />
-            <Sparkles size={48} className="text-white/20 animate-pulse" />
+            <Sparkles size={48} className="animate-pulse text-white/20" />
           </div>
         </div>
       </div>
     </section>
   );
 }
-

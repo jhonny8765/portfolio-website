@@ -72,7 +72,7 @@ Must implement:
    - hover link/button → ring expands, optional word (`OPEN` / `ASK` / `VIEW`)
    - hover image/project → larger ring or inverted mix-blend
    - hover Ask My AI → label `ASK`
-   Hide default cursor on desktop; never show custom cursor on touch. Always provide a real focus ring for keyboard.
+     Hide default cursor on desktop; never show custom cursor on touch. Always provide a real focus ring for keyboard.
 
 4. **Magnetic buttons / logo / primary nav / hero CTAs / project “view” links**  
    Element eases toward pointer inside a radius, elastic snap-back. Disable under `768px` and on touch.
@@ -108,7 +108,7 @@ Must implement:
 
 Keep one long homepage. Suggested order:
 
-1. Preloader → **Hero** (split headline, subcopy, Ask My AI + Explore Projects, email fallback, floating console assets, optional live `build-console.sh` panel as a *side* visual — not the whole hero).
+1. Preloader → **Hero** (split headline, subcopy, Ask My AI + Explore Projects, email fallback, floating console assets, optional live `build-console.sh` panel as a _side_ visual — not the whole hero).
 2. **Marquee** (currently building / learning / next).
 3. **README / About** (personality + `brand/monogram-jr.png` unless a real photo already exists in `/public`. Never generate a face).
 4. **Build Log** (the four facts, restyled as a terminal/log but cinematic).
@@ -116,7 +116,7 @@ Keep one long homepage. Suggested order:
 6. **How I Build** (pinned 01–04 on desktop).
 7. **AI Image Playground teaser** → `/playground`.
 8. **Services** (three magnetic cards).
-9. **Technical Arsenal** (two clusters: Active / Exploring). Ken’s “I cook with these ingredients” energy is OK as a heading *only if* rewritten in my voice, e.g. “What I actually ship with”.
+9. **Technical Arsenal** (two clusters: Active / Exploring). Ken’s “I cook with these ingredients” energy is OK as a heading _only if_ rewritten in my voice, e.g. “What I actually ship with”.
 10. **Let’s Work Together** contact form + email.
 
 Header: logo/name, Works, Playground, Ask My AI, Contact. Magnetic on desktop. Footer: email, year, small “Built with AI, shipped by hand” line.
@@ -188,7 +188,7 @@ Work in this order so the site never stays half-broken:
 
 ## 9. Done means
 
-- Desktop feels *alive* like kenjimmy.xyz (cursor, magnetic, smooth scroll, split hero, trail, preload, transitions) but still obviously **Jhon Rey** (AI, console, Ask My AI, playground, Kidapawan work).
+- Desktop feels _alive_ like kenjimmy.xyz (cursor, magnetic, smooth scroll, split hero, trail, preload, transitions) but still obviously **Jhon Rey** (AI, console, Ask My AI, playground, Kidapawan work).
 - Mobile is fast, readable, and non-broken (no fake cursor, no unusable pins).
 - Every previous link, form, Ask My AI, and `/playground` generate path still works.
 - No invented biography, clients, or metrics.

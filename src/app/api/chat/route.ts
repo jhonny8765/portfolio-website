@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     const now = Date.now();
     const rateLimitInfo = rateLimitMap.get(ip) || { count: 0, timestamp: now };
-    
+
     if (now - rateLimitInfo.timestamp > RATE_LIMIT_WINDOW_MS) {
       rateLimitInfo.count = 1;
       rateLimitInfo.timestamp = now;
@@ -68,6 +68,8 @@ CRITICAL RULES:
   } catch (error: unknown) {
     console.error('API Chat Error:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response('An error occurred while processing your request: ' + errorMessage, { status: 500 });
+    return new Response('An error occurred while processing your request: ' + errorMessage, {
+      status: 500,
+    });
   }
 }

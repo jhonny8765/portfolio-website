@@ -9,7 +9,9 @@ if (!supabaseUrl) {
 }
 
 if (!supabaseServiceKey) {
-  throw new Error('SUPABASE_SERVICE_ROLE_KEY is missing in environment variables. Do not use NEXT_PUBLIC_ for this key.');
+  throw new Error(
+    'SUPABASE_SERVICE_ROLE_KEY is missing in environment variables. Do not use NEXT_PUBLIC_ for this key.',
+  );
 }
 
 // Create a Supabase client with the service role key for admin privileges.

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useChat } from 'ai/react';
@@ -13,20 +13,29 @@ interface AskMyAIProps {
 }
 
 const SUGGESTED_PROMPTS = [
-  "What can Jhon Rey build?",
-  "Tell me about SukiSuite.",
-  "What technologies does he use?",
-  "Is Jhon Rey available for freelance work?",
+  'What can Jhon Rey build?',
+  'Tell me about SukiSuite.',
+  'What technologies does he use?',
+  'Is Jhon Rey available for freelance work?',
 ];
 
 export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
-  const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading, error, append } = useChat({
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit,
+    setMessages,
+    isLoading,
+    error,
+    append,
+  } = useChat({
     api: '/api/chat',
-    onError: (err) => console.error("Chat Error:", err)
+    onError: (err) => console.error('Chat Error:', err),
   });
   const [isBooting, setIsBooting] = useState(true);
   const [bootText, setBootText] = useState('');
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,24 +51,24 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
   useEffect(() => {
     if (isOpen) {
       previousFocusRef.current = document.activeElement as HTMLElement;
-      
+
       // Focus the input when modal opens
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
-      
+
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
           onClose();
           return;
         }
-        
+
         if (e.key === 'Tab' && modalRef.current) {
           const focusableElements = modalRef.current.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
           );
           if (focusableElements.length === 0) return;
-          
+
           const firstElement = focusableElements[0] as HTMLElement;
           const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
@@ -76,7 +85,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
           }
         }
       };
-      
+
       document.addEventListener('keydown', handleKeyDown);
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
@@ -94,7 +103,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
   // Boot sequence effect
   useEffect(() => {
     if (isOpen && isBooting) {
-      const text = "connecting to jhonrey...";
+      const text = 'connecting to jhonrey...';
       let i = 0;
       const interval = setInterval(() => {
         setBootText(text.slice(0, i + 1));
@@ -112,14 +121,14 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
     append({
       id: crypto.randomUUID(),
       role: 'user',
-      content: promptText
+      content: promptText,
     });
   };
 
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[var(--z-modal)] flex justify-end bg-black/60 backdrop-blur-sm transition-opacity"
       role="dialog"
       aria-modal="true"
@@ -127,33 +136,42 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
       aria-describedby="ask-my-ai-desc"
       ref={modalRef}
     >
-      <div className="w-full sm:w-[450px] md:w-[500px] h-full flex flex-col bg-[var(--bg-primary)] border-l border-white/10 shadow-[-20px_0_40px_rgba(0,0,0,0.5)] animate-slide-in-right relative">
-        
+      <div className="animate-slide-in-right relative flex h-full w-full flex-col border-l border-white/10 bg-[var(--bg-primary)] shadow-[-20px_0_40px_rgba(0,0,0,0.5)] sm:w-[450px] md:w-[500px]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[var(--bg-secondary)]">
+        <div className="flex items-center justify-between border-b border-white/10 bg-[var(--bg-secondary)] px-6 py-4">
           <div className="flex items-center gap-3 font-mono">
-            <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/10 border border-[var(--color-volt)]/50 flex items-center justify-center text-[var(--color-volt)]">
-              <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-volt)]/50 bg-[var(--color-volt)]/10 text-[var(--color-volt)]">
+              <Image
+                src="/site-assets/brand/preloader-glyph.webp"
+                alt="Glyph"
+                width={16}
+                height={16}
+                className="object-contain"
+              />
             </div>
             <div>
-              <h3 id="ask-my-ai-title" className="font-bold text-white tracking-tight">Ask My AI</h3>
-              <p id="ask-my-ai-desc" className="text-xs text-[var(--text-secondary)]">Strictly grounded in verified portfolio data</p>
+              <h3 id="ask-my-ai-title" className="font-bold tracking-tight text-white">
+                Ask My AI
+              </h3>
+              <p id="ask-my-ai-desc" className="text-xs text-[var(--text-secondary)]">
+                Strictly grounded in verified portfolio data
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button 
+            <button
               onClick={() => setMessages([])}
               title="Clear Conversation"
               aria-label="Clear conversation"
-              className="p-2 text-[var(--text-secondary)] hover:text-white hover:bg-white/5 rounded-full transition-colors"
+              className="rounded-full p-2 text-[var(--text-secondary)] transition-colors hover:bg-white/5 hover:text-white"
             >
               <RefreshCw size={18} />
             </button>
-            <button 
+            <button
               onClick={onClose}
               title="Close"
               aria-label="Close dialog"
-              className="p-2 text-[var(--text-secondary)] hover:text-white hover:bg-white/5 rounded-full transition-colors"
+              className="rounded-full p-2 text-[var(--text-secondary)] transition-colors hover:bg-white/5 hover:text-white"
             >
               <X size={20} />
             </button>
@@ -161,32 +179,47 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth relative" aria-live="polite">
+        <div
+          className="relative flex-1 space-y-6 overflow-y-auto scroll-smooth p-6"
+          aria-live="polite"
+        >
           {isBooting ? (
-            <div className="flex flex-col items-start justify-start h-full text-[var(--color-volt)] font-mono text-sm pt-4">
+            <div className="flex h-full flex-col items-start justify-start pt-4 font-mono text-sm text-[var(--color-volt)]">
               <div className="flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin" />
-                <span>{bootText}<span className="animate-pulse">_</span></span>
+                <span>
+                  {bootText}
+                  <span className="animate-pulse">_</span>
+                </span>
               </div>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-in fade-in duration-500">
-              <div className="w-16 h-16 flex items-center justify-center mb-2">
-                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={56} height={56} className="object-contain drop-shadow-[0_0_15px_rgba(232,245,74,0.3)]" />
+            <div className="animate-in fade-in flex h-full flex-col items-center justify-center space-y-6 text-center duration-500">
+              <div className="mb-2 flex h-16 w-16 items-center justify-center">
+                <Image
+                  src="/site-assets/brand/preloader-glyph.webp"
+                  alt="Glyph"
+                  width={56}
+                  height={56}
+                  className="object-contain drop-shadow-[0_0_15px_rgba(232,245,74,0.3)]"
+                />
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl font-bold text-white">Hi, I&apos;m Jhon Rey&apos;s AI Assistant.</h2>
-                <p className="text-[var(--text-secondary)] max-w-md mx-auto">
-                  I can answer questions about his skills, projects, and services based on his verified portfolio data.
+                <h2 className="text-xl font-bold text-white">
+                  Hi, I&apos;m Jhon Rey&apos;s AI Assistant.
+                </h2>
+                <p className="mx-auto max-w-md text-[var(--text-secondary)]">
+                  I can answer questions about his skills, projects, and services based on his
+                  verified portfolio data.
                 </p>
               </div>
-              
-              <div className="flex flex-wrap justify-center gap-3 w-full max-w-xl mt-4">
+
+              <div className="mt-4 flex w-full max-w-xl flex-wrap justify-center gap-3">
                 {SUGGESTED_PROMPTS.map((prompt, i) => (
                   <button
                     key={i}
                     onClick={() => handleSuggestedPrompt(prompt)}
-                    className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-[var(--text-secondary)] text-sm hover:text-white hover:bg-white/10 hover:border-white/20 transition-all"
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-[var(--text-secondary)] transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
                   >
                     {prompt}
                   </button>
@@ -196,43 +229,52 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
           ) : (
             <>
               {messages.map((message) => (
-                <div key={message.id} className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div
+                  key={message.id}
+                  className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
                   {message.role === 'assistant' && (
-                    <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/20 border border-[var(--color-volt)]/30 flex items-center justify-center text-[var(--color-volt)] shrink-0 mt-1">
-                      <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain" />
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/20 text-[var(--color-volt)]">
+                      <Image
+                        src="/site-assets/brand/preloader-glyph.webp"
+                        alt="Glyph"
+                        width={16}
+                        height={16}
+                        className="object-contain"
+                      />
                     </div>
                   )}
-                  
-                  <div className={`max-w-[85%] rounded-2xl px-5 py-4 ${
-                    message.role === 'user' 
-                      ? 'bg-[var(--color-volt)] text-white' 
-                      : 'bg-white/5 border border-white/10 text-white/90'
-                  }`}>
+
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-5 py-4 ${
+                      message.role === 'user'
+                        ? 'bg-[var(--color-volt)] text-white'
+                        : 'border border-white/10 bg-white/5 text-white/90'
+                    }`}
+                  >
                     {message.role === 'assistant' ? (
-                      <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                          {message.content}
-                        </ReactMarkdown>
+                      <div className="prose prose-invert prose-sm prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown>
                       </div>
                     ) : (
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     )}
                   </div>
-                  
+
                   {message.role === 'user' && (
-                    <div className="w-8 h-8 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0 mt-1">
+                    <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white">
                       <User size={16} aria-hidden="true" />
                     </div>
                   )}
                 </div>
               ))}
-              
+
               {isLoading && (
-                <div className="flex gap-4 justify-start" aria-live="polite" aria-busy="true">
-                   <div className="w-8 h-8 rounded-full bg-[var(--color-volt)]/20 border border-[var(--color-volt)]/30 flex items-center justify-center text-[var(--color-volt)] shrink-0 mt-1">
+                <div className="flex justify-start gap-4" aria-live="polite" aria-busy="true">
+                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/20 text-[var(--color-volt)]">
                     <Loader2 size={16} className="animate-spin" aria-hidden="true" />
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-[var(--text-secondary)] text-sm flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-[var(--text-secondary)]">
                     Thinking<span className="animate-pulse">...</span>
                   </div>
                 </div>
@@ -241,12 +283,18 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
           )}
 
           {error && (
-            <div className="flex gap-4 justify-start" role="alert" aria-live="assertive">
-               <div className="w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center text-red-400 shrink-0 mt-1">
-                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain grayscale opacity-50" />
+            <div className="flex justify-start gap-4" role="alert" aria-live="assertive">
+              <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-red-500/30 bg-red-500/20 text-red-400">
+                <Image
+                  src="/site-assets/brand/preloader-glyph.webp"
+                  alt="Glyph"
+                  width={16}
+                  height={16}
+                  className="object-contain opacity-50 grayscale"
+                />
               </div>
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl px-5 py-4 text-red-400 text-sm">
-                {error.message || "An error occurred. Please try again later."}
+              <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-400">
+                {error.message || 'An error occurred. Please try again later.'}
               </div>
             </div>
           )}
@@ -254,7 +302,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-[var(--bg-secondary)] border-t border-white/10">
+        <div className="border-t border-white/10 bg-[var(--bg-secondary)] p-4">
           <form onSubmit={handleSubmit} className="relative flex items-center">
             <input
               ref={inputRef}
@@ -262,19 +310,19 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
               value={input}
               onChange={handleInputChange}
               placeholder="Ask me anything about Jhon Rey's work..."
-              className="w-full bg-black/50 border border-white/10 rounded-full pl-6 pr-14 py-4 text-sm text-white placeholder-[var(--text-secondary)] focus:outline-none focus:border-[var(--color-volt)]/50 focus:ring-1 focus:ring-[var(--color-volt)]/50 transition-all"
+              className="w-full rounded-full border border-white/10 bg-black/50 py-4 pr-14 pl-6 text-sm text-white placeholder-[var(--text-secondary)] transition-all focus:border-[var(--color-volt)]/50 focus:ring-1 focus:ring-[var(--color-volt)]/50 focus:outline-none"
               disabled={isLoading}
             />
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
               aria-label="Send message"
-              className="absolute right-2 w-10 h-10 flex items-center justify-center bg-[var(--color-volt)] hover:bg-[var(--color-volt)] disabled:bg-white/10 disabled:text-white/30 text-white rounded-full transition-colors"
+              className="absolute right-2 flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-volt)] text-white transition-colors hover:bg-[var(--color-volt)] disabled:bg-white/10 disabled:text-white/30"
             >
               <Send size={16} className="ml-0.5" aria-hidden="true" />
             </button>
           </form>
-          <div className="text-center mt-3">
+          <div className="mt-3 text-center">
             <span className="text-[10px] text-[var(--text-secondary)]">
               Responses are generated by AI and limited to verified portfolio data.
             </span>

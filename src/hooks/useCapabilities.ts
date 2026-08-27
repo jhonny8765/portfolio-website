@@ -9,21 +9,23 @@ export function useCapabilities() {
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const touchQuery = window.matchMedia('(any-pointer: coarse)');
-    
+
     // We update state asynchronously to avoid React warnings about sync setState in effects
     requestAnimationFrame(() => {
       setPrefersReducedMotion(mediaQuery.matches);
-      setIsTouchDevice(touchQuery.matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+      setIsTouchDevice(
+        touchQuery.matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+      );
     });
-    
+
     const handleMotionChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
     };
-    
+
     const handleTouchChange = (e: MediaQueryListEvent) => {
       setIsTouchDevice(e.matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
     };
-    
+
     mediaQuery.addEventListener('change', handleMotionChange);
     touchQuery.addEventListener('change', handleTouchChange);
 

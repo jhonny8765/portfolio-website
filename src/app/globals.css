@@ -1,14 +1,14 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-bg: #07080A;
-  --color-bg-alt: #0B0D10;
-  --color-ink: #F4F1EA;
-  --color-muted: #9A9588;
-  --color-volt: #E8F54A;
-  --color-volt-light: #F4FA96;
+  --color-bg: #07080a;
+  --color-bg-alt: #0b0d10;
+  --color-ink: #f4f1ea;
+  --color-muted: #9a9588;
+  --color-volt: #e8f54a;
+  --color-volt-light: #f4fa96;
   --color-volt-line: rgba(232, 245, 74, 0.18);
-  
+
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-mono), monospace;
   --font-display: var(--font-display), system-ui, sans-serif;
@@ -87,20 +87,20 @@
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: var(--bg-primary);
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: rgba(232, 245, 74, 0.2);
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(232, 245, 74, 0.4);
   }
-  
+
   /* Firefox */
   * {
     scrollbar-width: thin;
@@ -115,10 +115,9 @@
     outline-offset: 4px;
     border-radius: 4px; /* Optional fallback radius */
   }
-  
+
   /* Prevent default outline when custom one is applied, unless it's the fallback */
   *:focus:not(:focus-visible) {
     outline: none;
   }
 }
-

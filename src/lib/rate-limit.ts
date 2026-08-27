@@ -39,6 +39,8 @@ export async function checkRateLimit({
 
 export function getSecondsUntilUTCMidnight(): number {
   const now = new Date();
-  const tomorrow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+  const tomorrow = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1),
+  );
   return Math.floor((tomorrow.getTime() - now.getTime()) / 1000);
 }

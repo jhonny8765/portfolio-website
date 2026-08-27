@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import Link, { LinkProps } from 'next/link';
@@ -12,7 +12,13 @@ interface TransitionLinkProps extends LinkProps {
   onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
 }
 
-export const TransitionLink = ({ children, className, href, onClick, ...props }: TransitionLinkProps) => {
+export const TransitionLink = ({
+  children,
+  className,
+  href,
+  onClick,
+  ...props
+}: TransitionLinkProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -33,19 +39,19 @@ export const TransitionLink = ({ children, className, href, onClick, ...props }:
     e.preventDefault();
 
     const overlay = document.getElementById('page-transition-overlay');
-    
+
     if (overlay) {
       const tl = gsap.timeline();
-      
+
       // Wipe up to cover
       tl.to(overlay, {
-        y: "0%",
+        y: '0%',
         duration: 0.4,
-        ease: "power3.inOut",
+        ease: 'power3.inOut',
         onComplete: () => {
           // Navigate once covered
           router.push(href);
-        }
+        },
       });
     } else {
       router.push(href);
@@ -53,14 +59,8 @@ export const TransitionLink = ({ children, className, href, onClick, ...props }:
   };
 
   return (
-    <Link 
-      href={href} 
-      className={className}
-      onClick={handleTransition}
-      {...props}
-    >
+    <Link href={href} className={className} onClick={handleTransition} {...props}>
       {children}
     </Link>
   );
 };
-
