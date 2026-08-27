@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useQueryState, parseAsString } from 'nuqs';
+import { toast } from 'sonner';
 import {
   Sparkles,
   Image as ImageIcon,
@@ -11,7 +13,13 @@ import {
 } from 'lucide-react';
 
 export default function ImageGenerator() {
-  const [prompt, setPrompt] = useState('');
+  // Prompt lives in the URL (?prompt=...) so a configured generator can be
+  // shared/bookmarked. URL updates are throttled + replace history entries so
+  // typing doesn't spam the back button (plan 5.5).
+  const [prompt, setPrompt] = useQueryState(
+    'prompt',
+    parseAsString.withDefault('').withOptions({ history: 'replace', throttleMs: 300 }),
+  );
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -82,6 +90,7 @@ export default function ImageGenerator() {
       const errorMessage =
         err instanceof Error ? err.message : 'An error occurred during enhancement.';
       setError(errorMessage);
+      toast.error('Enhancement failed', { description: errorMessage });
     } finally {
       setIsEnhancing(false);
     }
@@ -118,9 +127,13 @@ export default function ImageGenerator() {
       const url = URL.createObjectURL(blob);
       setImageUrl(url);
       setAltText(prompt.substring(0, 100) + (prompt.length > 100 ? '...' : '')); // Safe, truncated alt
+      toast.success('Image ready', {
+        description: `Generated in ${elapsed.toFixed(1)}s — use Download to save it.`,
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate image.';
       setError(errorMessage);
+      toast.error('Generation failed', { description: errorMessage });
     } finally {
       setIsGenerating(false);
     }

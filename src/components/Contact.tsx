@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react';
 import { Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { submitContactForm } from '@/actions/contact';
+import { toast } from 'sonner';
 import AnimatedSection from './AnimatedSection';
 
 export default function Contact() {
@@ -23,13 +24,22 @@ export default function Contact() {
       if (result.success) {
         setStatus('success');
         formRef.current?.reset();
+        toast.success('Message sent', {
+          description: 'Thanks for reaching out — I will get back to you as soon as I can.',
+        });
       } else {
         setStatus('error');
         setErrorMessage(result.error || 'Something went wrong.');
+        toast.error('Message not sent', {
+          description: result.error || 'Something went wrong. Please try again.',
+        });
       }
     } catch {
       setStatus('error');
       setErrorMessage('An unexpected error occurred. Please try again.');
+      toast.error('Message not sent', {
+        description: 'An unexpected error occurred. Please try again.',
+      });
     }
   };
 

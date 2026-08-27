@@ -4,6 +4,7 @@ import { TransitionLink as Link } from '@/components/TransitionLink';
 import Image from 'next/image';
 import { ArrowLeft, ExternalLink, CheckCircle2, Terminal } from 'lucide-react';
 import { portfolioData } from '@/data/portfolioData';
+import { ProjectFacts } from '@/components/ProjectFacts';
 
 export const metadata: Metadata = {
   alternates: {
@@ -61,6 +62,8 @@ export default function BetterYieldCaseStudy() {
           </h1>
           <p className="text-xl font-light text-[var(--text-secondary)]">{project.tagline}</p>
         </div>
+
+        <ProjectFacts project={project} />
 
         {/* Project Screenshot */}
         <div className="relative mb-16 flex aspect-video w-full items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl">

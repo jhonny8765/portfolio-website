@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ImageGenerator from '@/components/ImageGenerator';
 import { TransitionLink as Link } from '@/components/TransitionLink';
 import { ArrowLeft } from 'lucide-react';
@@ -88,7 +88,9 @@ export default function PlaygroundPage() {
             </div>
           </div>
           <div className="bg-black/40 p-4 sm:p-6 lg:p-8">
-            <ImageGenerator />
+            <Suspense fallback={null}>
+              <ImageGenerator />
+            </Suspense>
           </div>
         </div>
 

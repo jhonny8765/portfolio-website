@@ -58,6 +58,8 @@ export const metadata: Metadata = {
 import { LenisProvider } from '@/components/LenisProvider';
 import { EffectsLayer } from '@/components/EffectsLayer';
 import RouteTransition from '@/components/RouteTransition';
+import { Toaster } from 'sonner';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export default function RootLayout({
   children,
@@ -87,8 +89,22 @@ export default function RootLayout({
             aria-hidden="true"
           ></div>
           <RouteTransition />
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
         </LenisProvider>
+        {/* Toast feedback for contact form + playground (plan 5.5) */}
+        <Toaster
+          theme="dark"
+          richColors
+          closeButton
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#090a0f',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#ffffff',
+            },
+          }}
+        />
         <Analytics />
       </body>
     </html>
