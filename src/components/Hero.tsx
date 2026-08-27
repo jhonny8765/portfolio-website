@@ -63,26 +63,16 @@ export default function Hero({ onOpenAi }: HeroProps) {
     });
 
     mm.add("(prefers-reduced-motion: no-preference) and (max-width: 767px)", () => {
-      // Mobile: opacity starts at 1 so LCP element is immediately paintable.
-      // Animate transform only — slide in from y:30, no opacity gate.
-      gsap.set([".hero-text-item", ".hero-console-window", ".hero-floater"], { opacity: 1 });
-      // hero-word spans have CSS opacity-0/translate-y-100% — override immediately
-      gsap.set(".hero-word", { opacity: 1, y: "0%" });
-
-      gsap.fromTo(
+      // Mobile: text is visible from initial HTML paint.
+      // Animate transform only — slide in from y:20 without touching opacity.
+      gsap.from(
         ".hero-text-item",
-        { y: 20 },
-        { y: 0, duration: 0.6, stagger: 0.1, ease: "power3.out", delay: 0.05 }
+        { y: 20, duration: 0.6, stagger: 0.1, ease: "power3.out", delay: 0.05 }
       );
     });
 
     mm.add("(prefers-reduced-motion: reduce)", () => {
-      // No motion: reveal everything immediately
-      gsap.set(
-        [".hero-text-item", ".hero-console-window", ".hero-floater"],
-        { opacity: 1, y: 0 }
-      );
-      gsap.set(".hero-word", { opacity: 1, y: "0%" });
+      // No motion: everything stays at natural static position
     });
 
     return () => mm.revert();
@@ -105,13 +95,13 @@ export default function Hero({ onOpenAi }: HeroProps) {
           >
             {"I build with AI —".split(' ').map((word, i) => (
               <span key={i} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block translate-y-[100%] opacity-0">{word}</span>
+                <span className="hero-word inline-block">{word}</span>
               </span>
             ))}
             <span className="w-full h-0 sm:hidden"></span>
             {"websites, apps, & automations.".split(' ').map((word, i) => (
               <span key={`glow-${i}`} aria-hidden="true" className="inline-block overflow-hidden">
-                <span className="hero-word inline-block translate-y-[100%] opacity-0 text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}</span>
+                <span className="hero-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)]">{word}</span>
               </span>
             ))}
           </h1>

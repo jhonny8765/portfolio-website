@@ -56,12 +56,18 @@
   }
 }
 
-/* Glassmorphism utility */
 @layer utilities {
   .glass-panel {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+    .hero-word {
+      transform: translateY(100%);
+      opacity: 0;
+    }
   }
 }
 

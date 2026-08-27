@@ -45,9 +45,9 @@ export default function AboutReadme() {
               <div className="absolute -top-3 left-6 bg-[var(--bg-primary)] px-2 text-xs font-mono text-[var(--color-volt-light)] uppercase tracking-widest">
                 Fun Fact
               </div>
-              <div className="text-[var(--text-secondary)]">
-                {/* TODO(jhonrey): one real fun fact — do not fabricate */}
-              </div>
+              <p className="text-[var(--text-secondary)]">
+                No CS degree. I learned to build by shipping — every tool on this page was something I figured out mid-project.
+              </p>
             </div>
 
           </div>

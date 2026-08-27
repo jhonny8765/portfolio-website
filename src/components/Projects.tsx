@@ -215,11 +215,7 @@ export default function Projects() {
                     {project.techStack.map((tech) => (
                       <span 
                         key={tech} 
-                        className={`px-2.5 py-1 rounded-md border text-xs font-mono ${
-                          tech === "[Pending confirmation]" 
-                            ? "bg-[var(--color-volt)]/5 border-[var(--color-volt)]/20 text-[var(--color-volt)] opacity-70" 
-                            : "bg-white/5 border-white/10 text-[var(--text-secondary)]"
-                        }`}
+                        className="px-2.5 py-1 rounded-md border text-xs font-mono bg-white/5 border-white/10 text-[var(--text-secondary)]"
                       >
                         {tech}
                       </span>
