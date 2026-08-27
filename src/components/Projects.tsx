@@ -199,7 +199,7 @@ export default function Projects() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={`View ${project.title} live`}
-                      className="flex h-8 shrink-0 items-center justify-center rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/10 px-3 text-xs font-semibold text-[var(--color-volt)] transition-all hover:border-[var(--color-volt)]/50 hover:bg-[var(--color-volt)]/20"
+                      className="flex min-h-[44px] shrink-0 items-center justify-center rounded-full border border-[var(--color-volt)]/30 bg-[var(--color-volt)]/10 px-3 text-xs font-semibold text-[var(--color-volt)] transition-all hover:border-[var(--color-volt)]/50 hover:bg-[var(--color-volt)]/20"
                     >
                       Live
                     </a>
@@ -209,7 +209,7 @@ export default function Projects() {
                       target="_blank"
                       rel="noreferrer"
                       aria-label={`View ${project.title} live`}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:border-white/20 hover:bg-white/10"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all hover:border-white/20 hover:bg-white/10"
                     >
                       <ExternalLink size={18} aria-hidden="true" />
                     </a>
@@ -246,7 +246,7 @@ export default function Projects() {
                   <div className="mt-4 border-t border-white/10 pt-4">
                     <Link
                       href={`/projects/${project.id}`}
-                      className="group/link flex w-max items-center gap-2 text-sm font-semibold text-[var(--color-volt)] transition-colors hover:text-white"
+                      className="group/link flex min-h-[44px] w-max items-center gap-2 text-sm font-semibold text-[var(--color-volt)] transition-colors hover:text-white"
                     >
                       Read Case Study
                       <ArrowRight

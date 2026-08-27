@@ -19,11 +19,14 @@ export default function Footer() {
             href={portfolioData.identity.github}
             target="_blank"
             rel="noreferrer"
-            className="transition-colors hover:text-white"
+            className="inline-flex min-h-[44px] items-center transition-colors hover:text-white"
           >
             GitHub
           </a>
-          <a href="#contact" className="transition-colors hover:text-white">
+          <a
+            href="#contact"
+            className="inline-flex min-h-[44px] items-center transition-colors hover:text-white"
+          >
             Contact
           </a>
         </div>

@@ -20,6 +20,27 @@ export default function ImageGenerator() {
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Elapsed timer + staged status during generation (plan §4.4): generations
+  // can take 10-30s, so show what phase we're in instead of one static word.
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (!isGenerating) return;
+    const start = performance.now();
+    // elapsed is reset to 0 in handleGenerate right before setIsGenerating(true),
+    // so this effect only needs to tick (no sync setState in the effect body).
+    const tick = setInterval(() => setElapsed((performance.now() - start) / 1000), 200);
+    return () => clearInterval(tick);
+  }, [isGenerating]);
+
+  const stageText = isEnhancing
+    ? 'Enhancing your prompt'
+    : elapsed < 2
+      ? 'Warming up the model'
+      : elapsed < 6
+        ? 'Generating image'
+        : 'Refining details & rendering';
+
   // Cleanup object URLs on unmount or URL change
   useEffect(() => {
     return () => {
@@ -69,6 +90,7 @@ export default function ImageGenerator() {
   const handleGenerate = async () => {
     if (!prompt.trim() || prompt.length > 500) return;
 
+    setElapsed(0);
     setIsGenerating(true);
     setError(null);
 
@@ -160,7 +182,7 @@ export default function ImageGenerator() {
             <button
               onClick={handleReset}
               disabled={(!prompt && !imageUrl) || isGenerating || isEnhancing}
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-all hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-all hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               <RefreshCw size={14} /> Reset
             </button>
@@ -169,7 +191,7 @@ export default function ImageGenerator() {
               <button
                 onClick={handleEnhance}
                 disabled={!prompt.trim() || prompt.length > 200 || isEnhancing || isGenerating}
-                className="flex w-full items-center justify-center gap-2 rounded-full border border-[var(--color-volt)]/30 bg-white/5 px-5 py-2.5 text-sm font-medium whitespace-nowrap text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)]/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full border border-[var(--color-volt)]/30 bg-white/5 px-5 py-2.5 text-sm font-medium whitespace-nowrap text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)]/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 {isEnhancing ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -182,7 +204,7 @@ export default function ImageGenerator() {
               <button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || prompt.length > 500 || isGenerating || isEnhancing}
-                className="flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-volt)] px-6 py-2.5 text-sm font-semibold text-black shadow-[0_0_20px_rgba(232,245,74,0.3)] transition-all hover:bg-[var(--color-volt-light)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full bg-[var(--color-volt)] px-6 py-2.5 text-sm font-semibold text-black shadow-[0_0_20px_rgba(232,245,74,0.3)] transition-all hover:bg-[var(--color-volt-light)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
               >
                 {isGenerating ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -212,7 +234,18 @@ export default function ImageGenerator() {
               <div className="h-16 w-16 rounded-full border-4 border-[var(--color-volt)]/20"></div>
               <div className="absolute inset-0 h-16 w-16 animate-spin rounded-full border-4 border-[var(--color-volt)] border-t-transparent"></div>
             </div>
-            <p className="font-mono text-sm tracking-widest uppercase">Generating</p>
+            <p
+              className="font-mono text-sm tracking-widest uppercase"
+              role="status"
+              aria-live="polite"
+            >
+              {stageText}&hellip;
+            </p>
+            {/* Ticking timer is visual only — announcing it every 200ms would
+                spam screen readers; the stage text above carries the status. */}
+            <p aria-hidden="true" className="font-mono text-xs text-[var(--text-secondary)]">
+              {elapsed.toFixed(1)}s elapsed
+            </p>
           </div>
         ) : imageUrl ? (
           <div className="animate-in fade-in group relative h-full w-full duration-700">

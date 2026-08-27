@@ -36,7 +36,7 @@ export default function PlaygroundPage() {
       <div className="animate-in fade-in slide-in-from-bottom-8 relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col duration-700">
         <Link
           href="/"
-          className="mb-12 inline-flex items-center gap-2 text-[var(--text-secondary)] transition-colors hover:text-white"
+          className="mb-12 inline-flex min-h-[44px] items-center gap-2 text-[var(--text-secondary)] transition-colors hover:text-white"
         >
           <ArrowLeft size={16} />
           Back to Portfolio

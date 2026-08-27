@@ -90,6 +90,14 @@ export default function Header({ onOpenAi }: HeaderProps) {
   return (
     <>
       <header className="pointer-events-none fixed top-0 right-0 left-0 z-[var(--z-header)] px-4 py-4 sm:px-6">
+        {/* First focusable element on the page; lives inside the <header>
+            landmark so no page content sits outside a landmark (axe region). */}
+        <a
+          href="#main-content"
+          className="sr-only z-[var(--z-skiplink)] rounded-md bg-[var(--color-volt)] px-4 py-3 font-medium text-[var(--color-bg)] focus:pointer-events-auto focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:min-h-[44px]"
+        >
+          Skip to main content
+        </a>
         <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-[#07080A]/90 px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6">
           <Magnetic strength={0.25}>
             <div className="flex cursor-pointer items-center gap-3">

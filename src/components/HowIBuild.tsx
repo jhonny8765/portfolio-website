@@ -111,7 +111,14 @@ export default function HowIBuild() {
               }}
               className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:bg-white/[0.04]"
             >
-              <div className="pointer-events-none absolute top-4 right-6 text-5xl font-bold text-[var(--color-volt)]/20 transition-all group-hover:scale-110 group-hover:text-[var(--color-volt)]/30">
+              {/* Decorative watermark number — aria-hidden (step title carries the
+                  meaning). Opacity floored at /50 so the large digits still meet
+                  WCAG 1.4.3's 3:1 large-text contrast (axe counts aria-hidden text
+                  — 1.4.3 is a visual criterion; /20 measured 1.67:1 and failed). */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-4 right-6 text-5xl font-bold text-[var(--color-volt)]/50 transition-all group-hover:scale-110 group-hover:text-[var(--color-volt)]/60"
+              >
                 {step.num}
               </div>
 

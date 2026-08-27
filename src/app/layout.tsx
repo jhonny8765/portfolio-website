@@ -78,12 +78,6 @@ export default function RootLayout({
         {/* NOTE: no <noscript> fallback needed — Preloader is mount-gated client-side,
             so without JS there is no overlay to hide. The route-transition overlay
             is CSS-translated off-screen by default (translate-y-full). */}
-        <a
-          href="#main-content"
-          className="sr-only z-[var(--z-skiplink)] rounded-md bg-[var(--color-volt)] px-4 py-2 font-medium text-[var(--color-bg)] focus:not-sr-only focus:absolute focus:top-4 focus:left-4"
-        >
-          Skip to main content
-        </a>
         <EffectsLayer />
         <LenisProvider>
           {/* Global Page Transition Overlay */}

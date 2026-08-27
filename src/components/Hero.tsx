@@ -147,7 +147,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
             <span>Prefer email?</span>
             <a
               href="mailto:jhonreyc2001@gmail.com"
-              className="font-medium text-white underline underline-offset-4 transition-colors hover:text-[var(--color-volt)]"
+              className="inline-flex min-h-[44px] items-center font-medium text-white underline underline-offset-4 transition-colors hover:text-[var(--color-volt)]"
             >
               jhonreyc2001@gmail.com
             </a>
