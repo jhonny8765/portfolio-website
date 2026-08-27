@@ -18,7 +18,7 @@ export default function Skills() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Magnetic strength={0.03}>
+        <Magnetic strength={0.2}>
           <div className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-5 hover:-translate-y-1 hover:bg-white/[0.05] hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.2)] transition-all duration-300 cursor-default">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
@@ -34,7 +34,7 @@ export default function Skills() {
           </div>
         </Magnetic>
         
-        <Magnetic strength={0.03}>
+        <Magnetic strength={0.2}>
           <div className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-5 hover:-translate-y-1 hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300 cursor-default">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></span>

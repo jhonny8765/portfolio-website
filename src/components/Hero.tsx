@@ -6,6 +6,7 @@ import { Terminal, CheckCircle2, CircleDashed, Cpu, PlayCircle } from 'lucide-re
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import Image from 'next/image';
+import { Magnetic } from './Magnetic';
 
 interface HeroProps {
   onOpenAi: () => void;
@@ -118,17 +119,21 @@ export default function Hero({ onOpenAi }: HeroProps) {
           </p>
           
           <div className="hero-text-item flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <button 
-              onClick={onOpenAi}
-              className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl bg-[var(--color-volt)] hover:bg-[var(--color-volt)] text-[var(--bg-primary)] font-semibold transition-all shadow-[0_0_20px_rgba(232,245,74,0.3)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] flex items-center justify-center gap-2 hover:-translate-y-1"
-            >
-              <Terminal size={18} />
-              Ask My AI
-            </button>
+            <Magnetic strength={0.25}>
+              <button 
+                onClick={onOpenAi}
+                className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl bg-[var(--color-volt)] hover:bg-[var(--color-volt)] text-[var(--bg-primary)] font-semibold transition-all shadow-[0_0_20px_rgba(232,245,74,0.3)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] flex items-center justify-center gap-2"
+              >
+                <Terminal size={18} />
+                Ask My AI
+              </button>
+            </Magnetic>
             
-            <a href="#projects" className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all flex items-center justify-center hover:-translate-y-1">
-              Explore Projects
-            </a>
+            <Magnetic strength={0.25}>
+              <a href="#projects" className="w-full sm:w-auto min-h-[44px] px-8 py-3.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white font-semibold transition-all flex items-center justify-center">
+                Explore Projects
+              </a>
+            </Magnetic>
           </div>
           
           <div className="hero-text-item mt-6 flex items-center gap-3 text-sm text-[var(--text-secondary)]">
@@ -146,16 +151,16 @@ export default function Hero({ onOpenAi }: HeroProps) {
           <div className="absolute inset-0 bg-[var(--color-volt)]/10 blur-[80px] rounded-full pointer-events-none z-[-1]" />
           
           {/* Floating Hero Assets (Outside the Console Window, Framing the Edges) */}
-          <div className="hidden md:block absolute -top-16 -left-16 lg:-top-20 lg:-left-20 w-[160px] lg:w-[190px] pointer-events-none hero-floater mix-blend-screen z-[10]">
+          <div className="hidden md:block absolute -top-16 left-8 lg:-top-20 lg:left-12 w-[160px] lg:w-[190px] pointer-events-none hero-floater mix-blend-screen z-[10]">
             <Image src="/site-assets/floating/workflow-nodes.webp" alt="Workflow nodes diagram" width={190} height={130} className="w-full h-auto object-contain mix-blend-screen" priority />
           </div>
 
-          <div className="hidden md:block absolute -top-12 -right-12 lg:-top-16 lg:-right-16 w-[130px] lg:w-[150px] pointer-events-none hero-floater mix-blend-screen z-[10]">
+          <div className="hidden md:block absolute -top-12 -right-10 lg:-top-16 lg:-right-14 w-[130px] lg:w-[150px] pointer-events-none hero-floater mix-blend-screen z-[10]">
             <Image src="/site-assets/floating/ai-braces.webp" alt="AI Braces logic block" width={150} height={110} className="w-full h-auto object-contain mix-blend-screen" />
           </div>
 
-          <div className="hidden md:block absolute -bottom-10 -right-10 lg:-bottom-12 lg:-right-14 w-[110px] lg:w-[130px] pointer-events-none hero-floater mix-blend-normal z-[10]">
-            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={130} height={90} className="w-full h-auto object-contain" sizes="130px" />
+          <div className="hidden md:block absolute -bottom-10 -right-8 lg:-bottom-12 lg:-right-12 w-[120px] lg:w-[140px] pointer-events-none hero-floater mix-blend-screen z-[10]">
+            <Image src="/site-assets/floating/chip-cut.webp" alt="Microchip module" width={140} height={95} className="w-full h-auto object-contain mix-blend-screen" sizes="140px" />
           </div>
 
           <div className="relative rounded-2xl border border-white/10 bg-[#090a0f]/95 backdrop-blur-xl overflow-hidden shadow-2xl z-[2] hero-console-window">

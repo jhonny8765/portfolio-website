@@ -101,7 +101,10 @@ export default function Projects() {
         scale: 0.8,
         opacity: 0,
         duration: 0.8,
-        ease: "power2.out"
+        ease: "power2.out",
+        onComplete: () => {
+          gsap.set(imgNode, { opacity: 0 });
+        }
       });
 
       // Increment index (pool size 15)

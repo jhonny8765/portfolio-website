@@ -34,13 +34,22 @@ export default function Marquee() {
     return () => mm.revert();
   }, { scope: container });
 
-  const handleMouseEnter = () => tweenRef.current?.pause();
-  const handleMouseLeave = () => tweenRef.current?.play();
+  const handleMouseEnter = () => {
+    if (tweenRef.current) {
+      gsap.to(tweenRef.current, { timeScale: 0, duration: 0.25, overwrite: 'auto' });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (tweenRef.current) {
+      gsap.to(tweenRef.current, { timeScale: 1, duration: 0.25, overwrite: 'auto' });
+    }
+  };
 
   return (
     <section 
       ref={container} 
-      className="w-full relative overflow-hidden py-6 border-y border-white/5 bg-white/[0.01]"
+      className="w-full relative overflow-hidden py-6 border-y border-white/5 bg-white/[0.01] cursor-default"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

@@ -37,7 +37,7 @@ export const portfolioData = {
       techStack: ["Next.js", "React", "Tailwind CSS", "Firebase"],
       liveUrl: "https://sukisuite.vercel.app/",
       githubUrl: "",
-      imagePlaceholder: "/images/projects/SukiSuite.jpeg"
+      imagePlaceholder: "/projects/sukisuite.png"
     },
     {
       id: "barangay-arena",
@@ -52,7 +52,7 @@ export const portfolioData = {
       techStack: ["Next.js", "React", "Tailwind CSS", "Supabase"],
       liveUrl: "preview-on-request",
       githubUrl: "",
-      imagePlaceholder: "/images/projects/barangay arena.jpeg"
+      imagePlaceholder: "/projects/barangay-arena.png"
     },
     {
       id: "betteryield",
@@ -67,7 +67,7 @@ export const portfolioData = {
       techStack: ["Next.js", "React", "Tailwind CSS", "Supabase"],
       liveUrl: "https://betteryield.vercel.app/",
       githubUrl: "",
-      imagePlaceholder: "/images/projects/betteryield.jpeg"
+      imagePlaceholder: "/projects/betteryield.png"
     }
   ],
   services: [

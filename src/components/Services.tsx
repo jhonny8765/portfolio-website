@@ -29,7 +29,7 @@ export default function Services() {
           const imageSrc = serviceImages[index % serviceImages.length];
           const isScreen = imageSrc.includes('ai-braces') || imageSrc.includes('workflow-nodes');
           return (
-            <Magnetic key={index} strength={0.05}>
+            <Magnetic key={index} strength={0.2}>
               <div 
                 className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-4 motion-safe:hover:-translate-y-1 hover:bg-white/[0.05] hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.3)] motion-safe:transition-all duration-300 cursor-default"
               >

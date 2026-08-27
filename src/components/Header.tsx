@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TransitionLink as Link } from './TransitionLink';
 import { Menu, X, Sparkles } from 'lucide-react';
 import Image from 'next/image';
+import { Magnetic } from './Magnetic';
 
 interface HeaderProps {
   onOpenAi: () => void;
@@ -88,40 +89,53 @@ export default function Header({ onOpenAi }: HeaderProps) {
     <>
       <header className="fixed top-0 left-0 right-0 z-[var(--z-header)] py-4 px-4 sm:px-6 pointer-events-none">
         <div className="max-w-5xl mx-auto flex items-center justify-between bg-[#07080A]/90 backdrop-blur-xl border border-white/10 rounded-full px-4 sm:px-6 py-3 pointer-events-auto shadow-2xl">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.05)] overflow-hidden p-1.5">
-              <Image src="/site-assets/brand/monogram-jr-cut.webp" alt="JR Logo" width={24} height={24} className="object-contain opacity-90" />
+          <Magnetic strength={0.25}>
+            <div className="flex items-center gap-3 cursor-pointer">
+              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.05)] overflow-hidden p-1.5">
+                <Image src="/site-assets/brand/monogram-jr-cut.webp" alt="JR Logo" width={24} height={24} className="object-contain opacity-90" />
+              </div>
+              <span className="font-semibold tracking-tight hidden sm:block text-white">Jhon Rey</span>
+              <div className="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-[rgba(232,245,74,0.1)] border border-[var(--color-volt)]/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-volt)] animate-pulse"></span>
+                <span className="text-[10px] uppercase font-semibold text-[var(--color-volt-light)] tracking-wider">Available</span>
+              </div>
             </div>
-            <span className="font-semibold tracking-tight hidden sm:block text-white">Jhon Rey</span>
-            <div className="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-[rgba(232,245,74,0.1)] border border-[var(--color-volt)]/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-volt)] animate-pulse"></span>
-              <span className="text-[10px] uppercase font-semibold text-[var(--color-volt-light)] tracking-wider">Available</span>
-            </div>
-          </div>
+          </Magnetic>
 
           {/* Desktop Nav */}
           <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-white transition-colors">Work</Link>
-            <Link href="/#services" className="text-[var(--text-secondary)] hover:text-white transition-colors">Services</Link>
-            <Link href="/#skills" className="text-[var(--text-secondary)] hover:text-white transition-colors">Skills</Link>
-            <Link href="/playground" className="flex items-center gap-1.5 text-[var(--color-volt)] hover:text-white transition-colors">
-              <Sparkles size={14} /> Playground
-            </Link>
+            <Magnetic strength={0.25}>
+              <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-white transition-colors">Work</Link>
+            </Magnetic>
+            <Magnetic strength={0.25}>
+              <Link href="/#services" className="text-[var(--text-secondary)] hover:text-white transition-colors">Services</Link>
+            </Magnetic>
+            <Magnetic strength={0.25}>
+              <Link href="/#skills" className="text-[var(--text-secondary)] hover:text-white transition-colors">Skills</Link>
+            </Magnetic>
+            <Magnetic strength={0.25}>
+              <Link href="/playground" className="flex items-center gap-1.5 text-[var(--color-volt)] hover:text-white transition-colors">
+                <Sparkles size={14} /> Playground
+              </Link>
+            </Magnetic>
           </nav>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <button 
-              onClick={onOpenAi}
-              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-volt)]/10 text-[var(--color-volt)] border border-[var(--color-volt)]/20 hover:bg-[var(--color-volt)] hover:text-white transition-all text-sm font-medium pointer-events-auto"
-            >
-              <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity" />
-              Ask My AI
-            </button>
+            <Magnetic strength={0.25}>
+              <button 
+                onClick={onOpenAi}
+                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-volt)]/10 text-[var(--color-volt)] border border-[var(--color-volt)]/20 hover:bg-[var(--color-volt)] hover:text-white transition-all text-sm font-medium pointer-events-auto"
+              >
+                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity" />
+                Ask My AI
+              </button>
+            </Magnetic>
             
-
-            <a href="#contact" className="px-5 py-2 min-h-[44px] flex items-center rounded-full bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-colors pointer-events-auto shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-              Contact
-            </a>
+            <Magnetic strength={0.25}>
+              <a href="#contact" className="px-5 py-2 min-h-[44px] flex items-center rounded-full bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-colors pointer-events-auto shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+                Contact
+              </a>
+            </Magnetic>
 
             {/* Mobile Menu Trigger */}
             <button
