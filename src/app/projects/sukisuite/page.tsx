@@ -155,7 +155,7 @@ export default function SukiSuiteCaseStudy() {
               </a>
 
               <a
-                href="https://123-eight-rosy.vercel.app/"
+                href="https://sukisuite-demo.vercel.app/"
                 target="_blank"
                 rel="noreferrer"
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 font-semibold text-white transition-colors hover:bg-white/10"
