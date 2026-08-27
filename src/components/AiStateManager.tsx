@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import Marquee from '@/components/Marquee';
 import { Loader2 } from 'lucide-react';
 
 // Loading fallback for accessibility and preventing CLS during dynamic import
@@ -47,7 +48,12 @@ export default function AiStateManager({ children }: AiStateManagerProps) {
     <>
       <Header onOpenAi={handleOpenAi} />
 
-      <div className="flex w-full max-w-5xl flex-col gap-24 px-6 pt-32 pb-24 sm:gap-32 sm:px-12">
+      {/* Full-width marquee strip — sits just below the fixed header */}
+      <div className="mt-20 w-full">
+        <Marquee />
+      </div>
+
+      <div className="flex w-full max-w-5xl flex-col gap-24 px-6 pt-8 pb-24 sm:gap-32 sm:px-12">
         <Hero onOpenAi={handleOpenAi} />
         {children}
       </div>

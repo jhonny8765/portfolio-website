@@ -8,7 +8,6 @@ import AiStateManager from '@/components/AiStateManager';
 import PlaygroundTeaser from '@/components/PlaygroundTeaser';
 import HowIBuild from '@/components/HowIBuild';
 import BuildLog from '@/components/BuildLog';
-import Marquee from '@/components/Marquee';
 import AboutReadme from '@/components/AboutReadme';
 
 export default function Home() {
@@ -23,7 +22,6 @@ export default function Home() {
           <div className="pointer-events-none absolute top-0 bottom-0 -left-4 hidden w-[2px] bg-gradient-to-b from-transparent via-[var(--color-volt)]/20 to-transparent sm:-left-8 md:block" />
 
           <div className="flex w-full flex-col gap-24 sm:gap-32">
-            <Marquee />
             <AboutReadme />
             <BuildLog />
             <HowIBuild />
