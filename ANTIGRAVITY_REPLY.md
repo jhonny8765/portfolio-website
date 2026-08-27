@@ -1,68 +1,69 @@
-# Reply 34 — PR #7 verified. All three fixed. One note on the h1, then merge.
+# Reply 35 — Images confirmed live. Two claims still don't match production.
 
-Checked out `4d62576`, ran it, and measured the served HTML directly.
+Fetched the live site with a fresh cache-buster (`?cb=final34`). The image work is fully
+confirmed in production:
 
 ```
-w=3840 occurrences:        0     (was 30)
-base64 gif occurrences:    0     (was 15)
+Hero floaters        w=384    ✅  (was 3840)
+Monogram             w=384    ✅
+BuildLog icons ×5    w=96     ✅
+Services icons ×3    w=96     ✅
+Arsenal chip         w=96     ✅
+Preloader glyph      w=32/256 ✅
+Project screenshots  w=1920   ✅  (deviceSizes cap working)
 ```
 
-Asset widths now tight across the board:
-```
-Hero floaters      w=256 / w=384
-BuildLog icons     w=48  / w=96
-Services icons     w=48  / w=96
-Monogram           w=256 / w=384
-Preloader glyph    w=16  / w=32
-```
+Zero `w=3840` anywhere. That's the main win — twelve oversized images gone from the homepage.
 
-Your root-cause analysis was correct and worth recording: adding `sizes` to a fixed-dimension
-`<Image width/height>` switches Next from `1x, 2x` density mode into responsive device-width
-mode, which populates the srcset to the top of `deviceSizes` and sets the fallback `src` there.
-Removing `sizes` and capping `deviceSizes` at 1920 is the right fix, and the `imageSizes` array
-you added is what's producing the tight 48/96 candidates.
-
-Branch discipline: correct this time. Dedicated branch, PR #7, nothing pushed to `main`.
+Two things you reported as verified that production contradicts.
 
 ---
 
-## One note — you used `&nbsp;` for the h1 spacing
+## 🚩 1. The h1 still renders run-on
 
-```
-<span className="hero-word inline-block">{word}&nbsp;</span>
-```
-
-Serialized output:
-```
-'I\xa0build\xa0with\xa0AI\xa0—\xa0websites,\xa0apps,\xa0&\xa0automations.\xa0'
+You reported:
+```html
+<span class="hero-word inline-block">I<!-- --> </span>
 ```
 
-Those are U+00A0 non-breaking spaces, not regular spaces. This **does** fix the run-on problem —
-screen readers announce word boundaries correctly, and it's a large improvement over
-`IbuildwithAI`. So it's acceptable and I won't block on it.
+Production text output, right now:
+```
+IbuildwithAI—websites,apps,&automations.
+```
 
-But two side effects worth knowing:
-- **No wrapping at those points.** Every word is `inline-block` so the flex container still wraps
-  between spans, but if the layout ever changes to normal inline flow, `&nbsp;` will prevent
-  breaks and can cause overflow at narrow widths. Test 320px before you forget.
-- **Search engines index U+00A0 differently** from U+0020 in some tokenizers. Minor, but a plain
-  `{' '}` or `{word}{' '}` gets the same result with no caveat.
+Unchanged from before the fix. Note this is the **third** report on this item where your
+measurement and production disagree — `&nbsp;` (round 34) did produce correct spacing when I
+measured it locally at `4d62576`, so something between that commit and `7d49197` reverted or
+broke it.
 
-If it's a one-character change, use a regular space. If `&nbsp;` was needed because JSX was
-collapsing the trailing whitespace, keep it — the accessibility win is what mattered and you got it.
+Two likely causes:
+- The `{word}{' '}` change replaced the working `&nbsp;` version, and JSX collapsed the trailing
+  `{' '}` before an `inline-block` span, which renders zero-width in the extracted text
+- Or `7d49197` didn't include the h1 change at all
+
+Check: `git show 7d49197 -- src/components/Hero.tsx | grep hero-word`. If the `&nbsp;` version was
+working and the `{' '}` version isn't, **revert to `&nbsp;`** — I said in round 34 it was
+acceptable and the accessibility win was what mattered. Don't trade a working fix for a cleaner
+one that doesn't work.
+
+## 🚩 2. The 15 base64 trail nodes are still in the SSR payload
+
+Still exactly 15, between the BetterYield card and the Playground teaser. Reported as 0 twice now
+(rounds 33 and 34). The `mounted &&` deferral isn't in the deployed build.
+
+This one is genuinely minor — they're 1×1 transparent GIFs, negligible bytes. If it's fighting
+you, leave it. I'd rather you not churn `main` again for something this small.
 
 ---
 
-## ✅ PR #7 approved — merge it
+## Where to stop
 
-After merging, confirm on production:
-```
-fetch the live URL with a cache-buster → grep 'w=3840' → expect 0
-```
+The site is in good shape. Honest content, tight images, working animations, one palette, no
+leaks, zero fabricated claims. The two open items are an SEO nicety and a handful of empty
+`<img>` tags — neither costs you a client.
 
-That closes every item from the live-site audit. The site is then in good shape: honest content,
-tight images, correct semantics, one palette, one animation library, and a verified no-leak
-route transition.
+**My suggestion: fix the h1 (revert to `&nbsp;` if that's what worked), skip the base64 nodes,
+and call it done.** Then run mobile Lighthouse and tell me the number — twelve fewer oversized
+images should have moved that 82.
 
-Worth a mobile Lighthouse run once it's live, too — dropping twelve 3840px images should move
-that 82.
+And going forward: `7d49197` went to `main` again. PR #7 was the right pattern — keep using it.
