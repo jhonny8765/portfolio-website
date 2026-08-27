@@ -49,7 +49,7 @@ export default function AiStateManager({ children }: AiStateManagerProps) {
       <Header onOpenAi={handleOpenAi} />
 
       {/* Full-width marquee strip — sits just below the fixed header */}
-      <div className="mt-20 w-full">
+      <div className="mt-28 w-full">
         <Marquee />
       </div>
 
