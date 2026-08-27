@@ -119,7 +119,7 @@ export default function ImageGenerator() {
     <div className="w-full max-w-3xl mx-auto flex flex-col gap-8">
       {/* Input Section */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden group">
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-violet)]/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-volt)]/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
         
         <div className="relative z-10 flex flex-col gap-4">
           <div className="flex justify-between items-end mb-2">
@@ -137,7 +137,7 @@ export default function ImageGenerator() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="A futuristic city in the clouds, cyberpunk style..."
-            className="w-full min-h-[100px] max-h-[200px] resize-y bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-violet)] focus:ring-1 focus:ring-[var(--color-violet)] transition-all"
+            className="w-full min-h-[100px] max-h-[200px] resize-y bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[var(--color-volt)] focus:ring-1 focus:ring-[var(--color-volt)] transition-all"
             disabled={isGenerating || isEnhancing}
           />
           
@@ -154,7 +154,7 @@ export default function ImageGenerator() {
               <button
                 onClick={handleEnhance}
                 disabled={!prompt.trim() || prompt.length > 200 || isEnhancing || isGenerating}
-                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white/5 border border-[var(--color-violet)]/30 text-[var(--color-violet-light)] hover:bg-[var(--color-violet)]/20 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white/5 border border-[var(--color-volt)]/30 text-[var(--color-volt)] hover:bg-[var(--color-volt)]/20 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
               >
                 {isEnhancing ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
                 Enhance with AI
@@ -163,7 +163,7 @@ export default function ImageGenerator() {
               <button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || prompt.length > 500 || isGenerating || isEnhancing}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[var(--color-violet)] text-white hover:bg-[var(--color-violet-light)] shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] transition-all font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[var(--color-volt)] text-black hover:bg-[var(--color-volt-light)] shadow-[0_0_20px_rgba(232,245,74,0.3)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] transition-all font-semibold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
               >
                 {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
                 Generate
@@ -186,8 +186,8 @@ export default function ImageGenerator() {
         {isGenerating ? (
           <div className="flex flex-col items-center gap-4 text-[var(--text-secondary)] animate-pulse">
             <div className="relative">
-              <div className="w-16 h-16 rounded-full border-4 border-[var(--color-violet)]/20"></div>
-              <div className="w-16 h-16 rounded-full border-4 border-[var(--color-violet)] border-t-transparent animate-spin absolute inset-0"></div>
+              <div className="w-16 h-16 rounded-full border-4 border-[var(--color-volt)]/20"></div>
+              <div className="w-16 h-16 rounded-full border-4 border-[var(--color-volt)] border-t-transparent animate-spin absolute inset-0"></div>
             </div>
             <p className="font-mono text-sm tracking-widest uppercase">Generating</p>
           </div>
@@ -206,7 +206,7 @@ export default function ImageGenerator() {
               href={imageUrl}
               onClick={handleDownload}
               download="ai-generated-image.png"
-              className="absolute bottom-4 right-4 bg-[var(--color-violet)] md:bg-black/60 hover:bg-[var(--color-violet)] text-white p-3 rounded-xl backdrop-blur-md transition-all z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-lg border border-white/10 flex items-center gap-2"
+              className="absolute bottom-4 right-4 bg-[var(--color-volt)] md:bg-black/60 hover:bg-[var(--color-volt)] text-white p-3 rounded-xl backdrop-blur-md transition-all z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 shadow-lg border border-white/10 flex items-center gap-2"
               title="Download Image"
             >
               <Download size={18} />

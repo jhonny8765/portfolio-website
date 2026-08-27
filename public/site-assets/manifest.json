@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "doNotGenerateMoreAssets": true,
+  "palette": {
+    "bg": "#07080A",
+    "bgAlt": "#0B0D10",
+    "ink": "#F4F1EA",
+    "muted": "#9A9588",
+    "accent": "#E8F54A",
+    "accentDim": "#8A9228",
+    "line": "rgba(232,245,74,0.18)"
+  },
+  "blend": {
+    "floatingPng": "mix-blend-mode: screen; pointer-events: none; user-select: none;",
+    "note": "PNGs were shot on #07080A. Screen/lighten knocks out the studio backdrop on the dark site. Do not recrop or regenerate."
+  },
+  "copyIntoRepo": "public/site-assets/",
+  "brand": {
+    "monogram": {
+      "src": "/site-assets/brand/monogram-jr.png",
+      "alt": "JR monogram",
+      "use": "Header mark (small) and About/README visual if no real photo exists. Do not invent a face."
+    },
+    "preloader": {
+      "src": "/site-assets/brand/preloader-glyph.png",
+      "alt": "",
+      "use": "Preloader glyph beside the typed build-console.sh lines. Decorative, aria-hidden."
+    }
+  },
+  "overlays": {
+    "grain": "/site-assets/overlays/grain.svg",
+    "scanlines": "/site-assets/overlays/scanlines.svg",
+    "use": "Fixed full-viewport layers at 3–5% opacity, pointer-events none, z-index above background and below UI."
+  },
+  "ui": {
+    "accentDot": "/site-assets/ui/accent-dot.svg",
+    "marqueeSep": "/site-assets/ui/marquee-sep.svg"
+  },
+  "heroFloaters": [
+    {
+      "id": "console",
+      "src": "/site-assets/floating/console.png",
+      "alt": "",
+      "section": "hero",
+      "desktop": { "top": "12%", "right": "4%", "width": "340px", "depth": 18 },
+      "mobile": { "hide": true }
+    },
+    {
+      "id": "ai-braces",
+      "src": "/site-assets/floating/ai-braces.png",
+      "alt": "",
+      "section": "hero",
+      "desktop": { "top": "58%", "right": "18%", "width": "210px", "depth": 28 },
+      "mobile": { "hide": true }
+    },
+    {
+      "id": "workflow-nodes",
+      "src": "/site-assets/floating/workflow-nodes.png",
+      "alt": "",
+      "section": "hero",
+      "desktop": { "top": "22%", "left": "3%", "width": "280px", "depth": 14 },
+      "mobile": { "hide": true }
+    },
+    {
+      "id": "chip",
+      "src": "/site-assets/floating/chip.png",
+      "alt": "",
+      "section": "hero",
+      "desktop": { "bottom": "10%", "left": "10%", "width": "170px", "depth": 36 },
+      "mobile": { "hide": true }
+    }
+  ],
+  "aboutFloaters": [
+    {
+      "id": "milk-tea",
+      "src": "/site-assets/floating/milk-tea.png",
+      "alt": "",
+      "section": "about",
+      "desktop": { "top": "8%", "right": "6%", "width": "160px", "depth": 20 },
+      "caption": "Next up — POS for local shops",
+      "mobile": { "hide": true }
+    },
+    {
+      "id": "delivery-pin",
+      "src": "/site-assets/floating/delivery-pin.png",
+      "alt": "",
+      "section": "build-log",
+      "desktop": { "top": "12%", "right": "4%", "width": "190px", "depth": 22 },
+      "caption": "Currently building — Kidapawan delivery",
+      "mobile": { "hide": true }
+    },
+    {
+      "id": "pos",
+      "src": "/site-assets/floating/pos.png",
+      "alt": "",
+      "section": "build-log",
+      "desktop": { "bottom": "6%", "right": "16%", "width": "180px", "depth": 16 },
+      "caption": "Next up — POS",
+      "mobile": { "hide": true }
+    }
+  ],
+  "projectScreenshots": {
+    "note": "Use EXISTING repo files under /public/projects. Do not replace or regenerate product UI.",
+    "expected": [
+      "/projects/sukisuite.png",
+      "/projects/barangay-arena.png",
+      "/projects/betteryield.png",
+      "/projects/salon-suite.png"
+    ]
+  }
+}

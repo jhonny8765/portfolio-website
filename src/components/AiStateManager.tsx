@@ -9,13 +9,13 @@ import { Loader2 } from 'lucide-react';
 // Loading fallback for accessibility and preventing CLS during dynamic import
 const LoadingFallback = () => (
   <div 
-    className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
+    className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm"
     role="dialog"
     aria-modal="true"
     aria-label="Loading Ask My AI"
   >
     <div className="bg-[var(--bg-secondary)] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
-      <div className="w-12 h-12 rounded-full bg-[var(--color-violet)]/20 border border-[var(--color-violet)]/50 flex items-center justify-center text-[var(--color-violet-light)]">
+      <div className="w-12 h-12 rounded-full bg-[var(--color-volt)]/20 border border-[var(--color-volt)]/50 flex items-center justify-center text-[var(--color-volt)]">
         <Loader2 size={24} className="animate-spin" aria-hidden="true" />
       </div>
       <p className="text-white font-medium text-center">Initializing AI Assistant...</p>

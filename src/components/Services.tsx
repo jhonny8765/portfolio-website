@@ -1,19 +1,24 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import AnimatedSection from './AnimatedSection';
 import { portfolioData } from '@/data/portfolioData';
-import { Cpu, Terminal, LayoutTemplate } from 'lucide-react';
+import { Cpu } from 'lucide-react';
+import { Magnetic } from './Magnetic';
+import Image from 'next/image';
 
-const icons = [LayoutTemplate, Cpu, Terminal];
+const serviceImages = [
+  "/site-assets/floating/console-cut.webp",
+  "/site-assets/floating/ai-braces.webp",
+  "/site-assets/floating/workflow-nodes.webp"
+];
 
 export default function Services() {
   return (
     <AnimatedSection id="services" className="w-full flex flex-col gap-10 scroll-mt-24">
       <div className="flex flex-col gap-2">
         <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white flex items-center gap-3">
-          <Cpu className="text-[var(--color-violet)]" />
+          <Cpu className="text-[var(--color-volt)]" />
           Services
         </h2>
         <p className="text-[var(--text-secondary)] text-lg">How I can help bring your ideas to life.</p>
@@ -21,22 +26,22 @@ export default function Services() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {portfolioData.services.map((service, index) => {
-          const Icon = icons[index % icons.length];
+          const imageSrc = serviceImages[index % serviceImages.length];
+          const isScreen = imageSrc.includes('ai-braces') || imageSrc.includes('workflow-nodes');
           return (
-            <motion.div 
-              key={index} 
-              whileHover={{ y: -5 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-4 hover:bg-white/[0.05] hover:border-[var(--color-violet)]/30 hover:shadow-[0_10px_30px_-15px_rgba(139,92,246,0.3)] transition-colors duration-300"
-            >
-              <div className="w-12 h-12 rounded-xl bg-[var(--color-violet)]/10 border border-[var(--color-violet)]/20 flex items-center justify-center text-[var(--color-violet-light)] mb-2">
-                <Icon size={24} />
+            <Magnetic key={index} strength={0.05}>
+              <div 
+                className="glass-panel p-6 sm:p-8 rounded-2xl flex flex-col gap-4 motion-safe:hover:-translate-y-1 hover:bg-white/[0.05] hover:border-[var(--color-volt)]/30 hover:shadow-[0_10px_30px_-15px_rgba(232,245,74,0.3)] motion-safe:transition-all duration-300 cursor-default"
+              >
+                <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-2 p-2">
+                  <Image src={imageSrc} alt={service.title} width={48} height={48} className={`object-contain drop-shadow-md ${isScreen ? 'mix-blend-screen' : ''}`} />
+                </div>
+                <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                <p className="text-[var(--text-secondary)] leading-relaxed">
+                  {service.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-white">{service.title}</h3>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                {service.description}
-              </p>
-            </motion.div>
+            </Magnetic>
           );
         })}
       </div>

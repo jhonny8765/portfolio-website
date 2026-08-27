@@ -1,23 +1,48 @@
 @import "tailwindcss";
 
 @theme {
-  --color-obsidian: #090A0F;
-  --color-obsidian-light: #161821;
-  --color-violet: #8B5CF6;
-  --color-violet-light: #A855F7;
+  --color-bg: #07080A;
+  --color-bg-alt: #0B0D10;
+  --color-ink: #F4F1EA;
+  --color-muted: #9A9588;
+  --color-volt: #E8F54A;
+  --color-volt-light: #F4FA96;
+  --color-volt-line: rgba(232, 245, 74, 0.18);
   
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Geist Mono', monospace;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-mono: var(--font-mono), monospace;
+  --font-display: var(--font-display), system-ui, sans-serif;
+
+  --animate-slide-in-right: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 }
 
 @layer base {
   :root {
-    --bg-primary: var(--color-obsidian);
-    --bg-secondary: var(--color-obsidian-light);
-    --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
-    --accent: var(--color-violet);
-    --accent-hover: var(--color-violet-light);
+    --bg-primary: var(--color-bg);
+    --bg-secondary: var(--color-bg-alt);
+    --text-primary: var(--color-ink);
+    --text-secondary: var(--color-muted);
+    --accent: var(--color-volt);
+    --accent-hover: var(--color-volt-light);
+
+    /* Z-Index Scale */
+    --z-background: 0;
+    --z-content: 10;
+    --z-overlay: 20;
+    --z-header: 40;
+    --z-menu: 50;
+    --z-modal: 90;
+    --z-preloader: 200;
+    --z-skiplink: 300;
   }
 
   html,
@@ -52,18 +77,18 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(232, 245, 74, 0.2);
     border-radius: 4px;
   }
   
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(139, 92, 246, 0.4);
+    background: rgba(232, 245, 74, 0.4);
   }
   
   /* Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(139, 92, 246, 0.2) var(--bg-primary);
+    scrollbar-color: rgba(232, 245, 74, 0.2) var(--bg-primary);
   }
 }
 
@@ -80,4 +105,4 @@
     outline: none;
   }
 }
-
+
