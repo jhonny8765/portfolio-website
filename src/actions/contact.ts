@@ -100,9 +100,12 @@ export async function submitContactForm(formData: FormData) {
 
     // 5. Send Email via Resend
     try {
+      const fromEmail =
+        process.env.CONTACT_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+
       // Notify you
       await resend.emails.send({
-        from: 'onboarding@resend.dev', // NOTE: You must verify a domain in Resend to change this
+        from: fromEmail,
         to: 'jhonreyc2001@gmail.com',
         subject: `New Contact Form Submission: ${service}`,
         html: `

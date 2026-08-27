@@ -1,7 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { convertToModelMessages, streamText, type UIMessage } from 'ai';
-import { checkRateLimit, getSecondsUntilUTCMidnight } from '@/lib/rate-limit';
 import { portfolioData } from '@/data/portfolioData';
+import { checkRateLimit, getSecondsUntilUTCMidnight } from '@/lib/rate-limit';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
