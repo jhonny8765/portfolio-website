@@ -20,6 +20,50 @@ export const portfolioData = {
     ],
     exploring: ['Advanced RAG Architectures', 'Custom AI Agents', 'Python Data Pipelines'],
   },
+  certificates: [
+    {
+      title: 'AI Engineer for Developers Associate',
+      kind: 'Certificate',
+      credentialId: 'AIEDA0018153720357',
+      verifyUrl: 'https://www.datacamp.com/certificate/AIEDA0018153720357',
+      pdfUrl: '/certificates/ai-engineer-for-developers-associate.pdf',
+    },
+    {
+      title: 'SQL Associate',
+      kind: 'Certificate',
+      credentialId: 'SQA0017480230307',
+      verifyUrl: 'https://www.datacamp.com/certificate/SQA0017480230307',
+      pdfUrl: '/certificates/sql-associate.pdf',
+    },
+    {
+      title: 'Python Data Associate',
+      kind: 'Certificate',
+      credentialId: 'PDA0011119701943',
+      verifyUrl: 'https://www.datacamp.com/certificate/PDA0011119701943',
+      pdfUrl: '/certificates/python-data-associate.pdf',
+    },
+    {
+      title: 'Data Engineer Associate',
+      kind: 'Certificate',
+      credentialId: 'DEA0018739324705',
+      verifyUrl: 'https://www.datacamp.com/certificate/DEA0018739324705',
+      pdfUrl: '/certificates/associate-data-engineer.pdf',
+    },
+    {
+      title: 'Data Literacy',
+      kind: 'Skill verification',
+      credentialId: 'DL0031527173996',
+      verifyUrl: 'https://www.datacamp.com/skill-verification/DL0031527173996',
+      pdfUrl: '/certificates/data-literacy.pdf',
+    },
+    {
+      title: 'AI Fundamentals',
+      kind: 'Skill verification',
+      credentialId: 'AIF0020705959966',
+      verifyUrl: 'https://www.datacamp.com/skill-verification/AIF0020705959966',
+      pdfUrl: '/certificates/ai-fundamentals.pdf',
+    },
+  ],
   projects: [
     {
       id: 'sukisuite',

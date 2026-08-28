@@ -125,7 +125,7 @@ export default function Header({ onOpenAi }: HeaderProps) {
           {/* Desktop Nav */}
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-6 text-sm font-medium md:flex"
+            className="hidden items-center gap-4 text-sm font-medium md:flex lg:gap-6"
           >
             <Magnetic strength={0.25}>
               <Link
@@ -149,6 +149,14 @@ export default function Header({ onOpenAi }: HeaderProps) {
                 className="text-[var(--text-secondary)] transition-colors hover:text-white"
               >
                 Skills
+              </Link>
+            </Magnetic>
+            <Magnetic strength={0.25}>
+              <Link
+                href="/#credentials"
+                className="text-[var(--text-secondary)] transition-colors hover:text-white"
+              >
+                Credentials
               </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
@@ -255,6 +263,13 @@ export default function Header({ onOpenAi }: HeaderProps) {
                 className="inline-flex min-h-[44px] items-center justify-center text-white transition-colors hover:text-[var(--color-volt)]"
               >
                 Skills
+              </Link>
+              <Link
+                href="/#credentials"
+                onClick={closeMenu}
+                className="inline-flex min-h-[44px] items-center justify-center text-white transition-colors hover:text-[var(--color-volt)]"
+              >
+                Credentials
               </Link>
               <Link
                 href="/playground"

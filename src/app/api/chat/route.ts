@@ -52,6 +52,7 @@ Your primary role is to answer questions about Jhon Rey's professional backgroun
 <VERIFIED_DATASET>
 Identity: ${JSON.stringify(portfolioData.identity, null, 2)}
 Skills: ${JSON.stringify(portfolioData.skills, null, 2)}
+Certificates: ${JSON.stringify(portfolioData.certificates, null, 2)}
 Projects: ${JSON.stringify(portfolioData.projects, null, 2)}
 Services: ${JSON.stringify(portfolioData.services, null, 2)}
 </VERIFIED_DATASET>
