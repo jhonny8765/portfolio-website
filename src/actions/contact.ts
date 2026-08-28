@@ -63,23 +63,27 @@ export async function submitContactForm(formData: FormData) {
 
     // 4. Database Insertion using Admin Client
     // We intentionally omit storing the IP address to preserve privacy.
-    const { error } = await supabaseAdmin.from('contacts').insert([
-      {
-        validName,
-        validEmail,
-        validService,
-        validMessage,
-        // created_at is handled by Postgres default
-      },
-    ]);
-
-    if (error) {
-      // Log the actual error internally, but do NOT expose it to the client
-      console.error('Supabase Insert Error:', error.message);
-      return {
-        success: false,
-        error: 'An error occurred while sending your message. Please try again later.',
-      };
+    // Only attempt if not using the mock URL
+    const isMockSupabase = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('mock.supabase.co');
+    
+    if (!isMockSupabase) {
+      const { error } = await supabaseAdmin.from('contacts').insert([
+        {
+          name: validName,
+          email: validEmail,
+          service: validService,
+          message: validMessage,
+          // created_at is handled by Postgres default
+        },
+      ]);
+  
+      if (error) {
+        // Log the actual error internally, but do NOT expose it to the client
+        console.error('Supabase Insert Error:', error.message);
+        // We log the error but proceed to send the email so the user's message isn't lost
+      }
+    } else {
+      console.log('Skipping Supabase insert: Using mock Supabase URL');
     }
 
     // 5. Send Email via Resend
