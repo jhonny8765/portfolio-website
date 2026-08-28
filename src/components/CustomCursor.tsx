@@ -19,39 +19,33 @@ export function CustomCursor() {
     gsap.set(cursor, { xPercent: -50, yPercent: -50 });
     gsap.set(follower, { xPercent: -50, yPercent: -50 });
 
-    let mouseX = 0;
-    let mouseY = 0;
+    // quickTo-created tweeners are allocated ONCE and reused per move —
+    // the previous gsap.to() allocated 2 tween objects per pointer event
+    // (~120/sec), which was GC churn on the main thread during interaction.
+    const cursorXTo = gsap.quickTo(cursor, 'x', { duration: 0.1, ease: 'power2.out' });
+    const cursorYTo = gsap.quickTo(cursor, 'y', { duration: 0.1, ease: 'power2.out' });
+    const followerXTo = gsap.quickTo(follower, 'x', { duration: 0.5, ease: 'power2.out' });
+    const followerYTo = gsap.quickTo(follower, 'y', { duration: 0.5, ease: 'power2.out' });
 
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      
-      gsap.to(cursor, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.1,
-        ease: "power2.out"
-      });
-      
-      gsap.to(follower, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.5,
-        ease: "power2.out"
-      });
+    const onPointerMove = (e: PointerEvent) => {
+      cursorXTo(e.clientX);
+      cursorYTo(e.clientY);
+      followerXTo(e.clientX);
+      followerYTo(e.clientY);
     };
 
-    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
 
     // Handle interactive elements (hover states)
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isClickable = target.tagName.toLowerCase() === 'a' || 
-                          target.tagName.toLowerCase() === 'button' ||
-                          target.closest('a') || 
-                          target.closest('button') ||
-                          target.classList.contains('cursor-pointer');
-                          
+      const isClickable =
+        target.tagName.toLowerCase() === 'a' ||
+        target.tagName.toLowerCase() === 'button' ||
+        target.closest('a') ||
+        target.closest('button') ||
+        target.classList.contains('cursor-pointer');
+
       if (isClickable) {
         gsap.to(cursor, { scale: 1.5, opacity: 0.5, duration: 0.2 });
         gsap.to(follower, { scale: 0.5, opacity: 0, duration: 0.2 });
@@ -63,11 +57,11 @@ export function CustomCursor() {
       gsap.to(follower, { scale: 1, opacity: 1, duration: 0.2 });
     };
 
-    document.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('mouseover', handleMouseOver, { passive: true });
+    document.addEventListener('mouseout', handleMouseOut, { passive: true });
 
     return () => {
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
     };
@@ -77,13 +71,13 @@ export function CustomCursor() {
 
   return (
     <>
-      <div 
-        ref={cursorRef} 
-        className="fixed top-0 left-0 w-2 h-2 bg-[var(--color-volt)] rounded-full pointer-events-none z-[9999] mix-blend-screen hidden [@media(pointer:fine)]:block"
+      <div
+        ref={cursorRef}
+        className="pointer-events-none fixed top-0 left-0 z-[9999] hidden h-2 w-2 rounded-full bg-[var(--color-volt)] mix-blend-screen [@media(pointer:fine)]:block"
       />
-      <div 
-        ref={followerRef} 
-        className="fixed top-0 left-0 w-8 h-8 border border-[var(--color-volt)] rounded-full pointer-events-none z-[9998] mix-blend-screen opacity-50 hidden [@media(pointer:fine)]:block"
+      <div
+        ref={followerRef}
+        className="pointer-events-none fixed top-0 left-0 z-[9998] hidden h-8 w-8 rounded-full border border-[var(--color-volt)] opacity-50 mix-blend-screen [@media(pointer:fine)]:block"
       />
     </>
   );

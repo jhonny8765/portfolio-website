@@ -12,29 +12,29 @@ export default function RouteTransition() {
     const overlay = document.getElementById('page-transition-overlay');
     if (overlay) {
       const mm = gsap.matchMedia();
-      
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
         gsap.to(overlay, {
-          y: "-100%",
+          y: '-100%',
           duration: 0.5,
-          ease: "power3.inOut",
+          ease: 'power3.inOut',
           onComplete: () => {
-            gsap.set(overlay, { y: "100%" });
-          }
+            gsap.set(overlay, { y: '100%' });
+          },
         });
       });
-      
-      mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set(overlay, { y: "-100%" });
+
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        gsap.set(overlay, { y: '-100%' });
         setTimeout(() => {
-          gsap.set(overlay, { y: "100%" });
+          gsap.set(overlay, { y: '100%' });
         }, 50);
       });
 
       // Failsafe: force retraction after 1.2s in case of any interrupted state
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
-        gsap.set(overlay, { y: "100%" });
+        gsap.set(overlay, { y: '100%' });
       }, 1200);
 
       return () => {
@@ -46,4 +46,3 @@ export default function RouteTransition() {
 
   return null;
 }
-

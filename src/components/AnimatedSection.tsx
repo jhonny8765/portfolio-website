@@ -14,46 +14,51 @@ interface AnimatedSectionProps {
   id?: string;
 }
 
-export default function AnimatedSection({ children, className = '', delay = 0, id }: AnimatedSectionProps) {
+export default function AnimatedSection({
+  children,
+  className = '',
+  delay = 0,
+  id,
+}: AnimatedSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useGSAP(() => {
-    if (!sectionRef.current) return;
-    
-    const mm = gsap.matchMedia();
+  useGSAP(
+    () => {
+      if (!sectionRef.current) return;
 
-    mm.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(sectionRef.current, 
-        { opacity: 0, y: 40 },
-        { 
-          opacity: 1, 
-          y: 0, 
-          duration: 0.7, 
-          ease: "power3.out",
-          delay: delay,
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 85%", // Equivalent to margin "-50px"
-            once: true
-          }
-        }
-      );
-    });
+      const mm = gsap.matchMedia();
 
-    mm.add("(prefers-reduced-motion: reduce)", () => {
-      // Reveal immediately — no scroll gating for users who prefer reduced motion
-      gsap.set(sectionRef.current, { opacity: 1 });
-    });
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        gsap.fromTo(
+          sectionRef.current,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: 'power3.out',
+            delay: delay,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 85%', // Equivalent to margin "-50px"
+              once: true,
+            },
+          },
+        );
+      });
 
-    return () => mm.revert();
-  }, { scope: sectionRef });
+      mm.add('(prefers-reduced-motion: reduce)', () => {
+        // Reveal immediately — no scroll gating for users who prefer reduced motion
+        gsap.set(sectionRef.current, { opacity: 1 });
+      });
+
+      return () => mm.revert();
+    },
+    { scope: sectionRef },
+  );
 
   return (
-    <section
-      ref={sectionRef}
-      id={id}
-      className={className}
-    >
+    <section ref={sectionRef} id={id} className={className}>
       {children}
     </section>
   );

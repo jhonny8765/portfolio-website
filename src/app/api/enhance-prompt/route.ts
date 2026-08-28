@@ -8,7 +8,7 @@ const ENHANCER_GLOBAL_LIMIT = parseInt(process.env.ENHANCE_DAILY_GLOBAL_LIMIT ||
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    
+
     // 1. Check Rate Limit
     const limitResult = await checkRateLimit({
       ip,
@@ -19,18 +19,19 @@ export async function POST(req: Request) {
 
     if (!limitResult.allowed) {
       return new Response(
-        JSON.stringify({ 
-          error: limitResult.reason === 'global_limit' 
-            ? 'The AI enhancer is temporarily unavailable. Please try again later.' 
-            : 'You have reached today\'s prompt enhancement limit. Try again tomorrow.'
-        }), 
-        { 
-          status: 429, 
+        JSON.stringify({
+          error:
+            limitResult.reason === 'global_limit'
+              ? 'The AI enhancer is temporarily unavailable. Please try again later.'
+              : "You have reached today's prompt enhancement limit. Try again tomorrow.",
+        }),
+        {
+          status: 429,
           headers: {
             'Content-Type': 'application/json',
             'Retry-After': getSecondsUntilUTCMidnight().toString(),
-          } 
-        }
+          },
+        },
       );
     }
 
@@ -43,7 +44,10 @@ export async function POST(req: Request) {
 
     const trimmedPrompt = prompt.trim();
     if (trimmedPrompt.length === 0 || trimmedPrompt.length > 200) {
-      return new Response(JSON.stringify({ error: 'Prompt must be between 1 and 200 characters.' }), { status: 400 });
+      return new Response(
+        JSON.stringify({ error: 'Prompt must be between 1 and 200 characters.' }),
+        { status: 400 },
+      );
     }
 
     // 3. Enhance with Gemini
@@ -69,7 +73,7 @@ Structure the prompt exactly as follows, separated by commas:
       model: google('gemini-3.5-flash-lite'),
       system: systemPrompt,
       prompt: trimmedPrompt,
-      maxTokens: 150,
+      maxOutputTokens: 150,
       temperature: 0.7,
     });
 
@@ -79,12 +83,14 @@ Structure the prompt exactly as follows, separated by commas:
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (error: unknown) {
     console.error('Enhance Prompt API Error:', error);
-    return new Response(JSON.stringify({ error: 'An error occurred while enhancing the prompt.' }), { 
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({ error: 'An error occurred while enhancing the prompt.' }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
 }

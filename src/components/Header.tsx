@@ -29,16 +29,16 @@ export default function Header({ onOpenAi }: HeaderProps) {
       previousFocusRef.current = document.activeElement as HTMLElement;
       // Prevent background scrolling when open
       document.body.style.overflow = 'hidden';
-      
+
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') {
           closeMenu();
           return;
         }
-        
+
         if (e.key === 'Tab' && menuRef.current) {
           const focusableElements = menuRef.current.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
           );
           if (focusableElements.length === 0) return;
           const firstElement = focusableElements[0] as HTMLElement;
@@ -57,12 +57,14 @@ export default function Header({ onOpenAi }: HeaderProps) {
           }
         }
       };
-      
+
       document.addEventListener('keydown', handleKeyDown);
-      
+
       // Move focus into the menu (specifically the close button)
       setTimeout(() => {
-        const closeBtn = menuRef.current?.querySelector('button[aria-label="Close navigation menu"]') as HTMLElement;
+        const closeBtn = menuRef.current?.querySelector(
+          'button[aria-label="Close navigation menu"]',
+        ) as HTMLElement;
         closeBtn?.focus();
       }, 50);
 
@@ -87,34 +89,73 @@ export default function Header({ onOpenAi }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[var(--z-header)] py-4 px-4 sm:px-6 pointer-events-none">
-        <div className="max-w-5xl mx-auto flex items-center justify-between bg-[#07080A]/90 backdrop-blur-xl border border-white/10 rounded-full px-4 sm:px-6 py-3 pointer-events-auto shadow-2xl">
+      <header className="pointer-events-none fixed top-0 right-0 left-0 z-[var(--z-header)] px-4 py-4 sm:px-6">
+        {/* First focusable element on the page; lives inside the <header>
+            landmark so no page content sits outside a landmark (axe region). */}
+        <a
+          href="#main-content"
+          className="sr-only z-[var(--z-skiplink)] rounded-md bg-[var(--color-volt)] px-4 py-3 font-medium text-[var(--color-bg)] focus:pointer-events-auto focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:min-h-[44px]"
+        >
+          Skip to main content
+        </a>
+        <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-[#07080A]/90 px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6">
           <Magnetic strength={0.25}>
-            <div className="flex items-center gap-3 cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.05)] overflow-hidden p-1.5">
-                <Image src="/site-assets/brand/monogram-jr-cut.webp" alt="JR Logo" width={24} height={24} className="object-contain opacity-90" />
+            <div className="flex cursor-pointer items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5 p-1.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                <Image
+                  src="/site-assets/brand/monogram-jr-cut.webp"
+                  alt="JR Logo"
+                  width={24}
+                  height={24}
+                  className="object-contain opacity-90"
+                />
               </div>
-              <span className="font-semibold tracking-tight hidden sm:block text-white">Jhon Rey</span>
-              <div className="hidden sm:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-[rgba(232,245,74,0.1)] border border-[var(--color-volt)]/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-volt)] animate-pulse"></span>
-                <span className="text-[10px] uppercase font-semibold text-[var(--color-volt-light)] tracking-wider">Available</span>
+              <span className="hidden font-semibold tracking-tight text-white sm:block">
+                Jhon Rey
+              </span>
+              <div className="ml-2 hidden items-center gap-1.5 rounded-full border border-[var(--color-volt)]/20 bg-[rgba(232,245,74,0.1)] px-2.5 py-1 sm:flex">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-volt)]"></span>
+                <span className="text-[10px] font-semibold tracking-wider text-[var(--color-volt-light)] uppercase">
+                  Available
+                </span>
               </div>
             </div>
           </Magnetic>
 
           {/* Desktop Nav */}
-          <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center gap-6 text-sm font-medium md:flex"
+          >
             <Magnetic strength={0.25}>
-              <Link href="/#projects" className="text-[var(--text-secondary)] hover:text-white transition-colors">Work</Link>
+              <Link
+                href="/#projects"
+                className="text-[var(--text-secondary)] transition-colors hover:text-white"
+              >
+                Work
+              </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
-              <Link href="/#services" className="text-[var(--text-secondary)] hover:text-white transition-colors">Services</Link>
+              <Link
+                href="/#services"
+                className="text-[var(--text-secondary)] transition-colors hover:text-white"
+              >
+                Services
+              </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
-              <Link href="/#skills" className="text-[var(--text-secondary)] hover:text-white transition-colors">Skills</Link>
+              <Link
+                href="/#skills"
+                className="text-[var(--text-secondary)] transition-colors hover:text-white"
+              >
+                Skills
+              </Link>
             </Magnetic>
             <Magnetic strength={0.25}>
-              <Link href="/playground" className="flex items-center gap-1.5 text-[var(--color-volt)] hover:text-white transition-colors">
+              <Link
+                href="/playground"
+                className="flex items-center gap-1.5 text-[var(--color-volt)] transition-colors hover:text-white"
+              >
                 <Sparkles size={14} /> Playground
               </Link>
             </Magnetic>
@@ -122,17 +163,26 @@ export default function Header({ onOpenAi }: HeaderProps) {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <Magnetic strength={0.25}>
-              <button 
+              <button
                 onClick={onOpenAi}
-                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-volt)]/10 text-[var(--color-volt)] border border-[var(--color-volt)]/20 hover:bg-[var(--color-volt)] hover:text-white transition-all text-sm font-medium pointer-events-auto"
+                className="pointer-events-auto hidden items-center gap-2 rounded-full border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-4 py-2 text-sm font-medium text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)] md:flex"
               >
-                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={16} height={16} className="object-contain brightness-0 invert opacity-70 group-hover:opacity-100 transition-opacity" />
+                <Image
+                  src="/site-assets/brand/preloader-glyph.webp"
+                  alt="Glyph"
+                  width={16}
+                  height={16}
+                  className="object-contain opacity-70 brightness-0 invert transition-opacity group-hover:opacity-100"
+                />
                 Ask My AI
               </button>
             </Magnetic>
-            
+
             <Magnetic strength={0.25}>
-              <a href="#contact" className="px-5 py-2 min-h-[44px] flex items-center rounded-full bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-colors pointer-events-auto shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+              <a
+                href="#contact"
+                className="pointer-events-auto flex min-h-[44px] items-center rounded-full bg-white px-5 py-2 text-sm font-semibold text-black shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-colors hover:bg-zinc-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+              >
                 Contact
               </a>
             </Magnetic>
@@ -143,8 +193,8 @@ export default function Header({ onOpenAi }: HeaderProps) {
               onClick={toggleMenu}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
-              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-              className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 pointer-events-auto transition-colors ml-1"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              className="pointer-events-auto ml-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 md:hidden"
             >
               <Menu size={20} aria-hidden="true" />
             </button>
@@ -154,47 +204,86 @@ export default function Header({ onOpenAi }: HeaderProps) {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div 
+        <div
           id="mobile-menu"
           ref={menuRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
-          className="fixed inset-0 z-[var(--z-menu)] flex flex-col bg-[var(--bg-primary)]/95 backdrop-blur-xl overflow-hidden animate-in fade-in duration-200"
-          style={{ 
+          className="animate-in fade-in fixed inset-0 z-[var(--z-menu)] flex flex-col overflow-hidden bg-[var(--bg-primary)]/95 backdrop-blur-xl duration-200"
+          style={{
             height: '100dvh',
             paddingTop: 'env(safe-area-inset-top)',
-            paddingBottom: 'env(safe-area-inset-bottom)'
+            paddingBottom: 'env(safe-area-inset-bottom)',
           }}
         >
-          <div className="flex items-center justify-between p-4 px-6 border-b border-white/10 shrink-0">
-            <h2 id="mobile-menu-title" className="text-xl font-bold text-white tracking-tight">Navigation</h2>
-            <button 
+          <div className="flex shrink-0 items-center justify-between border-b border-white/10 p-4 px-6">
+            <h2 id="mobile-menu-title" className="text-xl font-bold tracking-tight text-white">
+              Navigation
+            </h2>
+            <button
               onClick={closeMenu}
               aria-label="Close navigation menu"
-              className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-colors"
+              className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 p-2 text-white transition-colors hover:bg-white/10"
             >
               <X size={20} aria-hidden="true" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto py-8 px-6 flex flex-col justify-center gap-12">
-            <nav aria-label="Mobile navigation" className="flex flex-col gap-6 text-2xl font-medium text-center">
-              <Link href="/#projects" onClick={closeMenu} className="text-white hover:text-[var(--color-volt)] transition-colors inline-flex min-h-[44px] items-center justify-center">Work</Link>
-              <Link href="/#services" onClick={closeMenu} className="text-white hover:text-[var(--color-volt)] transition-colors inline-flex min-h-[44px] items-center justify-center">Services</Link>
-              <Link href="/#skills" onClick={closeMenu} className="text-white hover:text-[var(--color-volt)] transition-colors inline-flex min-h-[44px] items-center justify-center">Skills</Link>
-              <Link href="/playground" onClick={closeMenu} className="flex items-center justify-center gap-2 text-[var(--color-volt)] hover:text-white transition-colors min-h-[44px]">
+          <div className="flex flex-1 flex-col justify-center gap-12 overflow-y-auto px-6 py-8">
+            <nav
+              aria-label="Mobile navigation"
+              className="flex flex-col gap-6 text-center text-2xl font-medium"
+            >
+              <Link
+                href="/#projects"
+                onClick={closeMenu}
+                className="inline-flex min-h-[44px] items-center justify-center text-white transition-colors hover:text-[var(--color-volt)]"
+              >
+                Work
+              </Link>
+              <Link
+                href="/#services"
+                onClick={closeMenu}
+                className="inline-flex min-h-[44px] items-center justify-center text-white transition-colors hover:text-[var(--color-volt)]"
+              >
+                Services
+              </Link>
+              <Link
+                href="/#skills"
+                onClick={closeMenu}
+                className="inline-flex min-h-[44px] items-center justify-center text-white transition-colors hover:text-[var(--color-volt)]"
+              >
+                Skills
+              </Link>
+              <Link
+                href="/playground"
+                onClick={closeMenu}
+                className="flex min-h-[44px] items-center justify-center gap-2 text-[var(--color-volt)] transition-colors hover:text-white"
+              >
                 <Sparkles size={20} /> Playground
               </Link>
-              <Link href="/#contact" onClick={closeMenu} className="text-[var(--color-volt)] hover:text-white transition-colors inline-flex min-h-[44px] items-center justify-center mt-2">Contact</Link>
+              <Link
+                href="/#contact"
+                onClick={closeMenu}
+                className="mt-2 inline-flex min-h-[44px] items-center justify-center text-[var(--color-volt)] transition-colors hover:text-white"
+              >
+                Contact
+              </Link>
             </nav>
 
-            <div className="flex flex-col gap-4 mt-4 w-full max-w-sm mx-auto">
-              <button 
+            <div className="mx-auto mt-4 flex w-full max-w-sm flex-col gap-4">
+              <button
                 onClick={handleAskMyAiClick}
-                className="w-full min-h-[48px] px-6 py-3 rounded-xl bg-[var(--color-volt)]/10 text-[var(--color-volt)] border border-[var(--color-volt)]/20 hover:bg-[var(--color-volt)] hover:text-white transition-all font-semibold flex items-center justify-center gap-2"
+                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-6 py-3 font-semibold text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)]"
               >
-                <Image src="/site-assets/brand/preloader-glyph.webp" alt="Glyph" width={20} height={20} className="object-contain brightness-0 invert opacity-70" />
+                <Image
+                  src="/site-assets/brand/preloader-glyph.webp"
+                  alt="Glyph"
+                  width={20}
+                  height={20}
+                  className="object-contain opacity-70 brightness-0 invert"
+                />
                 Ask My AI
               </button>
             </div>
@@ -204,4 +293,3 @@ export default function Header({ onOpenAi }: HeaderProps) {
     </>
   );
 }
-

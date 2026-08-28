@@ -3,18 +3,32 @@ import { portfolioData } from '@/data/portfolioData';
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-white/10 mt-auto py-8">
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 flex flex-col sm:flex-row justify-between items-center gap-4 text-[var(--text-secondary)] text-sm">
+    <footer className="mt-auto w-full border-t border-white/10 py-8">
+      <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 text-sm text-[var(--text-secondary)] sm:flex-row sm:px-12">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-[var(--color-volt)] flex items-center justify-center font-mono font-bold text-[10px] text-white">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--color-volt)] font-mono text-[10px] font-bold text-[var(--color-bg)]">
             JC
           </div>
-          <span>&copy; {new Date().getFullYear()} {portfolioData.identity.name}. All rights reserved.</span>
+          <span>
+            &copy; {new Date().getFullYear()} {portfolioData.identity.name}. All rights reserved.
+          </span>
         </div>
-        
+
         <div className="flex items-center gap-6">
-          <a href={portfolioData.identity.github} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">GitHub</a>
-          <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+          <a
+            href={portfolioData.identity.github}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-[44px] items-center transition-colors hover:text-white"
+          >
+            GitHub
+          </a>
+          <a
+            href="#contact"
+            className="inline-flex min-h-[44px] items-center transition-colors hover:text-white"
+          >
+            Contact
+          </a>
         </div>
       </div>
     </footer>

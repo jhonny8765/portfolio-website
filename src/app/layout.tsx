@@ -1,45 +1,65 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { Inter, Bricolage_Grotesque, JetBrains_Mono } from 'next/font/google';
-import "./globals.css";
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-display', display: 'swap', adjustFontFallback: true, preload: true });
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  adjustFontFallback: true,
+  preload: true,
+});
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Jhon Rey Consolacion',
+  jobTitle: 'AI Developer & Automation Builder',
+  url: siteUrl,
+  email: 'mailto:jhonreyc2001@gmail.com',
+  sameAs: ['https://github.com/jhonny8765'],
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
-  description: "I build with AI — websites, applications, and automations.",
+  title: 'Jhon Rey Consolacion | AI Developer & Automation Builder',
+  description: 'I build with AI — websites, applications, and automations.',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
-    description: "I build with AI — websites, applications, and automations.",
+    title: 'Jhon Rey Consolacion | AI Developer & Automation Builder',
+    description: 'I build with AI — websites, applications, and automations.',
     url: siteUrl,
-    siteName: "Jhon Rey Consolacion Portfolio",
-    type: "website",
+    siteName: 'Jhon Rey Consolacion Portfolio',
+    type: 'website',
     images: [
       {
-        url: "/og-image.jpg", // Ensure you have this image in public/
+        url: '/og-image.jpg', // Ensure you have this image in public/
         width: 1200,
         height: 630,
-        alt: "Jhon Rey Consolacion - AI Developer & Automation Builder",
+        alt: 'Jhon Rey Consolacion - AI Developer & Automation Builder',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Jhon Rey Consolacion | AI Developer & Automation Builder",
-    description: "I build with AI — websites, applications, and automations.",
-    images: ["/og-image.jpg"],
+    card: 'summary_large_image',
+    title: 'Jhon Rey Consolacion | AI Developer & Automation Builder',
+    description: 'I build with AI — websites, applications, and automations.',
+    images: ['/og-image.jpg'],
   },
 };
 
 import { LenisProvider } from '@/components/LenisProvider';
-import { CustomCursor } from '@/components/CustomCursor';
-import Preloader from '@/components/Preloader';
+import { EffectsLayer } from '@/components/EffectsLayer';
 import RouteTransition from '@/components/RouteTransition';
+import { Toaster } from 'sonner';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export default function RootLayout({
   children,
@@ -47,23 +67,44 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} scroll-smooth`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} scroll-smooth`}
+    >
       <body>
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-[var(--z-skiplink)] px-4 py-2 bg-[var(--color-volt)] text-[var(--color-bg)] rounded-md font-medium">
-          Skip to main content
-        </a>
-        <Preloader />
+        {/* Structured data: Person schema for knowledge-panel/card eligibility */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* NOTE: no <noscript> fallback needed — Preloader is mount-gated client-side,
+            so without JS there is no overlay to hide. The route-transition overlay
+            is CSS-translated off-screen by default (translate-y-full). */}
+        <EffectsLayer />
         <LenisProvider>
-          <CustomCursor />
           {/* Global Page Transition Overlay */}
-          <div 
+          <div
             id="page-transition-overlay"
-            className="fixed inset-0 bg-[var(--color-volt)] z-[var(--z-preloader)] pointer-events-none translate-y-full"
+            className="pointer-events-none fixed inset-0 z-[var(--z-preloader)] translate-y-full bg-[var(--color-volt)]"
             aria-hidden="true"
           ></div>
           <RouteTransition />
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
         </LenisProvider>
+        {/* Toast feedback for contact form + playground (plan 5.5) */}
+        <Toaster
+          theme="dark"
+          richColors
+          closeButton
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#090a0f',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: '#ffffff',
+            },
+          }}
+        />
         <Analytics />
       </body>
     </html>

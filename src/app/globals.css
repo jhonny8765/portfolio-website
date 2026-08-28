@@ -1,14 +1,14 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-bg: #07080A;
-  --color-bg-alt: #0B0D10;
-  --color-ink: #F4F1EA;
-  --color-muted: #9A9588;
-  --color-volt: #E8F54A;
-  --color-volt-light: #F4FA96;
+  --color-bg: #07080a;
+  --color-bg-alt: #0b0d10;
+  --color-ink: #f4f1ea;
+  --color-muted: #9a9588;
+  --color-volt: #e8f54a;
+  --color-volt-light: #f4fa96;
   --color-volt-line: rgba(232, 245, 74, 0.18);
-  
+
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-mono), monospace;
   --font-display: var(--font-display), system-ui, sans-serif;
@@ -64,6 +64,25 @@
   }
 }
 
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-animate {
+  animation: marquee-scroll 35s linear infinite;
+}
+
+.marquee-animate.marquee-paused {
+  animation-play-state: paused;
+}
+
+
+
 @media (max-width: 767px) {
   .preloader-root {
     display: none !important;
@@ -71,13 +90,63 @@
 }
 
 @media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  /* SSR-first hero entrance: the animation is pure CSS, so it starts at first
+     paint instead of waiting for the JS bundle to download + execute + boot
+     GSAP. Previously the hidden initial states below made the hero paragraph
+     (the LCP element) paint only after GSAP brought opacity to 1 — LCP was
+     hostage to script-execution timing (~4.6s simulated). Per-element delays
+     come from the --hero-delay var set inline in Hero.tsx; 'both' fill keeps
+     the hidden 0% keyframe applied during that delay. */
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes hero-word-rise {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   .hero-word {
-    transform: translateY(100%);
-    opacity: 0;
+    animation: hero-word-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--hero-delay, 0.15s);
   }
   .hero-text-item {
-    transform: translateY(30px);
-    opacity: 0;
+    animation: hero-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--hero-delay, 0.05s);
+  }
+
+  /* Console + floating images: opacity-only CSS entrance. Transform is left
+     to the JS yoyo float (y-axis only), so the two can never fight over the
+     transform property the way a CSS scale + GSAP y combo would. The fade
+     also keeps the LCP floater image painting at first paint time instead of
+     waiting on GSAP boot, and the image itself is request-prioritised via
+     next/image priority in Hero.tsx. */
+  @keyframes hero-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .hero-console-window {
+    animation: hero-fade 0.45s ease-out both;
+    animation-delay: var(--hero-delay, 0.2s);
+  }
+  .hero-floater {
+    animation: hero-fade 0.45s ease-out both;
+    animation-delay: var(--hero-delay, 0.3s);
   }
 }
 
@@ -87,20 +156,20 @@
     width: 8px;
     height: 8px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: var(--bg-primary);
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: rgba(232, 245, 74, 0.2);
     border-radius: 4px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(232, 245, 74, 0.4);
   }
-  
+
   /* Firefox */
   * {
     scrollbar-width: thin;
@@ -115,10 +184,9 @@
     outline-offset: 4px;
     border-radius: 4px; /* Optional fallback radius */
   }
-  
+
   /* Prevent default outline when custom one is applied, unless it's the fallback */
   *:focus:not(:focus-visible) {
     outline: none;
   }
 }
-

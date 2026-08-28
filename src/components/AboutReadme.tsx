@@ -5,55 +5,52 @@ import { portfolioData } from '@/data/portfolioData';
 
 export default function AboutReadme() {
   return (
-    <AnimatedSection id="about" className="w-full flex flex-col scroll-mt-24">
-      <div className="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden">
-        
+    <AnimatedSection id="about" className="flex w-full scroll-mt-24 flex-col">
+      <div className="glass-panel relative overflow-hidden rounded-3xl p-8 sm:p-12">
         {/* Background Decorative Element */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[var(--color-volt)]/5 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[var(--color-volt)]/5 rounded-full blur-[80px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
+        <div className="pointer-events-none absolute top-0 right-0 h-[500px] w-[500px] translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--color-volt)]/5 blur-[100px]" />
+        <div className="pointer-events-none absolute bottom-0 left-0 h-[300px] w-[300px] -translate-x-1/2 translate-y-1/2 rounded-full bg-[var(--color-volt)]/5 blur-[80px]" />
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 relative z-10">
-          
+        <div className="relative z-10 grid grid-cols-1 gap-12 md:grid-cols-12">
           {/* Monogram Section */}
-          <div className="md:col-span-4 lg:col-span-3 flex flex-col items-center md:items-start justify-center">
-            <div className="w-48 h-48 sm:w-56 sm:h-56 relative rounded-2xl overflow-hidden border border-[var(--color-volt)]/20 shadow-[0_0_30px_rgba(232,245,74,0.1)] bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-4 flex items-center justify-center group">
-              <div className="absolute inset-0 bg-[var(--color-volt)]/5 opacity-0 motion-safe:group-hover:opacity-100 motion-safe:transition-opacity duration-500" />
-              <Image 
-                src="/site-assets/brand/monogram-jr-cut.webp" 
-                alt="Jhon Rey Consolacion Monogram" 
-                width={160} 
+          <div className="flex flex-col items-center justify-center md:col-span-4 md:items-start lg:col-span-3">
+            <div className="group relative flex h-48 w-48 items-center justify-center overflow-hidden rounded-2xl border border-[var(--color-volt)]/20 bg-gradient-to-br from-[var(--bg-secondary)] to-[var(--bg-primary)] p-4 shadow-[0_0_30px_rgba(232,245,74,0.1)] sm:h-56 sm:w-56">
+              <div className="absolute inset-0 bg-[var(--color-volt)]/5 opacity-0 duration-500 motion-safe:transition-opacity motion-safe:group-hover:opacity-100" />
+              <Image
+                src="/site-assets/brand/monogram-jr-cut.webp"
+                alt="Jhon Rey Consolacion Monogram"
+                width={160}
                 height={160}
-                className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(232,245,74,0.2)] motion-safe:group-hover:scale-105 motion-safe:transition-transform duration-700 ease-out"
+                className="h-full w-full object-contain drop-shadow-[0_0_15px_rgba(232,245,74,0.2)] filter duration-700 ease-out motion-safe:transition-transform motion-safe:group-hover:scale-105"
               />
             </div>
           </div>
 
           {/* Text Content */}
-          <div className="md:col-span-8 lg:col-span-9 flex flex-col justify-center text-center md:text-left">
-            <h2 className="text-sm font-mono text-[var(--color-volt-light)] tracking-widest uppercase mb-4">
+          <div className="flex flex-col justify-center text-center md:col-span-8 md:text-left lg:col-span-9">
+            <h2 className="mb-4 font-mono text-sm tracking-widest text-[var(--color-volt-light)] uppercase">
               README.md
             </h2>
-            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+            <h3 className="mb-6 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
               I&apos;m Jhon Rey Consolacion, an AI Developer & Automation Builder.
             </h3>
-            
-            <div className="space-y-4 text-[var(--text-secondary)] text-lg leading-relaxed mb-8">
-                {portfolioData.identity.shortBio}
+
+            <div className="mb-8 space-y-4 text-lg leading-relaxed text-[var(--text-secondary)]">
+              {portfolioData.identity.shortBio}
             </div>
-            
-            <div className="p-6 border border-[var(--color-volt)]/20 rounded-xl bg-[var(--color-volt)]/5 relative">
-              <div className="absolute -top-3 left-6 bg-[var(--bg-primary)] px-2 text-xs font-mono text-[var(--color-volt-light)] uppercase tracking-widest">
+
+            <div className="relative rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/5 p-6">
+              <div className="absolute -top-3 left-6 bg-[var(--bg-primary)] px-2 font-mono text-xs tracking-widest text-[var(--color-volt-light)] uppercase">
                 Fun Fact
               </div>
               <p className="text-[var(--text-secondary)]">
-                No CS degree. I learned to build by shipping — every tool on this page was something I figured out mid-project.
+                No CS degree. I learned to build by shipping — every tool on this page was something
+                I figured out mid-project.
               </p>
             </div>
-
           </div>
         </div>
       </div>
     </AnimatedSection>
   );
 }
-
