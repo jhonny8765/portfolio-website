@@ -32,6 +32,7 @@ function getMessageText(message: UIMessage): string {
 
 const SUGGESTED_PROMPTS = [
   'What can Jhon Rey build?',
+  'What DataCamp credentials has he earned?',
   'Tell me about SukiSuite.',
   'What technologies does he use?',
   'Is Jhon Rey available for freelance work?',
@@ -169,7 +170,7 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
                 Ask My AI
               </h3>
               <p id="ask-my-ai-desc" className="text-xs text-[var(--text-secondary)]">
-                Strictly grounded in verified portfolio data
+                Grounded in verified work, skills, and DataCamp credentials
               </p>
             </div>
           </div>
@@ -224,8 +225,8 @@ export default function AskMyAI({ isOpen, onClose }: AskMyAIProps) {
                   Hi, I&apos;m Jhon Rey&apos;s AI Assistant.
                 </h2>
                 <p className="mx-auto max-w-md text-[var(--text-secondary)]">
-                  I can answer questions about his skills, projects, and services based on his
-                  verified portfolio data.
+                  I can answer questions about his skills, projects, services, and DataCamp
+                  credentials based on his verified portfolio data.
                 </p>
               </div>
 

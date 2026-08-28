@@ -9,13 +9,14 @@ export const portfolioData = {
   },
   skills: {
     active: [
-      'AI-Assisted Development',
-      'n8n Automation',
+      'AI Engineering & LLM Integration',
+      'Python for Data',
+      'SQL & Data Workflows',
+      'Data Engineering Foundations',
       'Next.js & React',
       'Tailwind CSS',
-      'Supabase',
-      'Firebase',
-      'Git & GitHub',
+      'Supabase & Firebase',
+      'n8n Automation',
       'API Integrations',
     ],
     exploring: ['Advanced RAG Architectures', 'Custom AI Agents', 'Python Data Pipelines'],
@@ -130,17 +131,19 @@ export const portfolioData = {
   ],
   services: [
     {
-      title: 'Web Application Development',
-      description: 'Building responsive, modern web applications and MVPs using Next.js and React.',
-    },
-    {
-      title: 'Workflow Automation',
-      description: 'Connecting APIs and automating business processes using tools like n8n.',
-    },
-    {
-      title: 'AI Integrations',
+      title: 'AI-Powered Web Applications',
       description:
-        'Implementing practical AI features like grounded chatbots and automated content generation into existing systems.',
+        'Building responsive web applications with practical AI features, LLM integrations, and grounded user experiences.',
+    },
+    {
+      title: 'Data & Workflow Automation',
+      description:
+        'Connecting data, APIs, and business processes into dependable workflows with Python, SQL, and n8n.',
+    },
+    {
+      title: 'Full-Stack MVPs & Internal Tools',
+      description:
+        'Shipping focused MVPs and internal tools with Next.js, React, Supabase, and Firebase.',
     },
   ],
 };
