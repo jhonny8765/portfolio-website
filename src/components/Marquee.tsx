@@ -38,7 +38,9 @@ export default function Marquee() {
       onMouseLeave={() => setPaused(false)}
     >
       {/* Two identical copies inside one animated container — CSS moves by -50% for a seamless loop */}
-      <div className={`marquee-animate flex w-max items-center whitespace-nowrap${paused ? ' marquee-paused' : ''}`}>
+      <div
+        className={`marquee-animate flex w-max items-center whitespace-nowrap${paused ? 'marquee-paused' : ''}`}
+      >
         <MarqueeRow />
         <MarqueeRow />
       </div>

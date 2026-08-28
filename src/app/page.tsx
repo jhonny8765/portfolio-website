@@ -9,6 +9,7 @@ import PlaygroundTeaser from '@/components/PlaygroundTeaser';
 import HowIBuild from '@/components/HowIBuild';
 import BuildLog from '@/components/BuildLog';
 import AboutReadme from '@/components/AboutReadme';
+import Certificates from '@/components/Certificates';
 
 export default function Home() {
   return (
@@ -29,6 +30,7 @@ export default function Home() {
             <PlaygroundTeaser />
             <Services />
             <Skills />
+            <Certificates />
             <Contact />
           </div>
         </div>
