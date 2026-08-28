@@ -21,7 +21,7 @@ export default function Skills() {
           Technical Arsenal
         </h2>
         <p className="text-lg text-[var(--text-secondary)]">
-          Tools and technologies I use to build products.
+          Credential-backed capabilities I use to build products.
         </p>
       </div>
 
