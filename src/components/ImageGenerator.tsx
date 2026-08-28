@@ -200,7 +200,7 @@ export default function ImageGenerator() {
               <RefreshCw size={14} /> Reset
             </button>
 
-            <div className="flex w-full items-center gap-3 sm:w-auto">
+            <div className="flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
               <button
                 onClick={handleEnhance}
                 disabled={!prompt.trim() || prompt.length > 200 || isEnhancing || isGenerating}
