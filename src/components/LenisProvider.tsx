@@ -1,46 +1,52 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Lenis from 'lenis';
 import { useCapabilities } from '@/hooks/useCapabilities';
+import { isPageScrollLocked, subscribeToScrollLock } from '@/lib/scroll-lock';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
-  const { prefersReducedMotion } = useCapabilities();
-  const lenisRef = useRef<Lenis | null>(null);
+  const { prefersReducedMotion, hasFinePointer } = useCapabilities();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    // Touch keeps its native scrolling/overscroll; reduced motion never starts a smoothing loop.
+    if (prefersReducedMotion || !hasFinePointer) return;
 
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
+      duration: 1,
       smoothWheel: true,
-      wheelMultiplier: 1,
-      touchMultiplier: 2,
+      anchors: true,
+      stopInertiaOnNavigate: true,
     });
-    lenisRef.current = lenis;
-
+    const tick = (time: number) => lenis.raf(time * 1000);
+    const syncLock = () => {
+      if (isPageScrollLocked()) lenis.stop();
+      else lenis.start();
+    };
+    const unsubscribe = subscribeToScrollLock(syncLock);
+    syncLock();
     lenis.on('scroll', ScrollTrigger.update);
-
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
-
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.add(tick);
 
     return () => {
+      unsubscribe();
+      // Remove the SAME function that was registered, including in React Strict Mode.
+      gsap.ticker.remove(tick);
+      lenis.off('scroll', ScrollTrigger.update);
       lenis.destroy();
-      gsap.ticker.remove((time) => {
-        lenis.raf(time * 1000);
-      });
     };
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, hasFinePointer]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(frame);
+  }, [pathname]);
 
   return <>{children}</>;
 }

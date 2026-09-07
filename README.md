@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jhon Rey Consolacion — Portfolio
 
-## Getting Started
+Next.js portfolio with project case studies, an AI assistant, an image playground,
+and a contact form. The dark/volt design uses GSAP for short reveals and pointer
+effects, Lenis for desktop scrolling, and native scrolling on touch devices.
 
-First, run the development server:
+## Local development
+
+Requires Node.js 22 or newer.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm ci
+npm run dev -- --hostname 0.0.0.0
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The portfolio renders without service credentials.
+Fonts are bundled locally, so builds do not require a Google Fonts connection.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Copy `.env.example` to `.env.local` to configure the optional contact and AI
+services. Keep secrets out of Git; configure production values in Vercel.
+`NEXT_PUBLIC_SITE_URL` is required on Vercel production builds for canonical,
+Open Graph, and sitemap URLs. No Vercel environment variables are changed by the
+animation fixes.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Validation
 
-## Learn More
+```bash
+npm run lint
+npx tsc --noEmit
+npx prettier --check .
+npm test
+npm run build
+npx playwright install chromium
+npm run test:smoke
+```
 
-To learn more about Next.js, take a look at the following resources:
+The browser suite starts the production server automatically if port 3000 is free.
+To test an optimized build while keeping the development preview running:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+PLAYWRIGHT_PORT=3001 npm run test:smoke
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`PLAYWRIGHT_BASE_URL` targets an already-running server; `CHROMIUM_PATH` optionally
+selects a locally installed Chromium executable. Failure screenshots and traces
+are written to the ignored `test-results/` directory.
 
-## Deploy on Vercel
+Regression coverage includes route wipes and stalled navigation, native link
+behavior, mobile menus, reduced motion, project carousel controls, anchor
+alignment, focus/scroll locking, streamed chat, blocked storage, no-JavaScript
+content, and responsive playground controls. AI browser requests are mocked and
+the contact smoke test uses the honeypot path, so tests do not consume provider
+quotas, send email, or create contact records. Delivery success/failure is covered
+separately by unit tests.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel deploys from the connected GitHub repository. Changes made on an Arena
+working branch should be reviewed and merged into the production branch before
+they affect the public site.

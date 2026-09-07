@@ -1,64 +1,94 @@
 'use client';
 
-import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
+import React, { lazy, Suspense, useCallback, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import Marquee from '@/components/Marquee';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
+import { useDialog } from '@/hooks/useDialog';
 
-// Loading fallback for accessibility and preventing CLS during dynamic import
-const LoadingFallback = () => (
-  <div
-    className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Loading Ask My AI"
-  >
-    <div className="animate-in fade-in zoom-in flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[var(--bg-secondary)] p-6 shadow-2xl duration-300 sm:p-8">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[var(--color-volt)]/50 bg-[var(--color-volt)]/20 text-[var(--color-volt)]">
-        <Loader2 size={24} className="animate-spin" aria-hidden="true" />
+function LoadingFallback({
+  onClose,
+  returnFocusRef,
+}: {
+  onClose: () => void;
+  returnFocusRef: React.RefObject<HTMLElement | null>;
+}) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialog(true, dialogRef, onClose, undefined, returnFocusRef);
+
+  return (
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      data-lenis-prevent
+      className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Loading Ask My AI"
+    >
+      <div className="animate-in fade-in relative flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[var(--bg-secondary)] px-8 pt-16 pb-8 shadow-2xl">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
+        <Loader2 size={28} className="animate-spin text-[var(--color-volt)]" aria-hidden="true" />
+        <p role="status" className="text-center font-medium text-white">
+          Initializing AI Assistant...
+        </p>
       </div>
-      <p className="text-center font-medium text-white">Initializing AI Assistant...</p>
     </div>
-  </div>
-);
-
-// Dynamically import AskMyAI so its heavy dependencies (react-markdown, ai/react)
-// are NOT included in the initial page bundle.
-const AskMyAI = dynamic(() => import('@/components/AskMyAI'), {
-  ssr: false, // Since this is an interactive modal, SSR is not needed and skipping it saves server resources
-  loading: () => <LoadingFallback />,
-});
-
-interface AiStateManagerProps {
-  children: React.ReactNode;
+  );
 }
 
-export default function AiStateManager({ children }: AiStateManagerProps) {
+// Fetch the heavy chat/markdown bundle only when needed. Suspense lets the real
+// loading state remain dismissible and focus-trapped, even on a slow connection.
+const AskMyAI = lazy(() => import('@/components/AskMyAI'));
+
+export default function AiStateManager({ children }: { children: React.ReactNode }) {
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
-
-  const handleOpenAi = () => {
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const handleOpenAi = useCallback(() => {
+    const active = document.activeElement as HTMLElement | null;
+    // The mobile-menu action unmounts when selected; return to its persistent trigger.
+    returnFocusRef.current = active?.closest('#mobile-menu')
+      ? document.querySelector<HTMLElement>('[aria-controls="mobile-menu"]')
+      : active;
     setIsAiOpen(true);
     setHasOpened(true);
-  };
+  }, []);
+  const handleCloseAi = useCallback(() => setIsAiOpen(false), []);
 
   return (
     <>
       <Header onOpenAi={handleOpenAi} />
-
-      {/* Full-width marquee strip — sits just below the fixed header */}
       <div className="mt-28 w-full">
         <Marquee />
       </div>
-
-      <div className="flex w-full max-w-5xl flex-col gap-24 px-6 pt-8 pb-24 sm:gap-32 sm:px-12">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="flex w-full max-w-5xl flex-col gap-24 px-6 pt-8 pb-24 sm:gap-32 sm:px-12"
+      >
         <Hero onOpenAi={handleOpenAi} />
         {children}
-      </div>
-
-      {hasOpened && <AskMyAI isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />}
+      </main>
+      {hasOpened && (
+        <Suspense
+          fallback={
+            isAiOpen ? (
+              <LoadingFallback onClose={handleCloseAi} returnFocusRef={returnFocusRef} />
+            ) : null
+          }
+        >
+          <AskMyAI isOpen={isAiOpen} onClose={handleCloseAi} returnFocusRef={returnFocusRef} />
+        </Suspense>
+      )}
     </>
   );
 }

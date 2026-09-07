@@ -30,10 +30,13 @@ test('contact form submits and reaches a terminal state', async ({ page }) => {
   await page
     .locator('textarea[name="message"], [name="message"]')
     .fill('Automated smoke test message.');
+  // Exercise the action's deterministic honeypot path: never email the owner
+  // or write test contacts, even if this suite is run with real provider envs.
+  await page.locator('input[name="website"]').evaluate((element) => {
+    (element as HTMLInputElement).value = 'automated-smoke-check';
+  });
   await page.locator('button[type="submit"]').click();
-  // With placeholder sandbox envs the Resend/Supabase call fails (error path);
-  // in production it succeeds. Either terminal state proves the pipeline ran.
-  await expect(page.getByText(/thank you|went wrong|error|try again/i).first()).toBeVisible({
+  await expect(page.getByRole('heading', { name: 'Message Sent!' })).toBeVisible({
     timeout: 15_000,
   });
 });

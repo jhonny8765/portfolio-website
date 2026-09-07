@@ -78,13 +78,14 @@ export default function PlaygroundPage() {
         <div className="glass-panel relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl sm:rounded-3xl">
           {/* Mac-style Window Header */}
           <div className="relative flex h-10 items-center gap-2 border-b border-white/10 bg-white/5 px-4">
-            <div className="flex gap-1.5">
+            <div className="flex shrink-0 gap-1.5">
               <div className="h-3 w-3 rounded-full border border-red-500/50 bg-red-500/20"></div>
               <div className="h-3 w-3 rounded-full border border-yellow-500/50 bg-yellow-500/20"></div>
               <div className="h-3 w-3 rounded-full border border-green-500/50 bg-green-500/20"></div>
             </div>
-            <div className="absolute left-1/2 -translate-x-1/2 font-mono text-xs text-[var(--text-secondary)]">
-              /usr/bin/generator --engine=cloudflare
+            <div className="ml-auto min-w-0 truncate pl-3 font-mono text-[10px] text-[var(--text-secondary)] sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:text-xs">
+              <span className="sm:hidden">generator --cloudflare</span>
+              <span className="hidden sm:inline">/usr/bin/generator --engine=cloudflare</span>
             </div>
           </div>
           <div className="bg-black/40 p-4 sm:p-6 lg:p-8">

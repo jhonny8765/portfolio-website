@@ -4,9 +4,12 @@ import React, { useRef } from 'react';
 import { portfolioData } from '@/data/portfolioData';
 import { Terminal, CheckCircle2, CircleDashed, Cpu, PlayCircle } from 'lucide-react';
 import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import Image from 'next/image';
 import { Magnetic } from './Magnetic';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface HeroProps {
   onOpenAi: () => void;
@@ -19,42 +22,28 @@ export default function Hero({ onOpenAi }: HeroProps) {
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add('(prefers-reduced-motion: no-preference) and (min-width: 768px)', () => {
-        // Desktop text entrance (hero-text-item / hero-word) is pure CSS now —
-        // see globals.css. JS only handles the console + floating images, which
-        // are decorative and never the LCP element.
-
-        // Console + floater entrances are CSS (globals.css @hero-fade) — JS here
-        // owns only the continuous yoyo float (y axis, non-transform-conflicting).
-        gsap.to('.hero-floater', {
-          y: '-=15',
-          duration: 2,
-          yoyo: true,
-          repeat: -1,
-          ease: 'sine.inOut',
-          stagger: {
-            each: 0.3,
-            from: 'random',
-          },
-        });
-      });
-
-      mm.add('(prefers-reduced-motion: no-preference) and (max-width: 767px)', () => {
-        // Mobile: hero text is 100% visible on initial HTML paint (no JS delay for LCP).
-        // Continuous floating animation for images only:
-        gsap.to('.hero-floater', {
-          y: '-=10',
-          duration: 2,
-          yoyo: true,
-          repeat: -1,
-          ease: 'sine.inOut',
-          stagger: 0.3,
-        });
-      });
-
-      mm.add('(prefers-reduced-motion: reduce)', () => {
-        // No motion: everything stays at natural static position
-      });
+      mm.add(
+        '(prefers-reduced-motion: no-preference) and (min-width: 768px) and (hover: hover) and (pointer: fine)',
+        () => {
+          // CSS handles the entrance; GSAP only owns the gentle y-axis float.
+          const float = gsap.to('.hero-floater', {
+            y: -12,
+            duration: 2.6,
+            yoyo: true,
+            repeat: -1,
+            ease: 'sine.inOut',
+            stagger: 0.3,
+            paused: true,
+          });
+          ScrollTrigger.create({
+            trigger: container.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            onToggle: (trigger) => float.paused(!trigger.isActive),
+            onRefresh: (trigger) => float.paused(!trigger.isActive),
+          });
+        },
+      );
 
       return () => mm.revert();
     },
@@ -75,7 +64,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
           </div>
 
           <h1
-            className="hero-text-item mb-6 flex flex-wrap gap-[0.25em] text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl"
+            className="hero-text-item mb-6 flex flex-wrap gap-x-[0.25em] gap-y-0 text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl md:text-5xl lg:text-5xl xl:text-6xl"
             aria-label="I build with AI — websites, apps, & automations."
           >
             {'I build with AI —'.split(' ').map((word, i) => (
@@ -84,7 +73,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
                   className="hero-word inline-block"
                   style={{ '--hero-delay': `${0.05 + i * 0.035}s` } as React.CSSProperties}
                 >
-                  {word}&nbsp;
+                  {word}
                 </span>
               </span>
             ))}
@@ -95,7 +84,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
                   className="hero-word inline-block bg-gradient-to-r from-[var(--color-volt-light)] to-[var(--color-volt-light)] bg-clip-text text-transparent"
                   style={{ '--hero-delay': `${0.22 + i * 0.035}s` } as React.CSSProperties}
                 >
-                  {word}&nbsp;
+                  {word}
                 </span>
               </span>
             ))}
@@ -115,7 +104,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
             <Magnetic strength={0.25}>
               <button
                 onClick={onOpenAi}
-                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-volt)] px-8 py-3.5 font-semibold text-[var(--bg-primary)] shadow-[0_0_20px_rgba(232,245,74,0.3)] transition-all hover:bg-[var(--color-volt)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] sm:w-auto"
+                className="flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl bg-[var(--color-volt)] px-8 py-3.5 font-semibold text-[var(--bg-primary)] shadow-[0_0_20px_rgba(232,245,74,0.3)] transition-[background-color,border-color,color,box-shadow] hover:bg-[var(--color-volt)] hover:shadow-[0_0_30px_rgba(232,245,74,0.5)] sm:w-auto"
               >
                 <Terminal size={18} />
                 Ask My AI
@@ -125,7 +114,7 @@ export default function Hero({ onOpenAi }: HeroProps) {
             <Magnetic strength={0.25}>
               <a
                 href="#projects"
-                className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 py-3.5 font-semibold text-white transition-all hover:border-white/20 hover:bg-white/10 sm:w-auto"
+                className="flex min-h-[44px] w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-8 py-3.5 font-semibold text-white transition-[background-color,border-color,color,box-shadow] hover:border-white/20 hover:bg-white/10 sm:w-auto"
               >
                 Explore Projects
               </a>

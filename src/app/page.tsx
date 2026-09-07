@@ -13,10 +13,7 @@ import Certificates from '@/components/Certificates';
 
 export default function Home() {
   return (
-    <main
-      id="main-content"
-      className="relative flex min-h-screen w-full flex-col items-center overflow-x-hidden selection:bg-[var(--color-volt)] selection:text-white"
-    >
+    <div className="relative flex min-h-screen w-full flex-col items-center overflow-x-hidden selection:bg-[var(--color-volt)] selection:text-white">
       <AiStateManager>
         <div className="relative w-full">
           {/* Decorative Progress Line */}
@@ -37,6 +34,6 @@ export default function Home() {
       </AiStateManager>
 
       <Footer />
-    </main>
+    </div>
   );
 }

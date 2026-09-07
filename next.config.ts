@@ -16,6 +16,8 @@ if (process.env.VERCEL_ENV === 'production' && !process.env.NEXT_PUBLIC_SITE_URL
 // - Generated images come back as blob/data URLs → img-src data: blob:
 // - GSAP/Lenis need style 'unsafe-inline'; Next needs script 'unsafe-inline' (RSC payload)
 //   TODO(Phase 6): move to nonce-based script-src once report-only data is reviewed.
+const isDevelopment = process.env.NODE_ENV === 'development';
+
 const cspReportOnly = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -23,7 +25,7 @@ const cspReportOnly = [
   "img-src 'self' data: blob:",
   "font-src 'self'",
   "connect-src 'self'",
-  "frame-ancestors 'none'",
+  ...(isDevelopment ? [] : ["frame-ancestors 'none'"]),
   "base-uri 'self'",
   "form-action 'self'",
   "object-src 'none'",
@@ -32,7 +34,8 @@ const cspReportOnly = [
 
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'X-Frame-Options', value: 'DENY' },
+  // Keep production protected; allow the development preview to be embedded.
+  ...(!isDevelopment ? [{ key: 'X-Frame-Options', value: 'DENY' }] : []),
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
   {
@@ -43,6 +46,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['*.e2b.app'],
   images: {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

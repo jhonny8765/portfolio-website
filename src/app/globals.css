@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'lenis/dist/lenis.css';
 
 @theme {
   --color-bg: #07080a;
@@ -9,9 +10,9 @@
   --color-volt-light: #f4fa96;
   --color-volt-line: rgba(232, 245, 74, 0.18);
 
-  --font-sans: var(--font-sans), system-ui, sans-serif;
-  --font-mono: var(--font-mono), monospace;
-  --font-display: var(--font-display), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
 
   --animate-slide-in-right: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -50,7 +51,6 @@
     background-color: var(--bg-primary);
     color: var(--text-primary);
     font-family: var(--font-sans);
-    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -77,7 +77,9 @@
   animation: marquee-scroll 35s linear infinite;
 }
 
-.marquee-animate.marquee-paused {
+.marquee-animate.marquee-paused,
+.marquee:hover .marquee-animate,
+.marquee:focus-within .marquee-animate {
   animation-play-state: paused;
 }
 
@@ -187,4 +189,110 @@
   *:focus:not(:focus-visible) {
     outline: none;
   }
+}
+
+/* Only one scroll engine at a time. CSS smooth scrolling otherwise fights Lenis. */
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: auto;
+}
+
+/* Native fragment links must land immediately during startup. A CSS smooth
+   scroll can be interrupted halfway when Lenis hydrates; Lenis owns animated
+   desktop anchor navigation instead. Touch and no-JS anchors stay native. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+/* These entrance classes were used throughout the UI without a matching plugin
+   or keyframes. Keep the small set we actually use local and dependency-free. */
+@keyframes ui-enter {
+  from {
+    opacity: var(--enter-opacity, 1);
+    transform: translateY(var(--enter-y, 0)) scale(var(--enter-scale, 1));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-in {
+  animation: ui-enter var(--tw-duration, 250ms) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-in {
+  --enter-opacity: 0;
+}
+.zoom-in {
+  --enter-scale: 0.97;
+}
+.slide-in-from-bottom-8 {
+  --enter-y: 2rem;
+}
+.slide-in-from-top-4 {
+  --enter-y: -1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Static updates should still expose every item, not just a clipped first row. */
+  .marquee-animate {
+    width: 100%;
+    white-space: normal;
+    animation: none !important;
+    transform: none !important;
+  }
+  .marquee-row {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+  }
+  .marquee-row > span {
+    font-size: 0.875rem;
+  }
+  .marquee-row[aria-hidden='true'],
+  .marquee-separator {
+    display: none;
+  }
+}
+
+/* Chat markdown is rendered lazily; style it without shipping a typography plugin. */
+.chat-markdown > * + * {
+  margin-top: 0.75rem;
+}
+.chat-markdown a {
+  color: var(--color-volt);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.chat-markdown ul,
+.chat-markdown ol {
+  padding-left: 1.25rem;
+  list-style: revert;
+}
+.chat-markdown pre {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: rgb(0 0 0 / 30%);
+  padding: 0.75rem;
+}
+.chat-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.chat-markdown th,
+.chat-markdown td {
+  padding: 0.375rem;
+  border: 1px solid rgb(255 255 255 / 15%);
 }

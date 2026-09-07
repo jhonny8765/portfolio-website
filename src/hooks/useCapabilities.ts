@@ -1,39 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
+
+export function useMediaQuery(query: string, serverValue = false) {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const media = window.matchMedia(query);
+      media.addEventListener('change', onChange);
+      return () => media.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+  const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
+  const getServerSnapshot = useCallback(() => serverValue, [serverValue]);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
 
 export function useCapabilities() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  // Opt in after hydration instead of briefly starting effects on touch/reduced-motion devices.
+  // Listen for changes too: accessibility preferences and connected pointers can change at runtime.
+  const allowsMotion = useMediaQuery('(prefers-reduced-motion: no-preference)');
+  const hasFinePointer = useMediaQuery('(hover: hover) and (pointer: fine)');
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const touchQuery = window.matchMedia('(any-pointer: coarse)');
-
-    // We update state asynchronously to avoid React warnings about sync setState in effects
-    requestAnimationFrame(() => {
-      setPrefersReducedMotion(mediaQuery.matches);
-      setIsTouchDevice(
-        touchQuery.matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-      );
-    });
-
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    const handleTouchChange = (e: MediaQueryListEvent) => {
-      setIsTouchDevice(e.matches || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-
-    mediaQuery.addEventListener('change', handleMotionChange);
-    touchQuery.addEventListener('change', handleTouchChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleMotionChange);
-      touchQuery.removeEventListener('change', handleTouchChange);
-    };
-  }, []);
-
-  return { prefersReducedMotion, isTouchDevice };
+  return { prefersReducedMotion: !allowsMotion, hasFinePointer };
 }

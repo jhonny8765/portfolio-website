@@ -5,6 +5,7 @@ import { defineConfig } from '@playwright/test';
 // `npx playwright install chromium` provides the browser; webServer boots
 // `next start` automatically when nothing is listening.
 const chromiumPath = process.env.CHROMIUM_PATH;
+const port = Number(process.env.PLAYWRIGHT_PORT || 3000);
 
 export default defineConfig({
   testDir: './tests',
@@ -12,8 +13,10 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || `http://localhost:${port}`,
     headless: true,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
     launchOptions: {
       ...(chromiumPath ? { executablePath: chromiumPath } : {}),
       args: ['--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
@@ -22,8 +25,8 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: 'npm run start',
-        port: 3000,
+        command: `npm run start -- --hostname 0.0.0.0 --port ${port}`,
+        port,
         reuseExistingServer: true,
         timeout: 60_000,
       },

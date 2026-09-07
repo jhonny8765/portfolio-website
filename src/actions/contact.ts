@@ -1,11 +1,9 @@
 'use server';
 
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
 import { escapeHtml, validateContactFields } from '@/lib/contact-utils';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Simple in-memory rate limiting for server actions
 // Note: In Vercel, this resets on cold starts, but provides basic spam protection
@@ -61,29 +59,25 @@ export async function submitContactForm(formData: FormData) {
     const validService = service as string;
     const validMessage = message as string;
 
-    // 4. Database Insertion using Admin Client
-    // We intentionally omit storing the IP address to preserve privacy.
-    // Only attempt if not using the mock URL
-    const isMockSupabase = process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('mock.supabase.co');
-    
-    if (!isMockSupabase) {
-      const { error } = await supabaseAdmin.from('contacts').insert([
-        {
-          name: validName,
-          email: validEmail,
-          service: validService,
-          message: validMessage,
-          // created_at is handled by Postgres default
-        },
-      ]);
-  
-      if (error) {
-        // Log the actual error internally, but do NOT expose it to the client
-        console.error('Supabase Insert Error:', error.message);
-        // We log the error but proceed to send the email so the user's message isn't lost
-      }
-    } else {
-      console.log('Skipping Supabase insert: Using mock Supabase URL');
+    // Either durable storage or accepted email delivery is required for success.
+    // Provider failures are independent so a database outage doesn't discard email.
+    let stored = false;
+    let emailed = false;
+    try {
+      const { error } = await getSupabaseAdmin()
+        .from('contacts')
+        .insert([
+          {
+            name: validName,
+            email: validEmail,
+            service: validService,
+            message: validMessage,
+          },
+        ]);
+      stored = !error;
+      if (error) console.error('Supabase Insert Error:', error.message);
+    } catch (databaseError) {
+      console.error('Supabase Insert Error:', databaseError);
     }
 
     // 5. Send Email via Resend
@@ -91,10 +85,11 @@ export async function submitContactForm(formData: FormData) {
       const fromEmail =
         process.env.CONTACT_FROM_EMAIL || process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 
-      // Notify you
-      await resend.emails.send({
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const result = await resend.emails.send({
         from: fromEmail,
         to: 'jhonreyc2001@gmail.com',
+        replyTo: validEmail,
         subject: `New Contact Form Submission: ${service}`,
         html: `
           <h3>New Message from ${escapeHtml(validName)}</h3>
@@ -104,11 +99,21 @@ export async function submitContactForm(formData: FormData) {
           <p>${escapeHtml(validMessage).replace(/\n/g, '<br/>')}</p>
         `,
       });
+      // Resend usually returns an error object instead of throwing.
+      emailed = !result.error && !!result.data?.id;
+      if (result.error) console.error('Resend Email Error:', result.error.message);
     } catch (emailErr) {
       // We don't want to fail the user request if email fails, but we should log it
       console.error('Resend Email Error:', emailErr);
     }
 
+    if (!stored && !emailed) {
+      return {
+        success: false,
+        error:
+          'Your message could not be delivered. Please try again or email jhonreyc2001@gmail.com.',
+      };
+    }
     return { success: true };
   } catch (err) {
     console.error('Contact Form Error:', err);
