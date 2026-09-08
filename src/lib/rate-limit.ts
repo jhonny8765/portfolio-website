@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { supabaseAdmin } from './supabase-admin';
+import { getSupabaseAdmin } from './supabase-admin';
 
 export async function checkRateLimit({
   ip,
@@ -20,7 +20,7 @@ export async function checkRateLimit({
   const ipHash = hashIp(ip, salt);
 
   // Call the atomic RPC using the admin client to bypass RLS
-  const { data, error } = await supabaseAdmin.rpc('check_and_increment_api_usage', {
+  const { data, error } = await getSupabaseAdmin().rpc('check_and_increment_api_usage', {
     p_ip_hash: ipHash,
     p_endpoint: endpoint,
     p_ip_limit: ipLimit,

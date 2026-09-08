@@ -29,32 +29,32 @@ export default function AnimatedSection({
       const mm = gsap.matchMedia();
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // Do not hide already-visible content on hydration, back navigation, or deep links.
+        if (sectionRef.current!.getBoundingClientRect().top < window.innerHeight * 0.9) return;
+        // Keep the section/anchor in normal geometry. Translating the anchor
+        // itself made smooth-scroll destinations drift as the reveal finished.
         gsap.fromTo(
-          sectionRef.current,
-          { opacity: 0, y: 40 },
+          Array.from(sectionRef.current!.children),
+          { opacity: 0, y: 24 },
           {
             opacity: 1,
             y: 0,
             duration: 0.7,
             ease: 'power3.out',
-            delay: delay,
+            delay,
+            clearProps: 'opacity,transform',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: 'top 85%', // Equivalent to margin "-50px"
+              start: 'top 90%',
               once: true,
             },
           },
         );
       });
 
-      mm.add('(prefers-reduced-motion: reduce)', () => {
-        // Reveal immediately — no scroll gating for users who prefer reduced motion
-        gsap.set(sectionRef.current, { opacity: 1 });
-      });
-
       return () => mm.revert();
     },
-    { scope: sectionRef },
+    { scope: sectionRef, dependencies: [delay], revertOnUpdate: true },
   );
 
   return (

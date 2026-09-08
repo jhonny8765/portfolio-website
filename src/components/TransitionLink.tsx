@@ -1,66 +1,61 @@
 'use client';
 
 import React from 'react';
-import Link, { LinkProps } from 'next/link';
+import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import gsap from 'gsap';
+import { useRouteTransition } from './RouteTransition';
 
-interface TransitionLinkProps extends LinkProps {
-  children: React.ReactNode;
-  className?: string;
+// Keep native anchor attributes AND refs (Magnetic attaches a ref to these links).
+type TransitionLinkProps = Omit<React.ComponentPropsWithRef<typeof Link>, 'href'> & {
   href: string;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
-}
+};
 
-export const TransitionLink = ({
-  children,
-  className,
+export function TransitionLink({
   href,
-  onClick,
+  onNavigate,
+  replace,
+  scroll,
+  transitionTypes,
   ...props
-}: TransitionLinkProps) => {
+}: TransitionLinkProps) {
   const router = useRouter();
   const pathname = usePathname();
-
-  const handleTransition = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    if (onClick) {
-      onClick(e);
-    }
-
-    // Parse target path and hash
-    const [targetPath] = href.split('#');
-    const normalizedTarget = targetPath || '/';
-
-    // Same-page anchor or hash link: let browser/Lenis handle smooth scrolling without overlay
-    if (href.startsWith('#') || normalizedTarget === pathname) {
-      return;
-    }
-
-    e.preventDefault();
-
-    const overlay = document.getElementById('page-transition-overlay');
-
-    if (overlay) {
-      const tl = gsap.timeline();
-
-      // Wipe up to cover
-      tl.to(overlay, {
-        y: '0%',
-        duration: 0.4,
-        ease: 'power3.inOut',
-        onComplete: () => {
-          // Navigate once covered
-          router.push(href);
-        },
-      });
-    } else {
-      router.push(href);
-    }
-  };
+  const transition = useRouteTransition();
 
   return (
-    <Link href={href} className={className} onClick={handleTransition} {...props}>
-      {children}
-    </Link>
+    <Link
+      {...props}
+      href={href}
+      replace={replace}
+      scroll={scroll}
+      transitionTypes={transitionTypes}
+      onNavigate={(event) => {
+        let cancelled = false;
+        onNavigate?.({
+          preventDefault: () => {
+            cancelled = true;
+            event.preventDefault();
+          },
+        });
+        if (cancelled || !transition) return;
+
+        const destination = new URL(href, window.location.href);
+        if (
+          destination.pathname === pathname ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ) {
+          return;
+        }
+
+        // Unlike onClick, Next's onNavigate excludes modifier-clicks, downloads,
+        // external URLs, and new tabs, preserving the browser's normal behavior.
+        event.preventDefault();
+        transition(() => {
+          const options = { scroll, transitionTypes };
+          if (replace) router.replace(href, options);
+          else router.push(href, options);
+        });
+      }}
+    />
   );
-};
+}

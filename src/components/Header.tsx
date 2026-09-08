@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useDialog } from '@/hooks/useDialog';
 import { TransitionLink as Link } from './TransitionLink';
 import { Menu, X, Sparkles } from 'lucide-react';
 import Image from 'next/image';
@@ -14,77 +15,23 @@ export default function Header({ onOpenAi }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const toggleMenu = () => setIsMenuOpen((open) => !open);
+  const closeMenu = () => setIsMenuOpen(false);
+  useDialog(isMenuOpen, menuRef, closeMenu);
 
   useEffect(() => {
-    if (isMenuOpen) {
-      previousFocusRef.current = document.activeElement as HTMLElement;
-      // Prevent background scrolling when open
-      document.body.style.overflow = 'hidden';
-
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          closeMenu();
-          return;
-        }
-
-        if (e.key === 'Tab' && menuRef.current) {
-          const focusableElements = menuRef.current.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-          );
-          if (focusableElements.length === 0) return;
-          const firstElement = focusableElements[0] as HTMLElement;
-          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-          if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-              lastElement.focus();
-              e.preventDefault();
-            }
-          } else {
-            if (document.activeElement === lastElement) {
-              firstElement.focus();
-              e.preventDefault();
-            }
-          }
-        }
-      };
-
-      document.addEventListener('keydown', handleKeyDown);
-
-      // Move focus into the menu (specifically the close button)
-      setTimeout(() => {
-        const closeBtn = menuRef.current?.querySelector(
-          'button[aria-label="Close navigation menu"]',
-        ) as HTMLElement;
-        closeBtn?.focus();
-      }, 50);
-
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = '';
-      };
-    } else if (previousFocusRef.current) {
-      // Restore focus to the hamburger button when closed
-      previousFocusRef.current.focus();
-      previousFocusRef.current = null;
-    }
+    if (!isMenuOpen) return;
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    const closeOnDesktop = () => {
+      if (desktop.matches) setIsMenuOpen(false);
+    };
+    desktop.addEventListener('change', closeOnDesktop);
+    return () => desktop.removeEventListener('change', closeOnDesktop);
   }, [isMenuOpen]);
 
   const handleAskMyAiClick = () => {
     closeMenu();
-    // Use timeout to prevent AskMyAI modal and Mobile menu from overlapping/focus clashing
-    setTimeout(() => {
-      onOpenAi();
-    }, 100);
+    onOpenAi();
   };
 
   return (
@@ -100,7 +47,11 @@ export default function Header({ onOpenAi }: HeaderProps) {
         </a>
         <div className="pointer-events-auto mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-[#07080A]/90 px-4 py-3 shadow-2xl backdrop-blur-xl sm:px-6">
           <Magnetic strength={0.25}>
-            <div className="flex cursor-pointer items-center gap-3">
+            <Link
+              href="/#main-content"
+              aria-label="Jhon Rey — home"
+              className="flex shrink-0 items-center gap-3"
+            >
               <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-white/5 p-1.5 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                 <Image
                   src="/site-assets/brand/monogram-jr-cut.webp"
@@ -119,13 +70,13 @@ export default function Header({ onOpenAi }: HeaderProps) {
                   Available
                 </span>
               </div>
-            </div>
+            </Link>
           </Magnetic>
 
           {/* Desktop Nav */}
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-4 text-sm font-medium md:flex lg:gap-6"
+            className="hidden items-center gap-4 text-sm font-medium lg:flex lg:gap-6"
           >
             <Magnetic strength={0.25}>
               <Link
@@ -173,14 +124,15 @@ export default function Header({ onOpenAi }: HeaderProps) {
             <Magnetic strength={0.25}>
               <button
                 onClick={onOpenAi}
-                className="pointer-events-auto hidden items-center gap-2 rounded-full border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-4 py-2 text-sm font-medium text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)] md:flex"
+                className="pointer-events-auto hidden min-h-[44px] items-center gap-2 rounded-full border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-4 py-2 text-sm font-medium text-[var(--color-volt)] transition-[background-color,border-color,color,box-shadow] hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)] lg:flex"
               >
                 <Image
                   src="/site-assets/brand/preloader-glyph.webp"
-                  alt="Glyph"
+                  alt=""
+                  aria-hidden="true"
                   width={16}
                   height={16}
-                  className="object-contain opacity-70 brightness-0 invert transition-opacity group-hover:opacity-100"
+                  className="object-contain opacity-90"
                 />
                 Ask My AI
               </button>
@@ -202,7 +154,7 @@ export default function Header({ onOpenAi }: HeaderProps) {
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
               aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              className="pointer-events-auto ml-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 md:hidden"
+              className="pointer-events-auto ml-1 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:bg-white/10 lg:hidden"
             >
               <Menu size={20} aria-hidden="true" />
             </button>
@@ -215,6 +167,8 @@ export default function Header({ onOpenAi }: HeaderProps) {
         <div
           id="mobile-menu"
           ref={menuRef}
+          tabIndex={-1}
+          data-lenis-prevent
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-menu-title"
@@ -238,10 +192,10 @@ export default function Header({ onOpenAi }: HeaderProps) {
             </button>
           </div>
 
-          <div className="flex flex-1 flex-col justify-center gap-12 overflow-y-auto px-6 py-8">
+          <div className="flex min-h-0 flex-1 flex-col gap-8 overflow-y-auto px-6 py-8">
             <nav
               aria-label="Mobile navigation"
-              className="flex flex-col gap-6 text-center text-2xl font-medium"
+              className="my-auto flex flex-col gap-6 text-center text-2xl font-medium"
             >
               <Link
                 href="/#projects"
@@ -290,14 +244,15 @@ export default function Header({ onOpenAi }: HeaderProps) {
             <div className="mx-auto mt-4 flex w-full max-w-sm flex-col gap-4">
               <button
                 onClick={handleAskMyAiClick}
-                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-6 py-3 font-semibold text-[var(--color-volt)] transition-all hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)]"
+                className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-xl border border-[var(--color-volt)]/20 bg-[var(--color-volt)]/10 px-6 py-3 font-semibold text-[var(--color-volt)] transition-[background-color,border-color,color,box-shadow] hover:bg-[var(--color-volt)] hover:text-[var(--color-bg)]"
               >
                 <Image
                   src="/site-assets/brand/preloader-glyph.webp"
-                  alt="Glyph"
+                  alt=""
+                  aria-hidden="true"
                   width={20}
                   height={20}
-                  className="object-contain opacity-70 brightness-0 invert"
+                  className="object-contain opacity-90"
                 />
                 Ask My AI
               </button>

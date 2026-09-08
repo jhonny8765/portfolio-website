@@ -7,9 +7,6 @@ import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
-if (typeof window !== 'undefined') {
-  (window as unknown as { ScrollTrigger: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
-}
 
 const steps = [
   {
@@ -47,37 +44,27 @@ export default function HowIBuild() {
       if (!container.current) return;
       const mm = gsap.matchMedia();
 
-      mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
-        // Pin the entire section on desktop
-        ScrollTrigger.create({
-          trigger: container.current,
-          start: 'top top',
-          end: '+=150%', // Keep it pinned for a while
-          pin: true,
-          anticipatePin: 1,
-        });
-
-        // Animate the cards in sequentially
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
+        // A short entrance, not a pinned, scrubbed section. Pinning inside the
+        // flex layout removed its spacing and made these cards overlap Projects.
+        if (container.current!.getBoundingClientRect().top < window.innerHeight * 0.85) return;
         gsap.fromTo(
           cardsRef.current,
-          { opacity: 0, y: 50 },
+          { opacity: 0, y: 24 },
           {
             opacity: 1,
             y: 0,
-            stagger: 1,
+            duration: 0.6,
+            stagger: 0.1,
             ease: 'power2.out',
+            clearProps: 'opacity,transform',
             scrollTrigger: {
               trigger: container.current,
-              start: 'top top',
-              end: '+=150%',
-              scrub: 1,
+              start: 'top 85%',
+              once: true,
             },
           },
         );
-      });
-
-      mm.add('(max-width: 767px), (prefers-reduced-motion: reduce)', () => {
-        gsap.set(cardsRef.current, { opacity: 1, y: 0 });
       });
 
       return () => mm.revert();
@@ -86,11 +73,7 @@ export default function HowIBuild() {
   );
 
   return (
-    <section
-      id="how-i-build"
-      ref={container}
-      className="flex min-h-screen w-full flex-col justify-center py-16"
-    >
+    <section id="how-i-build" ref={container} className="flex w-full scroll-mt-32 flex-col py-8">
       <div className="mb-12">
         <h2 className="mb-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
           How I <span className="text-[var(--color-volt)]">Build</span>

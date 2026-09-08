@@ -11,16 +11,17 @@ interface MagneticProps {
 
 export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
   const magneticRef = useRef<HTMLElement>(null);
-  const { prefersReducedMotion, isTouchDevice } = useCapabilities();
+  const { prefersReducedMotion, hasFinePointer } = useCapabilities();
 
   useEffect(() => {
-    if (prefersReducedMotion || isTouchDevice) return;
+    if (prefersReducedMotion || !hasFinePointer) return;
 
     const element = magneticRef.current;
     if (!element) return;
 
-    const xTo = gsap.quickTo(element, 'x', { duration: 1, ease: 'elastic.out(1, 0.3)' });
-    const yTo = gsap.quickTo(element, 'y', { duration: 1, ease: 'elastic.out(1, 0.3)' });
+    const originalTransform = element.style.transform;
+    const xTo = gsap.quickTo(element, 'x', { duration: 0.5, ease: 'power3.out' });
+    const yTo = gsap.quickTo(element, 'y', { duration: 0.5, ease: 'power3.out' });
 
     // Cache the element's UN-transformed center once per hover. Reading
     // getBoundingClientRect() inside every mousemove forces a layout query per
@@ -68,8 +69,12 @@ export function Magnetic({ children, strength = 0.3 }: MagneticProps) {
       element.removeEventListener('mouseleave', handleMouseLeave as EventListener);
       window.removeEventListener('scroll', invalidate, { capture: true } as EventListenerOptions);
       window.removeEventListener('resize', invalidate);
+      xTo.tween.kill();
+      yTo.tween.kill();
+      gsap.set(element, { x: 0, y: 0 });
+      element.style.transform = originalTransform;
     };
-  }, [prefersReducedMotion, isTouchDevice, strength]);
+  }, [prefersReducedMotion, hasFinePointer, strength]);
 
   return React.cloneElement(children, { ref: magneticRef } as React.HTMLAttributes<HTMLElement> & {
     ref: React.Ref<HTMLElement>;

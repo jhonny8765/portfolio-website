@@ -1,17 +1,27 @@
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
-import { Inter, Bricolage_Grotesque, JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-const bricolage = Bricolage_Grotesque({
-  subsets: ['latin'],
-  variable: '--font-display',
+// Keep the same typefaces, but make builds independent of Google Fonts' network.
+const inter = localFont({
+  src: './fonts/inter-latin.woff2',
+  variable: '--font-inter',
+  weight: '100 900',
   display: 'swap',
-  adjustFontFallback: true,
-  preload: true,
 });
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
+const bricolage = localFont({
+  src: './fonts/bricolage-grotesque-latin.woff2',
+  variable: '--font-bricolage',
+  weight: '200 800',
+  display: 'swap',
+});
+const jetbrainsMono = localFont({
+  src: './fonts/jetbrains-mono-latin.woff2',
+  variable: '--font-jetbrains',
+  weight: '100 800',
+  display: 'swap',
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -67,29 +77,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable} scroll-smooth`}
-    >
-      <body>
+    <html lang="en" className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable}`}>
+      <body className="isolate">
         {/* Structured data: Person schema for knowledge-panel/card eligibility */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* NOTE: no <noscript> fallback needed — Preloader is mount-gated client-side,
-            so without JS there is no overlay to hide. The route-transition overlay
-            is CSS-translated off-screen by default (translate-y-full). */}
         <EffectsLayer />
         <LenisProvider>
-          {/* Global Page Transition Overlay */}
-          <div
-            id="page-transition-overlay"
-            className="pointer-events-none fixed inset-0 z-[var(--z-preloader)] translate-y-full bg-[var(--color-volt)]"
-            aria-hidden="true"
-          ></div>
-          <RouteTransition />
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <RouteTransition>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </RouteTransition>
         </LenisProvider>
         {/* Toast feedback for contact form + playground (plan 5.5) */}
         <Toaster

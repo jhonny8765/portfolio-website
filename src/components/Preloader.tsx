@@ -1,72 +1,54 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { usePathname } from 'next/navigation';
 import gsap from 'gsap';
 import Image from 'next/image';
+import { useScrollLock } from '@/hooks/useScrollLock';
+import { isPageScrollLocked } from '@/lib/scroll-lock';
 
 export default function Preloader() {
-  // Mount-gated: SSR emits NO preloader markup at all. The overlay only mounts
-  // post-hydration when the browser can actually animate it away — so a no-JS
-  // (or failed-JS) visitor is never trapped behind a stuck full-screen overlay,
-  // and no <noscript> hack is required.
   const [shouldRender, setShouldRender] = useState(false);
   const container = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+  useScrollLock(shouldRender);
 
-  // Decide client-side whether to show (desktop only, once per session, motion allowed)
   useEffect(() => {
-    if (pathname !== '/') return;
+    // An optional flourish must not crash the app when storage is blocked, or
+    // interrupt visitors following a deep link or opening a dialog during load.
+    try {
+      if (sessionStorage.getItem('hasSeenPreloader') || location.hash || window.scrollY > 0) return;
+    } catch {
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      if (isPageScrollLocked() || window.scrollY > 0) return;
+      try {
+        // Mark admission, not completion: an interrupted animation won't replay.
+        sessionStorage.setItem('hasSeenPreloader', 'true');
+      } catch {
+        return;
+      }
+      setShouldRender(true);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
-    const hasSeen = sessionStorage.getItem('hasSeenPreloader');
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Skip on mobile — the animation is a desktop flourish and costs ~1.2s LCP on small screens.
-    // Use matchMedia, not innerWidth — innerWidth can read 0 at hydration on some renderers.
-    const isMobile = window.matchMedia('(max-width: 767px)').matches;
-
-    if (hasSeen || prefersReducedMotion || isMobile) return;
-
-    // rAF-deferred to avoid synchronous setState inside the effect body.
-    const raf = requestAnimationFrame(() => setShouldRender(true));
-    return () => cancelAnimationFrame(raf);
-  }, [pathname]);
-
-  // Run the boot animation only once the overlay exists in the DOM.
   useEffect(() => {
     if (!shouldRender) return;
-
-    // Lock scroll during preloader
-    document.body.style.overflow = 'hidden';
-
+    const finish = () => setShouldRender(false);
+    const failsafe = setTimeout(finish, 1500);
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        onComplete: () => {
-          sessionStorage.setItem('hasSeenPreloader', 'true');
-          document.body.style.overflow = '';
-          setShouldRender(false);
-        },
-      });
-
-      // Simple boot sequence animation — hard-capped at ~950ms total.
-      // The old ~3s version directly inflated the desktop LCP measurement,
-      // since the overlay obscured the page while it played.
-      tl.to('.boot-text', {
-        opacity: 1,
-        duration: 0.08,
-        stagger: 0.06,
-        ease: 'none',
-      })
-        .to({}, { duration: 0.05 }) // beat before the wipe
+      gsap
+        .timeline({ onComplete: finish })
+        .to('.boot-text', { opacity: 1, duration: 0.08, stagger: 0.06, ease: 'none' })
         .to(container.current, {
-          clipPath: 'polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)', // wipes up
-          duration: 0.4,
+          yPercent: -100,
+          duration: 0.35,
           ease: 'power3.inOut',
         });
     }, container);
-
     return () => {
+      clearTimeout(failsafe);
       ctx.revert();
-      document.body.style.overflow = '';
     };
   }, [shouldRender]);
 
@@ -76,7 +58,7 @@ export default function Preloader() {
     <div
       ref={container}
       className="preloader-root fixed inset-0 z-[var(--z-preloader)] flex flex-col items-center justify-center bg-[var(--bg-primary)] font-mono text-[var(--color-volt)]"
-      style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)' }}
+      aria-hidden="true"
     >
       {/* Decorative grain for the preloader itself */}
       <div

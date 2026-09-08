@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeAll } from 'vitest';
 // (vi.hoisted: the mock factory runs before const initializers.)
 const { rpcMock } = vi.hoisted(() => ({ rpcMock: vi.fn() }));
 vi.mock('@/lib/supabase-admin', () => ({
-  supabaseAdmin: { rpc: rpcMock },
+  getSupabaseAdmin: () => ({ rpc: rpcMock }),
 }));
 
 import { getSecondsUntilUTCMidnight, hashIp, checkRateLimit } from './rate-limit';
